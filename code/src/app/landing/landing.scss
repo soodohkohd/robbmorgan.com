@@ -544,6 +544,16 @@
 }
 
 .mobile-scene-strip {
+  /* Renders as a <button> so tap cycles through scenes; reset the
+     default button chrome so it looks like the previous decorative
+     strip while staying keyboard-focusable. */
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: block;
+  cursor: pointer;
+
   position: relative;
   width: 100%;
   height: 32vh;
@@ -551,11 +561,17 @@
   max-height: 320px;
   overflow: hidden;
 
+  &:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: -2px;
+  }
+
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 25%;
+    transition: opacity var(--dur-base) var(--ease-soft);
   }
 
   &::after {

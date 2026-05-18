@@ -168,7 +168,17 @@ export class Landing {
     ].join('\n');
   });
 
+  /* Array order drives the mobile-nav stack order; desktop hotspots
+     are positioned by clip-path coords so reordering is visual-only
+     for mobile. Keep `keyboard` last — it's special (no route, no
+     mobile entry, opens the scene picker overlay). */
   readonly spots: readonly Spot[] = [
+    {
+      key: 'resume',
+      label: 'Resume',
+      route: '/resume',
+      polygon: '0,21.5 65.8,0 100,64.4 21.0,100',
+    },
     {
       key: 'web-apps',
       label: 'Code',
@@ -182,6 +192,13 @@ export class Landing {
       // Rounded-corner quad (iPhone-style). objectBoundingBox 0-1
       // units; corner radius ~0.05.
       path: 'M 0.290,0.047 Q 0.306,0 0.356,0.006 L 0.950,0.080 Q 1,0.086 0.991,0.135 L 0.838,0.951 Q 0.829,1 0.779,0.993 L 0.050,0.889 Q 0,0.882 0.016,0.835 Z',
+    },
+    {
+      key: 'roots',
+      label: 'Certs',
+      route: '/certs',
+      // Terracotta pot on the left edge of the desk. 17-vertex shape.
+      polygon: '0,10.6 13.3,19.7 27.8,20.5 47.8,18.9 68.9,16.7 87.8,11.4 100,0 97.8,27.3 93.3,32.6 83.3,89.4 64.4,98.5 50.0,100 34.4,99.2 22.2,93.9 15.6,87.1 3.3,40.9 0,40.2',
     },
     {
       key: 'novels',
@@ -199,12 +216,6 @@ export class Landing {
       polygon: '0,0 66.4,2.6 100,94.3 24.8,100',
     },
     {
-      key: 'resume',
-      label: 'Resume',
-      route: '/resume',
-      polygon: '0,21.5 65.8,0 100,64.4 21.0,100',
-    },
-    {
       key: 'music',
       label: 'Music',
       route: '/music',
@@ -212,6 +223,14 @@ export class Landing {
       // ~15px pixel-equivalent radius — gives a circular look
       // despite the bbox being much wider than tall), bottom sharp.
       path: 'M 0.002,0.523 Q 0,0.333 0.050,0.316 L 0.933,0.017 Q 0.983,0 0.988,0.189 L 1,0.595 L 0.006,1 Z',
+    },
+    {
+      key: 'break',
+      label: 'Take a Break',
+      route: '/photos',
+      // Coffee mug / drink on the right side of the desk. Routes to
+      // the SoCal coastline photo gallery. 13-vertex shape.
+      polygon: '2.5,0 17.3,5.4 39.5,11.4 64.2,12.8 82.7,10.7 100,5.4 90.1,85.9 84.0,94.0 70.4,98.7 50.6,100 28.4,96.6 11.1,91.9 0,83.2',
     },
     {
       key: 'contact',
@@ -225,21 +244,6 @@ export class Landing {
       label: 'Scenes',
       // No route — clicking opens the time-of-day picker overlay.
       polygon: '1.2,8.8 92.3,0 100,87.3 0,100',
-    },
-    {
-      key: 'break',
-      label: 'Take a Break',
-      route: '/photos',
-      // Coffee mug / drink on the right side of the desk. Routes to
-      // the SoCal coastline photo gallery. 13-vertex shape.
-      polygon: '2.5,0 17.3,5.4 39.5,11.4 64.2,12.8 82.7,10.7 100,5.4 90.1,85.9 84.0,94.0 70.4,98.7 50.6,100 28.4,96.6 11.1,91.9 0,83.2',
-    },
-    {
-      key: 'roots',
-      label: 'Certs',
-      route: '/certs',
-      // Terracotta pot on the left edge of the desk. 17-vertex shape.
-      polygon: '0,10.6 13.3,19.7 27.8,20.5 47.8,18.9 68.9,16.7 87.8,11.4 100,0 97.8,27.3 93.3,32.6 83.3,89.4 64.4,98.5 50.0,100 34.4,99.2 22.2,93.9 15.6,87.1 3.3,40.9 0,40.2',
     },
   ];
 
@@ -300,6 +304,16 @@ export class Landing {
 
   setPickerSelection(value: TimeOfDay): void {
     this.pickerSelection.set(value);
+  }
+
+  /** Mobile tap-to-cycle: advances activeTime through the four scenes
+   *  in timeOptions order, wrapping at the end. Starts from whatever
+   *  the current activeTime is (local-time variant or last-picked). */
+  cycleScene(): void {
+    const current = this.activeTime();
+    const idx = this.timeOptions.findIndex(o => o.value === current);
+    const next = this.timeOptions[(idx + 1) % this.timeOptions.length].value;
+    this.pickerSelection.set(next);
   }
 
   closePicker(): void {

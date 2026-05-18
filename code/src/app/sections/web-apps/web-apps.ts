@@ -127,7 +127,7 @@ export class WebApps {
           <tr><td><code>angular</code></td><td>npm</td><td><code>dist/</code> → <code>.build/</code></td></tr>
           <tr><td><code>ami</code></td><td>EC2 Image Builder</td><td>AMI IDs → SSM → <code>.build/ami-manifest.json</code></td></tr>
           <tr><td><code>dotnet</code></td><td>dotnet CLI</td><td>Self-contained executable or NuGet package</td></tr>
-          <tr><td><code>dotnet_framework</code></td><td>MSBuild</td><td><code>.build/</code></td></tr>
+          <tr><td><code>dotnet_<wbr>framework</code></td><td>MSBuild</td><td><code>.build/</code></td></tr>
           <tr><td><code>html</code></td><td>(copy)</td><td><code>.build/</code></td></tr>
           <tr><td><code>java</code></td><td>Maven or Gradle</td><td>JAR → <code>.build/</code></td></tr>
           <tr><td><code>php</code></td><td>Composer</td><td><code>.build/</code></td></tr>

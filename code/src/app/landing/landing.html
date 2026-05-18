@@ -278,9 +278,14 @@
 
   <!-- Mobile fallback -->
   <section class="mobile-card" aria-label="Sections">
-    <div class="mobile-scene-strip" aria-hidden="true">
+    <button
+      type="button"
+      class="mobile-scene-strip"
+      aria-label="Tap to change scene time of day"
+      (click)="cycleScene()"
+    >
       <img [src]="sceneSrc()" alt="" decoding="async" />
-    </div>
+    </button>
 
     <header class="mobile-head">
       <p class="eyebrow">Desk of</p>
