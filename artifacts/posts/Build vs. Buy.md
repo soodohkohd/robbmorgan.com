@@ -1,0 +1,11 @@
+Build vs. Buy: Why AI Strategy Requires Engineers, Not Just Vendors.
+
+As a Principal Solutions Engineer and Architect with a focus on AI, I spend a lot of time evaluating emerging technologies. One pattern I continue to see is how quickly organizations fall for polished vendor pitches, especially when those pitches are wrapped in the language of artificial intelligence. Add a few buzzwords, a slick demo, and a promise of transformation, and suddenly the buying process moves faster than the strategy behind it.
+
+There is a real difference between leveraging AI strategically and buying something that happens to have AI in the product description. Too many vendor solutions are over marketed and under engineered for the actual business problem. They are built for the masses, designed to satisfy the broadest possible customer base, and optimized for recurring revenue rather than measurable outcomes. The result is a tool that looks impressive in a slide deck but struggles to deliver tangible business value once it meets real world complexity.
+
+What often gets overlooked in the rush to buy is the long term cost of not building. When you buy, you inherit someone else’s roadmap. You depend on their release cycles, their priorities, and their interpretation of what “innovation” means. You sacrifice control over your intellectual property and institutional knowledge. You create lock in that becomes harder and more expensive to unwind over time.
+
+In many cases, hiring the right engineers and architects to design and build purpose driven solutions is not only more strategic, it is more cost effective. Internal teams understand the data, the processes, the constraints, and the business goals in a way no external vendor ever will. They can iterate faster, tailor solutions precisely, and ensure that AI is applied where it actually drives impact rather than where it looks impressive in a demo.
+
+AI is not magic. It is a powerful set of tools that require thoughtful design, clean data, strong governance, and technical depth. If we are serious about extracting value from it, we need to stop being captivated by marketing narratives and start investing in the people who can build systems aligned to our specific mission. Buying software is easy. Building capability is harder. But capability is what creates durable competitive advantage.

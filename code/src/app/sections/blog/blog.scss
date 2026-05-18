@@ -1,0 +1,123 @@
+/* ---------- post index (pill row selector) ---------- */
+
+.post-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 clamp(1.5rem, 4vw, 2.25rem);
+  max-width: 720px;
+}
+
+.post-index-pill {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--parchment-soft);
+  color: var(--walnut);
+  border: 1px solid rgba(58, 42, 31, 0.22);
+  cursor: pointer;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft),
+    color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    outline: none;
+  }
+
+  &.is-active {
+    background: var(--brass);
+    color: var(--walnut-deep);
+    border-color: var(--brass);
+    box-shadow: 0 1px 4px rgba(38, 24, 18, 0.18);
+  }
+}
+
+/* ---------- single selected post ---------- */
+
+.post {
+  max-width: 720px;
+}
+
+.post-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.5vw + 0.6rem, 2.05rem);
+  line-height: 1.2;
+  color: var(--walnut-deep);
+}
+
+.post-date {
+  margin: 0 0 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.post-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 0 1.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(58, 42, 31, 0.18);
+  box-shadow:
+    0 2px 6px rgba(38, 24, 18, 0.16),
+    0 10px 24px rgba(38, 24, 18, 0.14);
+}
+
+/* ---------- post body (innerHTML-rendered) ---------- */
+
+.post-body {
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.7;
+
+  p {
+    margin: 0 0 1.1rem;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  em {
+    font-style: italic;
+    color: var(--walnut-deep);
+  }
+
+  strong {
+    font-weight: 700;
+    color: var(--walnut-deep);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0 0 1.2rem;
+    padding: 0;
+
+    li {
+      position: relative;
+      padding-left: 1.25rem;
+      margin: 0.45rem 0;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.75em;
+        width: 6px;
+        height: 1px;
+        background: var(--brass);
+      }
+    }
+  }
+}

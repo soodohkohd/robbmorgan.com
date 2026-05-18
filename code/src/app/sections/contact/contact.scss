@@ -1,0 +1,106 @@
+/* ---------- friendly invite under the page header ---------- */
+
+.invite {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 60ch;
+  color: var(--ink);
+  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* ---------- contact methods (vertical stack of "cards") ---------- */
+
+.methods {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 560px;
+}
+
+.method {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.85rem, 2vw, 1.25rem);
+  padding: clamp(0.9rem, 2vw, 1.15rem) clamp(1rem, 2vw, 1.35rem);
+  background: var(--parchment-soft);
+  border: 1px solid rgba(58, 42, 31, 0.18);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft),
+    transform var(--dur-quick) var(--ease-soft),
+    box-shadow var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(38, 24, 18, 0.12);
+    outline: none;
+
+    .method-arrow {
+      color: var(--brass);
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.method-icon {
+  display: block;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 5px;
+  }
+}
+
+.method-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.method-label {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+  font-weight: 600;
+}
+
+.method-value {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--walnut-deep);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.method-arrow {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  transition:
+    color var(--dur-quick) var(--ease-soft),
+    transform var(--dur-quick) var(--ease-soft);
+}
+
+@media (max-width: 499px) {
+  .method-value {
+    font-size: 1rem;
+  }
+}

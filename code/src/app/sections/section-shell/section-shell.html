@@ -1,0 +1,21 @@
+<article class="page">
+  <header class="page-head" #pageHead [class.is-minimized]="isMinimized()">
+    <a class="back" routerLink="/" aria-label="Back to the desk">
+      <span aria-hidden="true">←</span>&nbsp;back to the desk
+    </a>
+    <div class="page-head-row">
+      <div class="page-icon" aria-hidden="true">
+        <ng-content select="[slot=icon]" />
+      </div>
+      <div class="page-head-text">
+        <p class="eyebrow">{{ eyebrow() }}</p>
+        <h1>{{ title() }}</h1>
+        @if (lede()) { <p class="lede" [innerHTML]="lede()"></p> }
+      </div>
+    </div>
+  </header>
+
+  <section class="body">
+    <ng-content />
+  </section>
+</article>

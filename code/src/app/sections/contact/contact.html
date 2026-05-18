@@ -1,0 +1,60 @@
+<app-section-shell
+  eyebrow="Get in touch"
+  title="Contact"
+  lede="The quickest ways to find me. Reach out anytime — I read everything."
+>
+  <!-- Round portrait icon (sole alt/title on the page) -->
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Contact"
+    title="Robb Morgan - Contact"
+  />
+
+  <!-- Friendly invite -->
+  <p class="invite">
+    Whether it's a question, an opportunity, or just to say hello — pick a
+    channel below and drop a line.
+  </p>
+
+  <!-- Contact methods -->
+  <ul class="methods">
+    <li>
+      <a
+        class="method"
+        href="https://www.linkedin.com/in/robbmorgan"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Robb Morgan on LinkedIn"
+      >
+        <span class="method-icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="32" height="32" rx="5" fill="#3a2a1f"/>
+            <!-- 'i' dot -->
+            <circle cx="9" cy="9.5" r="2.1" fill="#b08850"/>
+            <!-- 'i' stem -->
+            <rect x="6.9" y="12.7" width="4.2" height="12" rx="0.4" fill="#b08850"/>
+            <!-- 'n' -->
+            <path d="
+              M 13.7 12.7
+              H 17.5 V 14.6
+              C 18.4 13.0, 20.4 12.4, 22.3 13.0
+              C 24.6 13.7, 25.3 15.7, 25.3 18.0
+              V 24.7
+              H 21.5 V 19.0
+              C 21.5 17.6, 21.1 16.2, 19.5 16.2
+              C 17.9 16.2, 17.5 17.6, 17.5 19.0
+              V 24.7
+              H 13.7 Z" fill="#b08850"/>
+          </svg>
+        </span>
+        <span class="method-text">
+          <span class="method-label">LinkedIn</span>
+          <span class="method-value">linkedin.com/in/robbmorgan</span>
+        </span>
+        <span class="method-arrow" aria-hidden="true">↗</span>
+      </a>
+    </li>
+  </ul>
+</app-section-shell>

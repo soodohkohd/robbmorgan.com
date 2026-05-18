@@ -1,0 +1,108 @@
+<app-section-shell
+  eyebrow="In your pocket"
+  title="Mobile Apps"
+  lede="Apps I've shipped on the App Store — plus the next one already on the workbench."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Mobile Apps"
+    title="Robb Morgan - Mobile Apps"
+  />
+
+  <!-- Selector pills: shipped apps on the left, current projects on
+       the right with a distinct dark fill. -->
+  <div class="app-index" role="tablist" aria-label="Mobile apps">
+    @for (app of apps; track app.slug) {
+      <button
+        type="button"
+        class="app-index-pill"
+        role="tab"
+        [class.is-active]="selectedSlug() === app.slug"
+        [attr.aria-selected]="selectedSlug() === app.slug"
+        (click)="select(app.slug)"
+      >{{ app.label }}</button>
+    }
+    @for (project of currentProjects; track project.slug) {
+      <button
+        type="button"
+        class="app-index-pill is-wip"
+        role="tab"
+        [class.is-active]="selectedSlug() === project.slug"
+        [attr.aria-selected]="selectedSlug() === project.slug"
+        (click)="select(project.slug)"
+      >Current Project: {{ project.label }}</button>
+    }
+  </div>
+
+  <!-- Selected app card -->
+  <ul class="apps">
+    <li class="app">
+      @if (selectedApp().icon) {
+        <div class="app-head">
+          <img
+            class="app-icon"
+            [src]="selectedApp().icon"
+            [alt]="selectedApp().iconAlt ?? ''"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="app-meta">
+            <h2 class="app-title">{{ selectedApp().title }}</h2>
+            @if (selectedApp().subtitle) {
+              <p class="app-subtitle">{{ selectedApp().subtitle }}</p>
+            }
+            @if (selectedApp().developer || selectedApp().category) {
+              <p class="app-sub">
+                @if (selectedApp().developer) { {{ selectedApp().developer }} }
+                @if (selectedApp().developer && selectedApp().category) { <span aria-hidden="true">·</span> }
+                @if (selectedApp().category) { {{ selectedApp().category }} }
+              </p>
+            }
+          </div>
+        </div>
+      }
+
+      @if (selectedApp().video) {
+        <video
+          class="app-video"
+          [src]="selectedApp().video!.src"
+          controls
+          preload="metadata"
+          playsinline
+          controlslist="nodownload"
+        ></video>
+      }
+
+      <div class="app-body" [innerHTML]="selectedApp().bodyHtml"></div>
+
+      @if (selectedApp().screenshots?.length) {
+        <div class="app-screens" role="list">
+          @for (shot of selectedApp().screenshots; track shot.src) {
+            <img
+              class="app-screen"
+              role="listitem"
+              [src]="shot.src"
+              [alt]="shot.alt"
+              loading="lazy"
+              decoding="async"
+            />
+          }
+        </div>
+      }
+
+      @if (selectedApp().appStoreUrl) {
+        <a
+          class="app-buy"
+          [href]="selectedApp().appStoreUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Get it on the App Store
+          <span class="app-buy-arrow" aria-hidden="true">↗</span>
+        </a>
+      }
+    </li>
+  </ul>
+</app-section-shell>

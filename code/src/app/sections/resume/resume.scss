@@ -1,0 +1,236 @@
+/* (.portrait-icon now lives in global styles.scss so all sections can use it) */
+
+/* ---------- contact bar (just under the page header) ---------- */
+
+.contact-bar {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+  }
+  li + li::before {
+    content: "·";
+    color: var(--brass);
+    margin-right: 1.5rem;
+    margin-left: -1.5rem;
+  }
+
+  a {
+    color: var(--walnut);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(176, 136, 80, 0.4);
+    transition: color var(--dur-quick) var(--ease-soft),
+                border-color var(--dur-quick) var(--ease-soft);
+
+    &:hover {
+      color: var(--brass);
+      border-bottom-color: var(--brass);
+    }
+  }
+}
+
+/* ---------- section headings ---------- */
+
+.resume-section {
+  margin: clamp(2rem, 4vw, 2.75rem) 0 0;
+
+  h2 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.35rem, 1.4vw + 0.85rem, 1.75rem);
+    color: var(--walnut-deep);
+    margin: 0 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+
+    /* small brass diamond ornament before each heading — a quiet
+       literary accent that ties back to the desk's brass tones. */
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      background: var(--brass);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    /* thin brass underline that fades out to the right */
+    &::after {
+      content: "";
+      flex: 1 1 auto;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        rgba(176, 136, 80, 0.55),
+        rgba(176, 136, 80, 0)
+      );
+    }
+  }
+}
+
+/* ---------- summary paragraph ---------- */
+
+.summary {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  max-width: 70ch;
+  color: var(--ink);
+}
+
+/* ---------- experience entries ---------- */
+
+.job {
+  padding: 0 0 1.25rem;
+  margin: 0 0 1.5rem;
+
+  & + .job {
+    border-top: 1px dashed rgba(58, 42, 31, 0.18);
+    padding-top: 1.5rem;
+  }
+}
+
+.job-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0.6rem;
+
+  > div { min-width: 0; }
+}
+
+.job-role {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--walnut-deep);
+}
+
+.job-where {
+  margin: 0.1rem 0 0;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.job-when {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--walnut);
+  white-space: nowrap;
+  /* a thin brass tick under the dates, like a calendar mark */
+  padding-bottom: 0.18rem;
+  border-bottom: 1px solid var(--brass-soft);
+}
+
+.job-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    position: relative;
+    padding-left: 1.25rem;
+    margin: 0.45rem 0;
+    line-height: 1.55;
+    color: var(--ink);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 6px;
+      height: 1px;
+      background: var(--brass);
+    }
+  }
+}
+
+/* ---------- generic bulleted lists ---------- */
+
+.bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    position: relative;
+    padding-left: 1.25rem;
+    margin: 0.45rem 0;
+    line-height: 1.55;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 6px;
+      height: 1px;
+      background: var(--brass);
+    }
+  }
+}
+
+/* ---------- skills (definition list) ---------- */
+
+.skills {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem 0;
+}
+
+.skill-row {
+  display: grid;
+  grid-template-columns: 11.5rem 1fr;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+
+  dt {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    font-weight: 600;
+  }
+  dd {
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+}
+
+@media (max-width: 599px) {
+  .job-head {
+    grid-template-columns: 1fr;
+  }
+  .job-when {
+    justify-self: start;
+    margin-top: 0.25rem;
+  }
+  .skill-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+
+    dt { margin-bottom: 0.1rem; }
+  }
+  .contact-bar {
+    gap: 0.4rem;
+    li + li::before { display: none; }
+  }
+}

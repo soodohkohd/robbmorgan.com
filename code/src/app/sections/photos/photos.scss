@@ -1,0 +1,170 @@
+.carousel {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------- hero frame ----------
+   Fixed 3:2 aspect ratio so the frame size and the prev/next button
+   positions never shift between images. Mixed-orientation photos
+   are letterboxed (landscape) or pillarboxed (portrait) inside the
+   black frame via object-fit: contain. */
+
+.frame {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 3px rgba(38, 24, 18, 0.18),
+    0 12px 28px rgba(38, 24, 18, 0.28);
+}
+
+.hero {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  animation: hero-fade var(--dur-base) var(--ease-soft);
+}
+
+@keyframes hero-fade {
+  from { opacity: 0.3; }
+  to   { opacity: 1; }
+}
+
+/* ---------- prev / next buttons ---------- */
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 234, 213, 0.5);
+  background: rgba(38, 24, 18, 0.6);
+  color: var(--parchment);
+  font-size: 1.75rem;
+  line-height: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft),
+    transform var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: rgba(38, 24, 18, 0.85);
+    border-color: var(--brass);
+    outline: none;
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+.nav-prev { left: 12px; }
+.nav-next { right: 12px; }
+
+/* ---------- caption ---------- */
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.counter {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--brass);
+}
+
+.credit {
+  font-style: italic;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--ink);
+
+  a {
+    color: var(--walnut);
+    text-decoration-color: var(--brass);
+    text-underline-offset: 2px;
+
+    &:hover { color: var(--brass); }
+  }
+}
+
+/* ---------- thumbnail strip ---------- */
+
+.thumbs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--brass-soft) transparent;
+  scrollbar-width: thin;
+}
+
+.thumb {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 64px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  scroll-snap-align: start;
+  transition:
+    border-color var(--dur-quick) var(--ease-soft),
+    transform var(--dur-quick) var(--ease-soft),
+    opacity var(--dur-quick) var(--ease-soft);
+  opacity: 0.55;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &:hover, &:focus-visible {
+    opacity: 1;
+    outline: none;
+    border-color: rgba(176, 136, 80, 0.5);
+  }
+
+  &.is-active {
+    opacity: 1;
+    border-color: var(--brass);
+    box-shadow: 0 1px 6px rgba(176, 136, 80, 0.5);
+  }
+}
+
+@media (max-width: 599px) {
+  .nav {
+    width: 36px;
+    height: 36px;
+    font-size: 1.4rem;
+  }
+  .thumb {
+    width: 64px;
+    height: 48px;
+  }
+}

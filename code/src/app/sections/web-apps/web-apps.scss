@@ -1,0 +1,248 @@
+/* ---------- topic selector tabs ---------- */
+
+.topic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.topic-tab {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--parchment-soft);
+  color: var(--walnut);
+  border: 1px solid rgba(58, 42, 31, 0.22);
+  cursor: pointer;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft),
+    color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    outline: none;
+  }
+
+  &.is-active {
+    background: var(--brass);
+    color: var(--walnut-deep);
+    border-color: var(--brass);
+    box-shadow: 0 1px 4px rgba(38, 24, 18, 0.18);
+  }
+}
+
+/* ---------- selected topic title + intro ---------- */
+
+.topic-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.55rem;
+  line-height: 1.15;
+  color: var(--walnut-deep);
+}
+
+.topic-intro {
+  margin: 0 0 2rem;
+  max-width: 72ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ---------- topic body (innerHTML prose) ---------- */
+
+.topic-body {
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 78ch;
+
+  /* Elements inside .topic-body are inserted via [innerHTML], so they
+     don't carry the component's view-encapsulation attribute. ::ng-deep
+     drops the attribute requirement from the selectors below so they
+     actually reach the rendered HTML. */
+  ::ng-deep {
+    /* Section headings — small brass uppercase label, solid brass rule
+       above, generous top margin so sections clearly break apart. */
+    h2 {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin: 3.5rem 0 1.1rem;
+      padding-top: 1.75rem;
+      border-top: 2px solid var(--brass);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      line-height: 1.2;
+    }
+    h2::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--brass);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+    /* The first h2 already follows the topic title — no extra divider. */
+    > h2:first-child {
+      margin-top: 0.25rem;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    h3 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-style: italic;
+      font-size: 0.98rem;
+      color: var(--walnut-deep);
+      margin: 1.4rem 0 0.5rem;
+      letter-spacing: normal;
+    }
+
+    p { margin: 0 0 0.8rem; }
+
+    strong { font-weight: 700; color: var(--walnut-deep); }
+    em     { font-style: italic; color: var(--walnut-deep); }
+
+    ol, ul {
+      margin: 0 0 0.95rem;
+      padding-left: 1.5rem;
+    }
+    li { margin: 0.3rem 0; }
+
+    /* Inline code */
+    code {
+      font-family: var(--mono);
+      font-size: 0.86em;
+      background: rgba(58, 42, 31, 0.08);
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+      color: var(--walnut-deep);
+    }
+
+    /* Code blocks */
+    pre {
+      margin: 0 0 1.2rem;
+      padding: 0.95rem 1.1rem;
+      background: #2b2018;
+      color: #e8d8b3;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.55;
+      box-shadow: inset 0 0 0 1px rgba(176, 136, 80, 0.25);
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    /* Tables with strong, visible walnut borders */
+    table {
+      width: 100%;
+      margin: 0.6rem 0 1.4rem;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      border: 1px solid var(--walnut);
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(58, 42, 31, 0.45);
+      vertical-align: top;
+    }
+    th {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--walnut-deep);
+      background: rgba(176, 136, 80, 0.32);
+      border-color: var(--walnut);
+      font-weight: 700;
+    }
+    tbody tr:nth-child(even) td { background: rgba(176, 136, 80, 0.08); }
+    tbody tr:hover td           { background: rgba(176, 136, 80, 0.18); }
+  }
+}
+
+/* ---------- Angular Packages list (rendered via [innerHTML]) ---------- */
+/* Same ::ng-deep escape hatch as the prose styles above. */
+
+::ng-deep {
+  .package-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .package {
+    padding: clamp(0.85rem, 2vw, 1.1rem) clamp(1rem, 2vw, 1.25rem);
+    background: var(--parchment-soft);
+    border: 1px solid rgba(58, 42, 31, 0.22);
+    border-radius: 8px;
+    transition:
+      background var(--dur-quick) var(--ease-soft),
+      border-color var(--dur-quick) var(--ease-soft);
+  }
+  .package:hover {
+    background: #ecdcb6;
+    border-color: var(--brass);
+  }
+
+  .package-name {
+    margin: 0 0 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-style: normal;
+    color: var(--walnut-deep);
+    padding: 0;
+    border: 0;
+    letter-spacing: normal;
+    text-transform: none;
+    background: transparent;
+    line-height: 1.3;
+    display: block;
+  }
+  .package-name::before { content: none; }
+  .package-name a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--brass-soft);
+    transition: border-color var(--dur-quick) var(--ease-soft);
+  }
+  .package-name a:hover { border-bottom-color: var(--brass); }
+
+  .package-arrow {
+    margin-left: 0.3rem;
+    color: var(--brass);
+    font-size: 0.9em;
+  }
+
+  .package-desc {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+}

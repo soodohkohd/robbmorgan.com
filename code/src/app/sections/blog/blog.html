@@ -1,0 +1,41 @@
+<app-section-shell
+  eyebrow="Notes from the desk"
+  title="Thoughts"
+  lede="Essays on engineering, AI strategy, hiring, and the work in between."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Thoughts"
+    title="Robb Morgan - Thoughts"
+  />
+
+  <div class="post-index" role="tablist" aria-label="Posts">
+    @for (post of posts; track post.slug) {
+      <button
+        type="button"
+        class="post-index-pill"
+        role="tab"
+        [class.is-active]="selectedSlug() === post.slug"
+        [attr.aria-selected]="selectedSlug() === post.slug"
+        (click)="select(post.slug)"
+      >{{ post.label }}</button>
+    }
+  </div>
+
+  <article class="post" [id]="selectedPost().slug">
+    <h2 class="post-title">{{ selectedPost().title }}</h2>
+    <p class="post-date">{{ selectedPost().date }}</p>
+
+    <img
+      class="post-image"
+      [src]="selectedPost().image"
+      [alt]="selectedPost().imageAlt"
+      loading="lazy"
+      decoding="async"
+    />
+
+    <div class="post-body" [innerHTML]="selectedPost().bodyHtml"></div>
+  </article>
+</app-section-shell>

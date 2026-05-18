@@ -1,0 +1,75 @@
+<app-section-shell
+  eyebrow="Take a break"
+  title="The Coast"
+  lede="A wander down the California coastline — cliffs, coves, and the light that makes us all stay. Every photo here is the work of a photographer on Unsplash; tap their name to visit their portfolio and support the artist behind the view."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - The Coast"
+    title="Robb Morgan - The Coast"
+  />
+
+  <figure class="carousel">
+    <div class="frame">
+      <img
+        class="hero"
+        [src]="imageSrc(current())"
+        [alt]="'Photo by ' + current().photographer"
+        decoding="async"
+      />
+
+      <button
+        type="button"
+        class="nav nav-prev"
+        aria-label="Previous photo"
+        (click)="prev()"
+      >‹</button>
+      <button
+        type="button"
+        class="nav nav-next"
+        aria-label="Next photo"
+        (click)="next()"
+      >›</button>
+    </div>
+
+    <figcaption class="caption">
+      <span class="counter">{{ index() + 1 }} / {{ count() }}</span>
+      <span class="credit">
+        Photo by
+        <a
+          [href]="profileUrl(current())"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ current().photographer }}</a>
+        on <a
+          href="https://unsplash.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Unsplash</a>
+      </span>
+    </figcaption>
+
+    <div class="thumbs" role="tablist" aria-label="Choose photo">
+      @for (p of photos; track p.file; let i = $index) {
+        <button
+          type="button"
+          class="thumb"
+          [class.is-active]="i === index()"
+          role="tab"
+          [attr.aria-selected]="i === index()"
+          [attr.aria-label]="'Photo ' + (i + 1) + ' by ' + p.photographer"
+          (click)="goto(i)"
+        >
+          <img
+            [src]="imageSrc(p)"
+            [alt]="'Photo by ' + p.photographer"
+            decoding="async"
+            loading="lazy"
+          />
+        </button>
+      }
+    </div>
+  </figure>
+</app-section-shell>

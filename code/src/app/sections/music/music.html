@@ -1,0 +1,50 @@
+<app-section-shell
+  eyebrow="On the airwaves"
+  title="Music"
+  [lede]="ledeHtml"
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Music"
+    title="Robb Morgan - Music"
+  />
+
+  <ol class="tracks">
+    @for (track of visibleTracks; track track.src; let i = $index) {
+      <li class="track">
+        <span class="track-number">{{ trackNumber(i) }}</span>
+
+        <img
+          class="track-cover"
+          [src]="track.cover"
+          [alt]="track.title + ' cover art'"
+          loading="lazy"
+          decoding="async"
+        />
+
+        <div class="track-body">
+          <p class="track-title">
+            {{ track.title }}
+            @if (track.subtitle) {
+              <span class="track-subtitle">{{ track.subtitle }}</span>
+            }
+          </p>
+          @if (track.style) {
+            <p class="track-style">{{ track.style }}</p>
+          }
+
+          <audio
+            #audioEl
+            controls
+            preload="none"
+            controlsList="nodownload"
+            [src]="track.src"
+            (play)="onPlay($event)"
+          ></audio>
+        </div>
+      </li>
+    }
+  </ol>
+</app-section-shell>

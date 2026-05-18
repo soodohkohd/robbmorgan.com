@@ -1,0 +1,32 @@
+<app-section-shell
+  eyebrow="Seeds of success"
+  title="Certifications"
+  lede="A short list of credentials I've earned along the way — from HarvardX and the California Institute of the Arts."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Certifications"
+    title="Robb Morgan - Certifications"
+  />
+
+  <ul class="certs">
+    @for (cert of certs; track cert.url) {
+      <li class="cert">
+        <p class="cert-school">{{ cert.school }}</p>
+        <h2 class="cert-title">{{ cert.title }}</h2>
+        <p class="cert-meta">Issued {{ cert.issued }}</p>
+        <a
+          class="cert-verify"
+          [href]="cert.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Verify certificate
+          <span class="cert-verify-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    }
+  </ul>
+</app-section-shell>

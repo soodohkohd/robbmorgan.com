@@ -1,0 +1,303 @@
+<main class="landing" [class.opening]="opening()" aria-label="Robb Morgan">
+
+  <!-- Cinematic scene (desktop & tablet) -->
+  <section
+    class="scene"
+    aria-label="Desk of Robb Morgan"
+    [class.ready]="sceneReady()"
+    [class.debug]="debug()"
+    [class.capturing]="captureState() === 'capturing'"
+    (mousemove)="onSceneMouseMove($event)"
+    (click)="onSceneClick($event)"
+  >
+    <img
+      class="scene-image"
+      [src]="sceneSrc()"
+      alt="A walnut writing desk in front of a wide window overlooking the Southern California coast."
+      (load)="sceneReady.set(true)"
+      decoding="async"
+    />
+
+    <!-- Portrait overlaid inside the picture frame on the desk.
+         Wrapper carries the polygon clip-path so the ::after inner
+         shadow can paint on top of the photo within the same shape. -->
+    <div
+      class="frame-photo"
+      [class.is-night]="activeTime() === 'night'"
+      [class.is-evening]="activeTime() === 'evening'"
+      [class.is-afternoon]="activeTime() === 'afternoon'"
+      aria-hidden="true"
+    >
+      <img
+        class="frame-photo-img"
+        src="/robb-morgan.png"
+        alt=""
+        decoding="async"
+      />
+    </div>
+
+    <!-- Hotspots over each interactive object. Polygon-shaped ones
+         get a sibling SVG that draws the stroke + outer glow on hover
+         (a sibling, not a child, so it isn't clipped by clip-path).
+         Uses visibleSpots() so debug-mode "Delete" can hide spots
+         for the session without touching the readonly spots[] array. -->
+    @for (spot of visibleSpots(); track spot.key) {
+      <button
+        type="button"
+        class="hotspot"
+        [attr.data-spot]="spot.key"
+        [attr.aria-label]="'Open ' + spot.label"
+        (click)="onSpotClick(spot)"
+      >
+        <span class="hotspot-label">{{ spot.label }}</span>
+        @if (debug()) {
+          <span class="hotspot-debug-tag">{{ spot.key }}</span>
+        }
+      </button>
+      @if (spot.polygon) {
+        <svg
+          class="hotspot-outline"
+          [attr.data-spot]="spot.key"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <polygon
+            [attr.points]="spot.polygon"
+            fill="none"
+            stroke="rgba(176, 136, 80, 0.85)"
+            stroke-width="2"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
+      } @else if (spot.path) {
+        <svg
+          class="hotspot-outline"
+          [attr.data-spot]="spot.key"
+          viewBox="0 0 1 1"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <clipPath [attr.id]="spot.key + '-clip'" clipPathUnits="objectBoundingBox">
+              <path [attr.d]="spot.path" />
+            </clipPath>
+          </defs>
+          <path
+            [attr.d]="spot.path"
+            fill="none"
+            stroke="rgba(176, 136, 80, 0.85)"
+            stroke-width="2"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
+      }
+    }
+
+    <!-- Time-of-day picker (opened by the keyboard hotspot). Floats
+         centered at the bottom of the scene. Click-stop so picker
+         interactions don't register as scene clicks during capture. -->
+    @if (pickerOpen()) {
+      <div
+        class="time-picker"
+        role="dialog"
+        aria-label="Choose scene time of day"
+        (click)="$event.stopPropagation()"
+      >
+        @for (opt of timeOptions; track opt.value) {
+          <button
+            type="button"
+            class="time-picker-btn"
+            [class.is-active]="activeTime() === opt.value"
+            (click)="setPickerSelection(opt.value)"
+          >{{ opt.label }}</button>
+        }
+        <button
+          type="button"
+          class="time-picker-close"
+          aria-label="Close scene picker"
+          (click)="closePicker()"
+        >×</button>
+      </div>
+    }
+
+    @if (debug()) {
+      <div class="coord-readout" aria-hidden="true">
+        x: {{ mouseX() }}% &nbsp;·&nbsp; y: {{ mouseY() }}%
+      </div>
+
+      <!-- Hotspot edit panel — opens when a hotspot is clicked in
+           debug mode. Mutually exclusive with the capture-panel: the
+           edit panel closes when "Update" kicks off a capture. -->
+      @if (editingSpot(); as spot) {
+        <div class="edit-panel" (click)="$event.stopPropagation()">
+          <p class="capture-title">Edit hotspot</p>
+          <p class="capture-meta"><strong>{{ spot.key }}</strong></p>
+          <p class="capture-help">
+            "Update" recaptures the polygon. "Delete" hides this
+            spot for this session — you'll still need to remove its
+            entry from spots[] in landing.ts.
+          </p>
+          <div class="capture-actions">
+            <button
+              type="button"
+              class="capture-btn capture-btn-primary"
+              (click)="startUpdateEdit()"
+            >Update</button>
+            <button
+              type="button"
+              class="capture-btn capture-btn-danger"
+              (click)="deleteEditingSpot()"
+            >Delete</button>
+            <button
+              type="button"
+              class="capture-btn"
+              (click)="cancelEditSpot()"
+            >Cancel</button>
+          </div>
+        </div>
+      }
+
+      <!-- Polygon-capture panel (upper-left). Stops click propagation so
+           clicks inside don't register as scene clicks during capture. -->
+      <div class="capture-panel" (click)="$event.stopPropagation()">
+        <p class="capture-title">Polygon Capture</p>
+
+        @if (captureState() === 'idle') {
+          <button
+            type="button"
+            class="capture-btn capture-btn-primary"
+            (click)="startCapture()"
+          >Start</button>
+        }
+
+        @if (captureState() === 'naming') {
+          <label class="capture-field">
+            <span>Section name</span>
+            <input
+              #nameInput
+              type="text"
+              [value]="captureName()"
+              (input)="captureName.set(nameInput.value)"
+              (keydown.enter)="beginCapturing()"
+              (keydown.escape)="resetCapture()"
+              placeholder="e.g. web-apps"
+              autofocus
+            />
+          </label>
+          <div class="capture-actions">
+            <button
+              type="button"
+              class="capture-btn capture-btn-primary"
+              [disabled]="!captureName().trim()"
+              (click)="beginCapturing()"
+            >Begin</button>
+            <button
+              type="button"
+              class="capture-btn"
+              (click)="resetCapture()"
+            >Cancel</button>
+          </div>
+        }
+
+        @if (captureState() === 'capturing') {
+          <p class="capture-meta">
+            <strong>{{ captureName() }}</strong> · {{ capturePoints().length }} pts
+          </p>
+          <p class="capture-help">Click corners on the scene (clockwise from TL).</p>
+          <div class="capture-actions">
+            <button
+              type="button"
+              class="capture-btn capture-btn-primary"
+              [disabled]="capturePoints().length < 3"
+              (click)="stopCapture()"
+            >Stop</button>
+            <button
+              type="button"
+              class="capture-btn"
+              [disabled]="!capturePoints().length"
+              (click)="undoLastPoint()"
+            >Undo</button>
+            <button
+              type="button"
+              class="capture-btn"
+              (click)="resetCapture()"
+            >Cancel</button>
+          </div>
+        }
+
+        @if (captureState() === 'done') {
+          <p class="capture-meta">
+            <strong>{{ captureName() }}</strong> · {{ capturePoints().length }} pts
+          </p>
+          <pre class="capture-output">{{ captureOutput() }}</pre>
+          <div class="capture-actions">
+            <button
+              type="button"
+              class="capture-btn capture-btn-primary"
+              (click)="copyOutput()"
+            >Copy</button>
+            <button
+              type="button"
+              class="capture-btn"
+              (click)="resetCapture()"
+            >New</button>
+          </div>
+        }
+      </div>
+
+      <!-- Live preview of the captured polygon (fill + stroke). -->
+      @if (capturePoints().length >= 2) {
+        <svg
+          class="capture-preview"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <polygon
+            [attr.points]="capturePointsForSvg()"
+            fill="rgba(242, 201, 76, 0.18)"
+            stroke="#f2c94c"
+            stroke-width="2"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
+      }
+
+      <!-- Numbered markers at each captured point. -->
+      @for (pt of capturePoints(); track $index) {
+        <span
+          class="capture-marker"
+          [style.left.%]="pt.x"
+          [style.top.%]="pt.y"
+          aria-hidden="true"
+        >{{ $index + 1 }}</span>
+      }
+    }
+  </section>
+
+  <!-- Mobile fallback -->
+  <section class="mobile-card" aria-label="Sections">
+    <div class="mobile-scene-strip" aria-hidden="true">
+      <img [src]="sceneSrc()" alt="" decoding="async" />
+    </div>
+
+    <header class="mobile-head">
+      <p class="eyebrow">Desk of</p>
+      <h1>Robb Morgan</h1>
+      <p class="lede">Writer, builder. A desk full of things I've made.</p>
+    </header>
+
+    <nav class="mobile-nav">
+      @for (spot of spots; track spot.key) {
+        @if (spot.route) {
+          <a class="mobile-link" [routerLink]="spot.route">
+            <span class="mobile-link-label">{{ spot.label }}</span>
+            <span class="mobile-link-arrow" aria-hidden="true">→</span>
+          </a>
+        }
+      }
+    </nav>
+  </section>
+
+</main>

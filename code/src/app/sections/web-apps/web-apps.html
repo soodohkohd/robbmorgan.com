@@ -1,0 +1,36 @@
+<app-section-shell
+  eyebrow="From the keyboard"
+  title="Code"
+  lede="Pick a project below — each one expands with details, repo / package links, and the design thinking behind it."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - Code"
+    title="Robb Morgan - Code"
+  />
+
+  <!-- Topic selector -->
+  <div class="topic-tabs" role="tablist" aria-label="Code topics">
+    @for (topic of topics; track topic.slug) {
+      <button
+        type="button"
+        class="topic-tab"
+        role="tab"
+        [class.is-active]="selectedSlug() === topic.slug"
+        [attr.aria-selected]="selectedSlug() === topic.slug"
+        (click)="select(topic.slug)"
+      >{{ topic.label }}</button>
+    }
+  </div>
+
+  <!-- Selected topic content -->
+  <article class="topic" [attr.data-topic]="selectedSlug()">
+    <h2 class="topic-title">{{ selectedTopic().label }}</h2>
+    @if (selectedTopic().intro) {
+      <p class="topic-intro">{{ selectedTopic().intro }}</p>
+    }
+    <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
+  </article>
+</app-section-shell>
