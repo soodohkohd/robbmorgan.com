@@ -16,13 +16,30 @@
       <li class="track">
         <span class="track-number">{{ trackNumber(i) }}</span>
 
-        <img
-          class="track-cover"
-          [src]="track.cover"
-          [alt]="track.title + ' cover art'"
-          loading="lazy"
-          decoding="async"
-        />
+        @if (track.videoUrl) {
+          <button
+            type="button"
+            class="track-cover-btn"
+            [attr.aria-label]="'Play music video for ' + track.title"
+            (click)="openVideo(track)"
+          >
+            <img
+              class="track-cover"
+              [src]="track.cover"
+              [alt]="track.title + ' cover art'"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+        } @else {
+          <img
+            class="track-cover"
+            [src]="track.cover"
+            [alt]="track.title + ' cover art'"
+            loading="lazy"
+            decoding="async"
+          />
+        }
 
         <div class="track-body">
           <p class="track-title">
@@ -47,4 +64,32 @@
       </li>
     }
   </ol>
+
+  <!-- Music-video modal (easter egg). Backdrop click + ESC + close
+       button all dismiss; click on the modal body itself doesn't. -->
+  @if (modalTrack(); as t) {
+    <div
+      class="video-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="t.title + ' music video'"
+      (click)="closeVideo()"
+    >
+      <div class="video-modal-content" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="video-modal-close"
+          aria-label="Close video"
+          (click)="closeVideo()"
+        >×</button>
+        <video
+          #videoEl
+          [src]="t.videoUrl"
+          controls
+          autoplay
+          playsinline
+        ></video>
+      </div>
+    </div>
+  }
 </app-section-shell>

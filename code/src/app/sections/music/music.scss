@@ -101,6 +101,104 @@
   filter: sepia(0.15) saturate(0.85);
 }
 
+/* ---------- track cover button (easter-egg) ----------
+   Wraps the cover img when track.videoUrl is set so clicking the
+   cover opens the music-video modal. Acts as a transparent button
+   in the grid; the inner .track-cover keeps the same dimensions. */
+.track-cover-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 4px;
+  transition: transform var(--dur-quick) var(--ease-soft);
+
+  &:hover .track-cover,
+  &:focus-visible .track-cover {
+    border-color: var(--brass);
+    box-shadow:
+      0 1px 3px rgba(38, 24, 18, 0.18),
+      0 6px 14px rgba(176, 136, 80, 0.45);
+  }
+  &:hover { transform: scale(1.03); }
+
+  &:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+  }
+}
+
+/* ---------- music-video modal (easter-egg viewer) ---------- */
+
+.video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: video-modal-in 0.2s var(--ease-soft);
+}
+
+.video-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90dvh;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.65);
+
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 90dvh;
+    background: #000;
+  }
+}
+
+.video-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 234, 213, 0.5);
+  background: rgba(38, 24, 18, 0.7);
+  color: var(--parchment);
+  font-size: 1.6rem;
+  line-height: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: rgba(38, 24, 18, 0.95);
+    border-color: var(--brass);
+    outline: none;
+  }
+}
+
+@keyframes video-modal-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @media (max-width: 599px) {
   .track {
     grid-template-columns: auto 1fr;
@@ -110,8 +208,12 @@
     padding-top: 0;
     grid-row: 1;
   }
-  .track-cover {
+  .track-cover,
+  .track-cover-btn {
     grid-row: 1 / span 2;
+  }
+  .track-cover,
+  .track-cover-btn .track-cover {
     width: 70px;
     height: 70px;
   }
