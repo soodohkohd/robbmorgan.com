@@ -81,6 +81,14 @@ export class Music implements AfterViewInit {
     if (!track.videoUrl) return;
     this.audios().forEach(ref => ref.nativeElement.pause());
     this.modalTrack.set(track);
+    // iOS Safari often ignores the autoplay attribute when the <video>
+    // is added via conditional render — explicitly play() after the
+    // element is in the DOM so the user-gesture token still applies.
+    setTimeout(() => {
+      this.videoEl()?.nativeElement.play().catch(() => {
+        /* autoplay blocked — user can still tap the play control. */
+      });
+    }, 0);
   }
 
   closeVideo(): void {
