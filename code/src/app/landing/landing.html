@@ -18,6 +18,68 @@
       decoding="async"
     />
 
+<!-- Monitor "VS Code + Claude Code session" overlay. The whole
+         block is blurred so specific text isn't readable but the
+         structure (activity bar / file tree / chat session) reads.
+         Bottom-anchored flex on the chat pane auto-scrolls older
+         content off the top. -->
+    <div class="monitor-code" aria-hidden="true">
+      <div class="vsc-sidebar">
+        <div class="vsc-sb-header">EXPLORER</div>
+        <div class="vsc-sb-row">▾ robbmorgan.com</div>
+        <div class="vsc-sb-row vsc-i1">▸ .claude</div>
+        <div class="vsc-sb-row vsc-i1">▾ artifacts</div>
+        <div class="vsc-sb-row vsc-i1">▾ code</div>
+        <div class="vsc-sb-row vsc-i2">▸ public</div>
+        <div class="vsc-sb-row vsc-i2">▾ src</div>
+        <div class="vsc-sb-row vsc-i3">▾ app</div>
+        <div class="vsc-sb-row vsc-i4 vsc-active">landing</div>
+        <div class="vsc-sb-row vsc-i4">sections</div>
+        <div class="vsc-sb-row vsc-i1">deploy.sh</div>
+        <div class="vsc-sb-row vsc-i1">CLAUDE.md</div>
+      </div>
+      <div class="vsc-main">
+        <div class="vsc-tabbar">
+          <span class="vsc-tab">⊞ Claude Code</span>
+        </div>
+        <div class="vsc-chat">
+          <pre class="monitor-code-stream">{{ codeBuffer() }}<span class="monitor-code-cursor"></span></pre>
+        </div>
+        <!-- Input area (where the user types prompts) — orange
+             border calls it out the way Claude Code highlights
+             the input box. Static — purely decorative. -->
+        <div class="vsc-input">
+          <div class="vsc-input-text">add another easter egg to the desk</div>
+          <div class="vsc-input-footer">
+            <span class="vsc-input-icon"></span>
+            <span class="vsc-input-icon"></span>
+            <span class="vsc-input-hint">Ask before edits ↑</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sound-playing glow — soft brass halo over the sound button.
+         Only visible when ambient audio is playing; pulses to feel
+         "in concert" with the music. -->
+    <div class="sound-glow" [class.is-active]="audioPlaying()" aria-hidden="true"></div>
+
+    <!-- Ambient coffee steam — eight soft puffs rise slowly and
+         billow outward as they go. Negative animation-delays
+         spread them across one cycle so puffs are always visible
+         at every height of the column. Pointer-events disabled
+         so the break hotspot underneath still receives clicks. -->
+    <div class="coffee-steam" aria-hidden="true">
+      <span class="puff puff-1"></span>
+      <span class="puff puff-2"></span>
+      <span class="puff puff-3"></span>
+      <span class="puff puff-4"></span>
+      <span class="puff puff-5"></span>
+      <span class="puff puff-6"></span>
+      <span class="puff puff-7"></span>
+      <span class="puff puff-8"></span>
+    </div>
+
     <!-- Portrait overlaid inside the picture frame on the desk.
          Wrapper carries the polygon clip-path so the ::after inner
          shadow can paint on top of the photo within the same shape. -->
@@ -49,7 +111,7 @@
         [attr.aria-label]="'Open ' + spot.label"
         (click)="onSpotClick(spot)"
       >
-        <span class="hotspot-label">{{ spot.label }}</span>
+        <span class="hotspot-label">{{ labelFor(spot) }}</span>
         @if (debug()) {
           <span class="hotspot-debug-tag">{{ spot.key }}</span>
         }

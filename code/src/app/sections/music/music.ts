@@ -9,6 +9,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { SectionShell } from '../section-shell/section-shell';
+import { AmbientAudioService } from '../../ambient-audio.service';
 
 interface Track {
   title: string;
@@ -33,6 +34,15 @@ interface Track {
 })
 export class Music implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
+  private ambient = inject(AmbientAudioService);
+
+  constructor() {
+    // Pause the desk-scene ambient track while the Music page is
+    // mounted (so it doesn't fight the tracks the user plays here),
+    // and resume it on the way back to the desk.
+    this.ambient.suspend();
+    this.destroyRef.onDestroy(() => this.ambient.resume());
+  }
 
   readonly ledeHtml =
     'A small catalogue of original songs — my lyrics mixed with AI-generated ' +

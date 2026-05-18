@@ -104,7 +104,8 @@
   [data-spot="contact"],
   [data-spot="keyboard"],
   [data-spot="roots"],
-  [data-spot="break"]
+  [data-spot="break"],
+  [data-spot="sound"]
 ) {
   &:hover, &:focus-visible {
     box-shadow: none;
@@ -146,9 +147,9 @@
 
 .hotspot-outline[data-spot="web-apps"] {
   left: 34.8%;
-  top: 15.6%;
-  width: 29.0%;
-  height: 30.4%;
+  top: 15.4%;
+  width: 28.9%;
+  height: 30.6%;
 }
 
 .hotspot-outline[data-spot="blog"] {
@@ -200,6 +201,13 @@
   height: 14.9%;
 }
 
+.hotspot-outline[data-spot="sound"] {
+  left: 26.3%;
+  top: 49.4%;
+  width: 2.2%;
+  height: 4.1%;
+}
+
 .hotspot:hover + .hotspot-outline,
 .hotspot:focus-visible + .hotspot-outline {
   opacity: 1;
@@ -211,17 +219,17 @@
 .hotspot[data-spot="web-apps"] {
   /* Monitor, back-center. Near-rectangular, slight perspective.
      Corners in image %:
-       TL (34.8, 15.6)   TR (63.8, 15.6)
-       BL (35.0, 46.0)   BR (63.8, 44.9) */
+       TL (34.8, 15.5)   TR (63.7, 15.4)
+       BL (35.1, 46.0)   BR (63.7, 45.6) */
   left: 34.8%;
-  top: 15.6%;
-  width: 29.0%;
-  height: 30.4%;
+  top: 15.4%;
+  width: 28.9%;
+  height: 30.6%;
   clip-path: polygon(
-    0%     0%,
+    0%     0.3%,
     100%   0%,
-    100%   96.4%,
-    0.7%   100%
+    100%   98.7%,
+    1.0%   100%
   );
 }
 .hotspot[data-spot="resume"] {
@@ -381,6 +389,44 @@
   );
 }
 
+/* Small round sound toggle on the desk (radio power/speaker
+   button). Click toggles ambient JSB playback. 16-vertex
+   circular polygon hugs the round button. */
+.hotspot[data-spot="sound"] {
+  left: 26.3%;
+  top: 49.4%;
+  width: 2.2%;
+  height: 4.1%;
+  clip-path: polygon(
+    50%   0%,
+    69.1% 3.8%,
+    85.4% 14.6%,
+    96.2% 30.9%,
+    100%  50%,
+    96.2% 69.1%,
+    85.4% 85.4%,
+    69.1% 96.2%,
+    50%   100%,
+    30.9% 96.2%,
+    14.6% 85.4%,
+    3.8%  69.1%,
+    0%    50%,
+    3.8%  30.9%,
+    14.6% 14.6%,
+    30.9% 3.8%
+  );
+
+  /* Hover-only label — centered inside the round button via the
+     centered-label :is() rule above. Shows the ACTION the click
+     will perform (OFF while playing, ON when paused). Tiny font
+     and minimal padding so "OFF" fits inside the small bbox. */
+  .hotspot-label {
+    font-size: 0.55rem;
+    padding: 0.08rem 0.28rem;
+    letter-spacing: 0.04em;
+  }
+}
+
 /* Coffee mug on the right side of the desk. Routes to the SoCal
    coastline photo gallery. 13-vertex polygon. */
 .hotspot[data-spot="break"] {
@@ -455,7 +501,8 @@
   [data-spot="contact"],
   [data-spot="keyboard"],
   [data-spot="roots"],
-  [data-spot="break"]
+  [data-spot="break"],
+  [data-spot="sound"]
 ) {
   .hotspot-label {
     bottom: auto;

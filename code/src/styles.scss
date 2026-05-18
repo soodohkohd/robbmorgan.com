@@ -222,6 +222,265 @@ button {
   border-color: rgba(220, 50, 50, 0.9);
 }
 
+/* ============================================================
+   MONITOR CODE TYPEWRITER (landing scene)
+   Overlays the monitor screen with a <pre> that gets fed one
+   character at a time. Bottom-anchored flex means new content
+   appears at the bottom and older lines scroll off the top as
+   the <pre> grows beyond the container's height.
+   ============================================================ */
+
+.monitor-code {
+  position: absolute;
+  /* Match the web-apps hotspot bbox + clip-path (monitor screen). */
+  left: 34.8%;
+  top: 15.4%;
+  width: 28.9%;
+  height: 30.6%;
+  clip-path: polygon(0% 0.3%, 100% 0%, 100% 98.7%, 1.0% 100%);
+  pointer-events: none;
+  background: #1e1e1e;
+  overflow: hidden;
+
+  /* VS Code layout: activity bar | sidebar | main */
+  display: flex;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: #c9d4e3;
+
+  /* The whole monitor is blurred — specific text isn't readable
+     but the shapes of the UI (icons, file list, chat lines) read.
+     Tune the radius up/down to make it harder/easier to read. */
+  filter: blur(1.6px);
+}
+
+/* ---------- Sidebar / Explorer (flush against left edge) ---------- */
+.vsc-sidebar {
+  flex: 0 0 22%;
+  background: #1f1f1f;
+  border-right: 1px solid #2a2a2a;
+  padding: 5% 4%;
+  overflow: hidden;
+  font-size: clamp(4px, 0.45cqi, 8px);
+  min-width: 0;
+}
+.vsc-sb-header {
+  font-size: 0.78em;
+  letter-spacing: 0.08em;
+  color: #6e7681;
+  margin-bottom: 6%;
+}
+.vsc-sb-row {
+  padding: 0.18em 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.vsc-sb-row.vsc-active {
+  background: #2a2a2a;
+  color: #ffffff;
+}
+.vsc-i1 { padding-left: 0.6em; }
+.vsc-i2 { padding-left: 1.2em; }
+.vsc-i3 { padding-left: 1.8em; }
+.vsc-i4 { padding-left: 2.4em; }
+
+/* ---------- Main pane (tabs + chat) ---------- */
+.vsc-main {
+  flex: 1;
+  background: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.vsc-tabbar {
+  background: #181818;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 2% 4%;
+  font-size: clamp(4px, 0.45cqi, 8px);
+}
+.vsc-tab {
+  display: inline-block;
+  background: #1e1e1e;
+  padding: 1px 6px;
+  border-radius: 2px;
+  color: #c9d4e3;
+}
+.vsc-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: 3% 4%;
+  min-height: 0;
+}
+
+/* ---------- Input area (orange-bordered prompt box) ---------- */
+.vsc-input {
+  flex: 0 0 auto;
+  margin: 0 4% 4%;
+  padding: 3% 4%;
+  border: 1.8px solid #ea580c;
+  border-radius: 5px;
+  background: #161616;
+  display: flex;
+  flex-direction: column;
+  gap: 4%;
+}
+.vsc-input-text {
+  color: #c9d4e3;
+  font-size: clamp(5px, 0.55cqi, 9px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vsc-input-footer {
+  display: flex;
+  align-items: center;
+  gap: 5%;
+}
+.vsc-input-icon {
+  width: 8px;
+  height: 8px;
+  background: #5a5a5a;
+  border-radius: 2px;
+}
+.vsc-input-hint {
+  margin-left: auto;
+  color: #6e7681;
+  font-size: clamp(4px, 0.4cqi, 7px);
+  white-space: nowrap;
+}
+
+.monitor-code-stream {
+  margin: 0;
+  font-family: inherit;
+  font-size: clamp(5px, 0.55cqi, 10px);
+  line-height: 1.45;
+  color: #c9d4e3;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.monitor-code-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  vertical-align: text-bottom;
+  background: #b0d4ff;
+  margin-left: 1px;
+  animation: monitor-code-cursor-blink 1s steps(2) infinite;
+}
+
+@keyframes monitor-code-cursor-blink {
+  to { opacity: 0; }
+}
+
+/* ============================================================
+   SOUND GLOW — soft brass halo around the sound button. Only
+   visible when ambient music is playing; pulses gently to feel
+   "in concert" with the music. pointer-events: none so it
+   doesn't block clicks on the underlying sound hotspot.
+   ============================================================ */
+
+.sound-glow {
+  position: absolute;
+  /* Centered on the sound button at (~27.4%, ~51.4%) in the scene. */
+  left: 27.4%;
+  top: 51.4%;
+  width: 6cqw;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  /* Warm golden core fading through brass to transparent. */
+  background:
+    radial-gradient(circle,
+      rgba(255, 225, 150, 0.65) 0%,
+      rgba(255, 200, 110, 0.40) 22%,
+      rgba(212, 158, 80,  0.22) 50%,
+      transparent 80%);
+  border-radius: 50%;
+  filter: blur(1.5px);
+}
+
+.sound-glow.is-active {
+  opacity: 1;
+  animation: sound-glow-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes sound-glow-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.18);
+    opacity: 0.85;
+  }
+}
+
+/* ============================================================
+   COFFEE STEAM (ambient motion above the mug on the landing scene)
+   Five wisps cycle through three keyframe variants with offset
+   durations + delays — no two wisps ever follow the same path so
+   the column looks organically random. pointer-events: none keeps
+   the break hotspot underneath clickable.
+   ============================================================ */
+
+.coffee-steam {
+  position: absolute;
+  /* Mug rim ≈ 94% across, ≈52% down. Container bottom sits at the
+     rim; top capped lower so the steam column doesn't rise as
+     high as before. */
+  left: 90%;
+  top: 28%;
+  width: 9%;
+  height: 26%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Soft puffs — high blur + radial gradient → no hard edges.
+   Each puff has slight per-puff variations (size, h-offset, blur)
+   for organic differentiation. */
+.coffee-steam .puff {
+  position: absolute;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse 60% 75% at center,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.22) 50%,
+      transparent 80%);
+  border-radius: 50%;
+  opacity: 0;
+  /* All puffs share the same keyframe; per-puff vars set scale +
+     drift so the variants below differ. */
+  animation: puff-rise 9s linear infinite;
+}
+
+/* Each puff: position, size, blur, animation-delay, and override
+   width/height. Negative delays at evenly spaced offsets through
+   the 9s cycle keep ~5+ puffs visible at any moment. */
+.coffee-steam .puff-1 { left: 50%; width: 78%; height: 36%; filter: blur(4px);   animation-delay:  0s;     }
+.coffee-steam .puff-2 { left: 44%; width: 60%; height: 30%; filter: blur(3.5px); animation-delay: -1.1s;   }
+.coffee-steam .puff-3 { left: 56%; width: 70%; height: 34%; filter: blur(4.5px); animation-delay: -2.25s;  }
+.coffee-steam .puff-4 { left: 48%; width: 82%; height: 38%; filter: blur(5px);   animation-delay: -3.4s;   }
+.coffee-steam .puff-5 { left: 52%; width: 55%; height: 30%; filter: blur(3.5px); animation-delay: -4.5s;   }
+.coffee-steam .puff-6 { left: 45%; width: 72%; height: 36%; filter: blur(4px);   animation-delay: -5.6s;   }
+.coffee-steam .puff-7 { left: 54%; width: 65%; height: 32%; filter: blur(4px);   animation-delay: -6.75s;  }
+.coffee-steam .puff-8 { left: 50%; width: 78%; height: 38%; filter: blur(4.5px); animation-delay: -7.9s;   }
+
+@keyframes puff-rise {
+  0%   { transform: translate(-50%, 12%)            scale(0.45, 0.55); opacity: 0; }
+  10%  { transform: translate(-50%, 0%)             scale(0.7, 0.75);  opacity: 0.5; }
+  35%  { transform: translate(calc(-50% + 5px), -55%)  scale(1.0, 1.0);   opacity: 0.55; }
+  65%  { transform: translate(calc(-50% + 12px), -130%) scale(1.35, 1.2); opacity: 0.4; }
+  88%  { transform: translate(calc(-50% + 18px), -195%) scale(1.65, 1.4); opacity: 0.15; }
+  100% { transform: translate(calc(-50% + 24px), -230%) scale(1.85, 1.5); opacity: 0; }
+}
+
 /* Hotspot edit panel — shares visual language with .capture-panel
    but lives top-right so a developer can see the spot polygon
    under it while choosing Update / Delete. */

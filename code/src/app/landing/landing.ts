@@ -1,12 +1,15 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { AmbientAudioService } from '../ambient-audio.service';
+
 type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 
 type SpotKey =
   | 'web-apps' | 'mobile-apps' | 'novels' | 'blog'
   | 'resume'   | 'music'       | 'contact' | 'roots'
   | 'break'
+  | 'sound'    // toggles ambient JSB playback (no navigation)
   | 'keyboard'; // not a destination — opens the time-of-day picker
 
 interface Spot {
@@ -36,6 +39,10 @@ interface CapturePoint { x: number; y: number; }
 export class Landing {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private ambient = inject(AmbientAudioService);
+  /** Mirrors the service's playing signal — used by labelFor() to
+   *  render OFF / ON. */
+  audioPlaying = this.ambient.playing;
 
   sceneReady = signal(false);
   opening = signal(false);
@@ -70,11 +77,50 @@ export class Landing {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      const id = window.setInterval(() => {
+      // Pre-populate the buffer so the monitor starts mid-session
+      // instead of typing in from empty.
+      this.codeBuffer.set(this.codeSource);
+
+      // Time-of-day refresh every minute
+      const todId = window.setInterval(() => {
         this.timeOfDay.set(this.timeOfDayFor(new Date().getHours()));
       }, 60_000);
-      this.destroyRef.onDestroy(() => clearInterval(id));
+      this.destroyRef.onDestroy(() => clearInterval(todId));
+
+      // Monitor typewriter — one char every codeTickMs, looping
+      // through codeSource forever. Buffer trimmed so the rendered
+      // <pre> doesn't grow without bound.
+      const typeId = window.setInterval(() => this.tickTypewriter(), this.codeTickMs);
+      this.destroyRef.onDestroy(() => clearInterval(typeId));
     }
+  }
+
+  /** Toggle ambient playback via the root-scoped service so the
+   *  state persists across route navigation and tab refresh. */
+  toggleSound(): void {
+    this.ambient.toggle();
+  }
+
+  /** Dynamic label for state-driven hotspots (currently just sound).
+   *  For sound, the label shows the ACTION the click will perform —
+   *  "OFF" when music is playing (click will pause), "ON" when
+   *  paused (click will start). The pulsing glow already conveys
+   *  current state. */
+  labelFor(spot: Spot): string {
+    if (spot.key === 'sound') return this.audioPlaying() ? 'OFF' : 'ON';
+    return spot.label;
+  }
+
+  private tickTypewriter(): void {
+    const ch = this.codeSource[this.codeCursor];
+    this.codeBuffer.update(buf => {
+      let next = buf + ch;
+      if (next.length > this.codeMaxBuffer) {
+        next = next.substring(next.length - this.codeMaxBuffer);
+      }
+      return next;
+    });
+    this.codeCursor = (this.codeCursor + 1) % this.codeSource.length;
   }
 
   private timeOfDayFor(hour: number): TimeOfDay {
@@ -92,6 +138,106 @@ export class Landing {
 
   mouseX = signal(0);
   mouseY = signal(0);
+
+  /* ---------- Ambient JSB playback ----------
+     State lives in AmbientAudioService (providedIn: 'root') so it
+     survives route changes. The service mirrors playing to
+     sessionStorage so a tab refresh tries to resume. */
+
+  /* ---------- Monitor "Claude Code session" overlay ----------
+     Cycles through a fake Claude Code chat one char at a time. The
+     source ends with an empty "> " prompt and starts with the next
+     user-prompt text (no leading "> "), so when the cursor wraps
+     back to 0 the boundary reads as a fresh user message — the
+     loop is invisible. Everything in the monitor is blurred via
+     CSS so the specific text isn't readable but the structure
+     (prompts, tool uses, responses) reads clearly. */
+  codeBuffer = signal<string>('');
+  private codeCursor = 0;
+  private readonly codeTickMs = 65;
+  private readonly codeMaxBuffer = 3000;
+  /* Source ends with "> " (space, no newline) so the loop boundary
+     reads as a fresh user prompt on the same line as the waiting
+     "> " marker. */
+  private readonly codeSource = (`add a steam animation to the coffee mug
+
+I'll add CSS-based steam wisps that rise and fade above the hotspot. Let me check the current scene structure first.
+
+● Read(landing.html)
+  Reading code/src/app/landing/landing.html...
+
+● Read(styles.scss)
+  Reading code/src/styles.scss...
+
+I see where the break hotspot covers the mug. I'll add a container with eight puffs that rise via @keyframes and use negative animation-delays so the column never has gaps.
+
+● Edit(landing.html)
+  Adding .coffee-steam container with eight puff spans
+
+● Edit(styles.scss)
+  Defining puff-rise keyframes and per-puff offsets
+
+● Bash(npm run build)
+  ✓ Application bundle generated.
+
+Build clean. Steam is in. Want to deploy?
+
+> yes
+
+● Bash(TERM=xterm ./deploy.sh)
+  🔧 Building Angular app...
+  📦 Zipping build output...
+     → /tmp/robbmorgan-com.zip (96M)
+  ⚙️  Ensuring SPA-fallback startup command...
+     ✓ already set
+  🚀 Deploying zip to Azure App Service...
+     Polling status...
+     Status: Build successful. Time: 0(s)
+     Status: Site started successfully. Time: 63(s)
+  ✅ Deployment complete!
+
+Live at https://robbmorgan.com. Steam visible after cache refresh.
+
+> can it look billowier?
+
+Sure. I'll increase scale-X growth and add horizontal drift to each puff so they billow outward as they rise.
+
+● Edit(styles.scss)
+  Adjusting puff-rise keyframes for billow effect
+
+● Bash(npm run build)
+  ✓ Build complete.
+
+> deploy
+
+● Bash(TERM=xterm ./deploy.sh)
+  ✅ Deployment complete!
+
+> now add a typewriter to the monitor
+
+I'll position a <pre> over the web-apps hotspot and feed it characters via a setInterval tick. Auto-scroll comes from a bottom-anchored flex container.
+
+● Edit(landing.ts)
+  Adding codeBuffer signal, codeSource string, tickTypewriter method
+
+● Edit(landing.html)
+  Adding .monitor-code overlay above the hotspot
+
+● Edit(styles.scss)
+  Positioning monitor-code over the web-apps bbox + clip-path
+
+● Bash(npm run build)
+  ✓ Application bundle generated.
+
+The monitor should show a typing session now. Hot reload picks it up.
+
+> deploy
+
+● Bash(TERM=xterm ./deploy.sh)
+  ✅ Deployment complete!
+
+>
+`).trim() + ' ';
 
   /* ---------- Debug hotspot edit panel ----------
      Clicking a hotspot in debug mode opens the edit panel for that
@@ -183,7 +329,7 @@ export class Landing {
       key: 'web-apps',
       label: 'Code',
       route: '/web-apps',
-      polygon: '0,0 100,0 100,96.4 0.7,100',
+      polygon: '0,0.3 100,0 100,98.7 1.0,100',
     },
     {
       key: 'mobile-apps',
@@ -245,6 +391,14 @@ export class Landing {
       // No route — clicking opens the time-of-day picker overlay.
       polygon: '1.2,8.8 92.3,0 100,87.3 0,100',
     },
+    {
+      key: 'sound',
+      label: 'OFF',
+      // No route — clicking toggles ambient JSB playback. 16-vertex
+      // circular polygon so the click target hugs the round button.
+      // Label is rendered dynamically (OFF / ON) via labelFor().
+      polygon: '50,0 69.1,3.8 85.4,14.6 96.2,30.9 100,50 96.2,69.1 85.4,85.4 69.1,96.2 50,100 30.9,96.2 14.6,85.4 3.8,69.1 0,50 3.8,30.9 14.6,14.6 30.9,3.8',
+    },
   ];
 
   open(route: string): void {
@@ -271,6 +425,10 @@ export class Landing {
     if (spot.key === 'keyboard') {
       if (this.pickerOpen()) this.closePicker();
       else this.pickerOpen.set(true);
+      return;
+    }
+    if (spot.key === 'sound') {
+      this.toggleSound();
       return;
     }
     if (spot.route) this.open(spot.route);
