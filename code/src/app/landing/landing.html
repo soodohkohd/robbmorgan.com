@@ -18,6 +18,7 @@
       decoding="async"
     />
 
+
 <!-- Monitor "VS Code + Claude Code session" overlay. The whole
          block is blurred so specific text isn't readable but the
          structure (activity bar / file tree / chat session) reads.
@@ -58,6 +59,17 @@
         </div>
       </div>
     </div>
+
+    <!-- iPhone "New Message" notification — pre-rendered image
+         (opaque, perspective-warped, tint baked in). One element
+         only so alignment is guaranteed. -->
+    <img
+      class="message-notification-image"
+      [class.is-visible]="notificationVisible()"
+      src="/notification.png"
+      alt=""
+      aria-hidden="true"
+    />
 
     <!-- Sound-playing glow — soft brass halo over the sound button.
          Only visible when ambient audio is playing; pulses to feel

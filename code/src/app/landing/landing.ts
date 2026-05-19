@@ -92,7 +92,56 @@ export class Landing {
       // <pre> doesn't grow without bound.
       const typeId = window.setInterval(() => this.tickTypewriter(), this.codeTickMs);
       this.destroyRef.onDestroy(() => clearInterval(typeId));
+
+      // Random iPhone notification scheduler. Single active timeout
+      // tracked in notificationTimeoutId so destroy can cancel it.
+      this.scheduleNextNotification(true);
+      this.destroyRef.onDestroy(() => {
+        if (this.notificationTimeoutId !== undefined) {
+          clearTimeout(this.notificationTimeoutId);
+        }
+      });
+
+      // Auto-start the ambient JSB music 3s after page load. If the
+      // browser blocks autoplay, the service falls back to starting
+      // on the first user interaction.
+      const audioStartId = window.setTimeout(() => this.ambient.autoStart(), 3000);
+      this.destroyRef.onDestroy(() => clearTimeout(audioStartId));
     }
+  }
+
+  /** Play the message-arrival chime. Lazy-creates the audio so it's
+   *  only loaded if needed; volume tuned modest. Autoplay may be
+   *  blocked on the very first scheduled fire if the user hasn't
+   *  interacted with the page yet — falls silent in that case. */
+  private playNotificationSound(): void {
+    if (typeof window === 'undefined') return;
+    if (!this.notificationSound) {
+      this.notificationSound = new Audio('/music/message.mp3');
+      this.notificationSound.preload = 'auto';
+      this.notificationSound.volume = 0.55;
+    }
+    this.notificationSound.currentTime = 0;
+    this.notificationSound.play().catch(() => { /* autoplay blocked */ });
+  }
+
+  private scheduleNextNotification(isFirst = false): void {
+    // First notification 15-20s after page load; recurring every
+    // 30-45s thereafter.
+    const delay = isFirst
+      ? 15_000 + Math.random() * 5_000
+      : 30_000 + Math.random() * 15_000;
+    this.notificationTimeoutId = window.setTimeout(() => {
+      this.notificationVisible.set(true);
+      this.playNotificationSound();
+
+      // 1s fade-in + 3s fully visible = 4s before triggering the
+      // fade-out (which itself takes 1s per the CSS transition).
+      this.notificationTimeoutId = window.setTimeout(() => {
+        this.notificationVisible.set(false);
+        this.scheduleNextNotification();
+      }, 4000);
+    }, delay);
   }
 
   /** Toggle ambient playback via the root-scoped service so the
@@ -143,6 +192,13 @@ export class Landing {
      State lives in AmbientAudioService (providedIn: 'root') so it
      survives route changes. The service mirrors playing to
      sessionStorage so a tab refresh tries to resume. */
+
+  /* ---------- iPhone "New Message" overlay ----------
+     A single pre-rendered notification image that fades in/out
+     at random intervals over the iPhone screen. */
+  notificationVisible = signal(false);
+  private notificationTimeoutId?: number;
+  private notificationSound?: HTMLAudioElement;
 
   /* ---------- Monitor "Claude Code session" overlay ----------
      Cycles through a fake Claude Code chat one char at a time. The

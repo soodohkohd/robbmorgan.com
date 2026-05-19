@@ -377,6 +377,64 @@ button {
 }
 
 /* ============================================================
+   iPHONE NOTIFICATION OVERLAY — random "New message" style banner
+   that slides into the top of the iPhone screen. The container
+   shares the mobile-apps hotspot bbox + clip-path so the banner
+   stays inside the phone outline even with the device's tilt.
+   ============================================================ */
+
+.message-notification-image {
+  position: absolute;
+  /* Perspective-warped PNG with the softening tint baked in.
+     Fills the captured red-box bbox exactly. */
+  left: 63.3%;
+  top: 73.5%;
+  width: 8.1%;
+  height: 4.0%;
+  pointer-events: none;
+  opacity: 0;
+  /* Slow fade in/out — 1s each direction, symmetric. */
+  transition: opacity 1s var(--ease-soft);
+}
+
+.message-notification-image.is-visible {
+  opacity: 1;
+}
+
+.message-notification-icon {
+  width: 0.55cqi;
+  height: 0.55cqi;
+  border-radius: 25%;
+  flex-shrink: 0;
+}
+
+.message-notification-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.message-notification-title {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.38cqi;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.1;
+}
+
+.message-notification-body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-size: 0.32cqi;
+  color: #4a4a4a;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
    SOUND GLOW — soft brass halo around the sound button. Only
    visible when ambient music is playing; pulses gently to feel
    "in concert" with the music. pointer-events: none so it

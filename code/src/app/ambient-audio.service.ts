@@ -63,6 +63,38 @@ export class AmbientAudioService {
       .catch(() => this.setState(false));
   }
 
+  /** Best-effort autoplay used at first landing-page mount. Marks
+   *  intent as ON so the toggle UI reflects it, then attempts to
+   *  play immediately. If the browser blocks autoplay (no recent
+   *  user gesture), wires one-time listeners for the next user
+   *  interaction and plays then. */
+  autoStart(): void {
+    if (typeof window === 'undefined' || this.playing()) return;
+    this.ensure();
+    if (!this.audio) return;
+
+    // Mark intent ON in sessionStorage even before play() resolves,
+    // so a refresh during the wait still tries to resume.
+    sessionStorage.setItem(this.storageKey, 'true');
+
+    this.audio.play()
+      .then(() => this.setState(true))
+      .catch(() => {
+        // Autoplay blocked — wait for first user interaction.
+        const startOnInteraction = () => {
+          ['click', 'keydown', 'touchstart', 'pointerdown'].forEach(t =>
+            document.removeEventListener(t, startOnInteraction, true));
+          if (this.audio && !this.playing()) {
+            this.audio.play()
+              .then(() => this.setState(true))
+              .catch(() => this.setState(false));
+          }
+        };
+        ['click', 'keydown', 'touchstart', 'pointerdown'].forEach(t =>
+          document.addEventListener(t, startOnInteraction, { once: true, capture: true }));
+      });
+  }
+
   private ensure(): void {
     if (this.audio || typeof window === 'undefined') return;
     const audio = new Audio(this.tracks[this.trackIndex]);
