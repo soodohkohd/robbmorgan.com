@@ -118,11 +118,11 @@
     strong { font-weight: 700; color: var(--walnut-deep); }
     em     { font-style: italic; color: var(--walnut-deep); }
 
-    ol, ul {
+    ol, ul:not(.package-list) {
       margin: 0 0 0.95rem;
       padding-left: 1.5rem;
     }
-    li { margin: 0.3rem 0; }
+    li:not(.package) { margin: 0.3rem 0; }
 
     /* Inline code */
     code {
