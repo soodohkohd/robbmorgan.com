@@ -93,12 +93,20 @@ export class Landing {
       const typeId = window.setInterval(() => this.tickTypewriter(), this.codeTickMs);
       this.destroyRef.onDestroy(() => clearInterval(typeId));
 
-      // Random iPhone notification scheduler. Single active timeout
-      // tracked in notificationTimeoutId so destroy can cancel it.
+      // Random iPhone notification scheduler. Notifications only
+      // exist on the desk view — leaving the landing page destroys
+      // this component, which clears the pending timeout, hides the
+      // banner (signal is gone with the component), and silences any
+      // in-flight chime via the cleanup below. Returning to the desk
+      // restarts a fresh schedule via this constructor.
       this.scheduleNextNotification(true);
       this.destroyRef.onDestroy(() => {
         if (this.notificationTimeoutId !== undefined) {
           clearTimeout(this.notificationTimeoutId);
+        }
+        if (this.notificationSound) {
+          this.notificationSound.pause();
+          this.notificationSound.currentTime = 0;
         }
       });
 
