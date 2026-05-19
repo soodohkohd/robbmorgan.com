@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { AmbientAudioService } from '../ambient-audio.service';
@@ -75,7 +75,41 @@ export class Landing {
   activeTime = computed<TimeOfDay>(() => this.pickerSelection() ?? this.timeOfDay());
   sceneSrc = computed(() => `/desk-scene-${this.activeTime()}.png`);
 
+  /* ---------- Crossfade scene swap ----------
+     Two stacked <img> elements. When sceneSrc() changes, the new
+     src is loaded into the INACTIVE slot. On load, the slot is
+     marked active — its opacity transitions from 0→1 while the
+     previously-active slot transitions 1→0. Subsequent changes
+     alternate between slots. */
+  private readonly blankImg =
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  slotASrc = signal<string>('');
+  slotBSrc = signal<string>('');
+  activeSlot = signal<'a' | 'b'>('a');
+
   constructor() {
+    // Seed slot A with the initial scene; slot B gets a 1x1 blank
+    // until it picks up its first real src on the first swap.
+    this.slotASrc.set(this.sceneSrc());
+    this.slotBSrc.set(this.blankImg);
+
+    // Whenever sceneSrc() changes, route the new src into the
+    // INACTIVE slot. The active slot stays put until the new one
+    // finishes loading — then onSlotLoad swaps which one is active.
+    effect(() => {
+      const newSrc = this.sceneSrc();
+      untracked(() => {
+        const active = this.activeSlot();
+        const activeSrc = active === 'a' ? this.slotASrc() : this.slotBSrc();
+        if (newSrc === activeSrc) return;
+        if (active === 'a') {
+          this.slotBSrc.set(newSrc);
+        } else {
+          this.slotASrc.set(newSrc);
+        }
+      });
+    });
+
     if (typeof window !== 'undefined') {
       // Pre-populate the buffer so the monitor starts mid-session
       // instead of typing in from empty.
@@ -164,6 +198,16 @@ export class Landing {
   labelFor(spot: Spot): string {
     if (spot.key === 'sound') return this.audioPlaying() ? 'OFF' : 'ON';
     return spot.label;
+  }
+
+  /** Called when each scene-image slot finishes loading. Marks the
+   *  scene ready (first load) and promotes the slot to active if a
+   *  swap was pending. */
+  onSlotLoad(slot: 'a' | 'b'): void {
+    this.sceneReady.set(true);
+    if (slot !== this.activeSlot()) {
+      this.activeSlot.set(slot);
+    }
   }
 
   private tickTypewriter(): void {

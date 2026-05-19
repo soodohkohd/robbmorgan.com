@@ -36,6 +36,14 @@
   object-fit: fill; /* container matches image aspect; fill is exact */
   user-select: none;
   -webkit-user-drag: none;
+  /* Two stacked images; the active one fades to opacity 1 while
+     the previous fades to 0 — smooth crossfade between scenes. */
+  opacity: 0;
+  transition: opacity 700ms var(--ease-soft);
+}
+
+.scene-image.is-active {
+  opacity: 1;
 }
 
 /* ---------- HOTSPOTS ---------- */

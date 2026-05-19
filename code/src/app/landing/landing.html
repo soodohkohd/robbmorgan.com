@@ -10,12 +10,25 @@
     (mousemove)="onSceneMouseMove($event)"
     (click)="onSceneClick($event)"
   >
+    <!-- Two stacked scene images. The active one is fully visible;
+         when activeTime() changes, the new src loads into the
+         other slot, then activeSlot flips and CSS crossfades. -->
     <img
       class="scene-image"
-      [src]="sceneSrc()"
+      [class.is-active]="activeSlot() === 'a'"
+      [src]="slotASrc()"
       alt="A walnut writing desk in front of a wide window overlooking the Southern California coast."
-      (load)="sceneReady.set(true)"
+      (load)="onSlotLoad('a')"
       decoding="async"
+    />
+    <img
+      class="scene-image"
+      [class.is-active]="activeSlot() === 'b'"
+      [src]="slotBSrc()"
+      alt=""
+      (load)="onSlotLoad('b')"
+      decoding="async"
+      aria-hidden="true"
     />
 
 
