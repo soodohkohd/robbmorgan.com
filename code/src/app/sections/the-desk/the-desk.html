@@ -20,7 +20,7 @@
         role="tab"
         [class.is-active]="selectedSlug() === chapter.slug"
         [attr.aria-selected]="selectedSlug() === chapter.slug"
-        (click)="select(chapter.slug)"
+        (click)="select(chapter.slug, true)"
       ><span class="chapter-pill-num">{{ i + 1 }}</span>{{ chapter.label }}</button>
     }
   </div>
