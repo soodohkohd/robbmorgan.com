@@ -65,6 +65,11 @@ export class TheDesk {
         <p>So we built a debugging mode.</p>
         <p>Append <code>?debug=1</code> to the URL and the entire scene shifts into a hotspot-authoring environment:</p>
 
+        <figure class="chapter-figure">
+          <img src="/debug-mode.png" alt="The desk scene in debug mode — every hotspot polygon outlined in red, the polygon-capture panel docked in the upper-left, the live coordinate readout in the upper-right." loading="lazy" decoding="async" />
+          <figcaption>Debug mode in action — red polygon outlines on every hotspot, the capture panel docked upper-left, the live coord readout upper-right.</figcaption>
+        </figure>
+
         <h3>1. Every hotspot outline is drawn in red.</h3>
         <p>In production, the polygons are invisible — you only see them on hover via the brass outline. In debug mode, every polygon is permanently outlined so you can see exactly where each click target lives and whether it actually hugs its object. The first time I turned debug mode on, I discovered that half of my initial rectangle-approximations were drifting two or three pixels off their objects. The red outlines made the misalignment impossible to ignore.</p>
 

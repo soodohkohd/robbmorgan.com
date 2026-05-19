@@ -89,6 +89,8 @@ So we built a debugging mode.
 Append `?debug=1` to the URL and the entire scene shifts into a
 hotspot-authoring environment:
 
+![Debug mode in action — red polygon outlines on every hotspot, the capture panel docked upper-left, the live coord readout upper-right.](artifacts/debug-mode.png)
+
 **1. Every hotspot outline is drawn in red.** In production, the
 polygons are invisible — you only see them on hover via the brass
 outline. In debug mode, every polygon is permanently outlined so you
