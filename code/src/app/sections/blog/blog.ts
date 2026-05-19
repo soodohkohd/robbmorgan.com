@@ -24,6 +24,28 @@ interface Post {
 export class Blog {
   readonly posts: readonly Post[] = [
     {
+      slug: 'ic-track',
+      label: 'IC Track',
+      title: 'Climbing the IC Ladder Is a Gamble.',
+      date: 'May 19, 2026',
+      image: '/posts/ic-track.png',
+      imageAlt: 'Two career ladders side by side — the IC track has question marks on its upper rungs and looks unstable, the management track is solid',
+      bodyHtml: `
+        <p>Every enterprise I have worked in has the same recruiting slide. Two parallel ladders. Engineer to Senior to Staff to Principal to Distinguished on the left. Engineer to Manager to Director to VP on the right. Equal status. Equal pay. Pick your path.</p>
+        <p>In practice, only one of those ladders is real.</p>
+        <p>I have spent many years inside large engineering organizations, and the pattern is almost universal. The IC track stops working at Senior. After that, the promotions slow down, the pay bands compress, and the only path to a meaningful raise is to take on direct reports. "Staff" gets handed out when someone threatens to leave. "Principal" is reserved for two or three people the CTO already knows by name. "Distinguished" is on the recruiting deck and almost nowhere else.</p>
+        <p>This is not a hiring marketing problem. It is a retention problem with a long tail.</p>
+        <p>When the only way to grow is to manage, your best engineers stop engineering. The person who could have spent the next decade hardening your platform is now running 1:1s and approving PTO requests. The person who could have mentored ten juniors is sitting in skip-level reviews. The institutional knowledge you spent fifteen years building gets quietly traded for a middle manager you did not actually need.</p>
+        <p>And the engineers who refuse to make that trade? They leave. Usually for twelve percent more money at a competitor with the same broken ladder, who has not yet had time to disappoint them.</p>
+        <p>The fix is not complicated, and most companies will still not do it.</p>
+        <p>Pay Principals like Directors. Pay Distinguished like VPs. Mean it on the offer letter, not the recruiting slide. Give them scope &mdash; architecture authority, cross-team influence, the right to veto a bad design &mdash; without forcing them to manage humans to earn it. Let the technical ladder confer real organizational power, not just a polite seat at planning meetings.</p>
+        <p>This is not a perk. It is how you keep the people who actually know how your systems work.</p>
+        <p>The organizations that get this right end up with deep technical benches and senior engineers still writing code at fifty. The ones that do not end up with a lot of newly minted managers, a lot of resignation letters, and a recruiting slide they keep showing to candidates who will figure it out within eighteen months.</p>
+        <p>If your senior engineers keep leaving, the ladder is the reason. Not the comp. Not the office. The ladder.</p>
+        <p>Fix the ladder.</p>
+      `,
+    },
+    {
       slug: 'ai-dlc',
       label: 'AI-DLC',
       title: 'AI-DLC Is Not a CoE. And a CoE Is Not a Methodology.',
