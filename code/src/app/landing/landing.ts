@@ -10,6 +10,7 @@ type SpotKey =
   | 'web-apps' | 'mobile-apps' | 'novels' | 'blog'
   | 'resume'   | 'music'       | 'contact' | 'roots'
   | 'break'    | 'desk'
+  | 'not-me'   // easter egg — briefly flashes "NOT ME!" on click
   | 'sound'    // toggles ambient JSB playback (no navigation)
   | 'keyboard'; // not a destination — opens the time-of-day picker
 
@@ -372,6 +373,23 @@ export class Landing {
     return spot.label;
   }
 
+  /* ---------- "NOT ME!" easter egg ----------
+     Hover does NOT reveal the label (suppressed in CSS). A click
+     flashes "NOT ME!" for 1.5s, then fades. */
+  notMeRevealed = signal(false);
+  private notMeTimeoutId?: number;
+
+  private revealNotMe(): void {
+    this.notMeRevealed.set(true);
+    if (this.notMeTimeoutId !== undefined) {
+      clearTimeout(this.notMeTimeoutId);
+    }
+    this.notMeTimeoutId = window.setTimeout(() => {
+      this.notMeRevealed.set(false);
+      this.notMeTimeoutId = undefined;
+    }, 1500);
+  }
+
   /** Called when each scene-image slot finishes loading. Marks the
    *  scene ready (first load) and promotes the slot to active only
    *  if it actually holds the current sceneSrc — otherwise the
@@ -715,6 +733,14 @@ The monitor should show a typing session now. Hot reload picks it up.
       polygon: '0,3.4 97.3,0 100,96.6 0,100',
     },
     {
+      key: 'not-me',
+      label: 'NOT ME!',
+      // Easter egg — no route. On hover, no label appears. On click,
+      // the label briefly reveals "NOT ME!" before fading. Behavior
+      // wired in onSpotClick + .show-label CSS hook.
+      polygon: '0,3.4 95.9,0 100,95.5 1.4,100',
+    },
+    {
       key: 'sound',
       label: 'OFF',
       // No route — clicking toggles ambient JSB playback. 16-vertex
@@ -752,6 +778,10 @@ The monitor should show a typing session now. Hot reload picks it up.
     }
     if (spot.key === 'sound') {
       this.toggleSound();
+      return;
+    }
+    if (spot.key === 'not-me') {
+      this.revealNotMe();
       return;
     }
     if (spot.route) this.open(spot.route);

@@ -178,6 +178,7 @@
         class="hotspot"
         [attr.data-spot]="spot.key"
         [attr.aria-label]="'Open ' + spot.label"
+        [class.show-label]="spot.key === 'not-me' && notMeRevealed()"
         (click)="onSpotClick(spot)"
       >
         <span class="hotspot-label">{{ labelFor(spot) }}</span>

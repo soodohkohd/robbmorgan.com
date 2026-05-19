@@ -146,6 +146,7 @@
   [data-spot="roots"],
   [data-spot="break"],
   [data-spot="desk"],
+  [data-spot="not-me"],
   [data-spot="sound"]
 ) {
   &:hover, &:focus-visible {
@@ -254,6 +255,13 @@
   top: 47.5%;
   width: 7.3%;
   height: 8.7%;
+}
+
+.hotspot-outline[data-spot="not-me"] {
+  left: 57.0%;
+  top: 47.0%;
+  width: 7.3%;
+  height: 8.8%;
 }
 
 .hotspot:hover + .hotspot-outline,
@@ -507,6 +515,37 @@
   }
 }
 
+/* Easter-egg parallelogram on the desk surface near the keyboard.
+   No hover label; flashes "NOT ME!" briefly on click via the
+   .show-label class set by the component. Corners in image %:
+     1 (57.0, 47.3)   2 (64.0, 47.0)
+     3 (64.3, 55.4)   4 (57.1, 55.8) */
+.hotspot[data-spot="not-me"] {
+  left: 57.0%;
+  top: 47.0%;
+  width: 7.3%;
+  height: 8.8%;
+  clip-path: polygon(
+    0%     3.4%,
+    95.9%  0%,
+    100%   95.5%,
+    1.4%   100%
+  );
+
+  /* Suppress hover/focus label entirely — even though this hotspot
+     is in the centered-label :is() list below, the label only
+     becomes visible when .show-label is set by the click handler. */
+  &:hover .hotspot-label,
+  &:focus-visible .hotspot-label {
+    opacity: 0;
+  }
+
+  &.show-label .hotspot-label {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
 /* Small parallelogram on the desk surface itself. Routes to the
    behind-the-scenes story of how this site was built. Corners in
    image %:
@@ -569,6 +608,7 @@
   [data-spot="roots"],
   [data-spot="break"],
   [data-spot="desk"],
+  [data-spot="not-me"],
   [data-spot="sound"]
 ) {
   .hotspot-label {
