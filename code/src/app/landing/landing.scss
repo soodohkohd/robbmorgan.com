@@ -22,10 +22,23 @@
   max-height: 100dvh;
   overflow: hidden;
   container-type: inline-size;
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-soft);
+  /* Hard-show on entry; only fades during .opening (see below). */
+  opacity: 1;
+}
 
-  &.ready { opacity: 1; }
+/* Inset drop shadows on the scene's left + right edges, falling
+   INWARD onto the desk scene. Pseudo-element rather than box-shadow
+   on .scene itself because the scene-image fills the container at
+   opacity 1 and would paint over a plain inset shadow. */
+.scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow:
+    inset  28px 0 38px -8px rgba(0, 0, 0, 0.75),
+    inset -28px 0 38px -8px rgba(0, 0, 0, 0.75);
 }
 
 .scene-image {
@@ -583,12 +596,18 @@
    keep this component under its 8 kB style budget — they only run
    on ?debug=1 and aren't part of the production UI. */
 
-/* Page-leaving fade */
+/* Page-leaving fade — applies the transition only when navigating
+   AWAY from the desk, so the return trip hard-shows the scene with
+   no fade-in. Children of .scene (bird flight, monitor code, steam,
+   notifications, etc.) inherit the opacity drop. */
 .landing.opening .scene {
   opacity: 0;
-  transition-duration: var(--dur-slow);
+  transition: opacity var(--dur-slow) var(--ease-soft);
 }
-.landing.opening .hotspot-label { opacity: 0; }
+.landing.opening .hotspot-label {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-soft);
+}
 
 /* ============================================================
    MOBILE FALLBACK

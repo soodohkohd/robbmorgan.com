@@ -240,11 +240,15 @@ export class Landing {
   }
 
   /** Called when each scene-image slot finishes loading. Marks the
-   *  scene ready (first load) and promotes the slot to active if a
-   *  swap was pending. */
+   *  scene ready (first load) and promotes the slot to active only
+   *  if it actually holds the current sceneSrc — otherwise the
+   *  tiny seeded blankImg in the inactive slot could fire a load
+   *  event after a route round-trip and steal active away from the
+   *  real desk image, leaving the scene blank. */
   onSlotLoad(slot: 'a' | 'b'): void {
     this.sceneReady.set(true);
-    if (slot !== this.activeSlot()) {
+    const slotSrc = slot === 'a' ? this.slotASrc() : this.slotBSrc();
+    if (slot !== this.activeSlot() && slotSrc === this.sceneSrc()) {
       this.activeSlot.set(slot);
     }
   }
