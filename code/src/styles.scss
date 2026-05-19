@@ -435,41 +435,6 @@ button {
 }
 
 /* ============================================================
-   SOUND GLOW — soft brass halo around the sound button. Only
-   visible when ambient music is playing; pulses gently to feel
-   "in concert" with the music. pointer-events: none so it
-   doesn't block clicks on the underlying sound hotspot.
-   ============================================================ */
-
-.sound-glow {
-  position: absolute;
-  /* Centered slightly left of the sound button so the glow sits
-     over the visible button rather than its hover bbox center. */
-  left: 27.1%;
-  top: 51.4%;
-  width: 5cqw;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  /* Warm golden core fading through brass to transparent. */
-  background:
-    radial-gradient(circle,
-      rgba(255, 225, 150, 0.65) 0%,
-      rgba(255, 200, 110, 0.40) 20%,
-      rgba(212, 158, 80,  0.22) 44%,
-      transparent 70%);
-  border-radius: 50%;
-  filter: blur(1.5px);
-}
-
-.sound-glow.is-active {
-  opacity: 1;
-  animation: sound-glow-pulse 2.2s ease-in-out infinite;
-}
-
-/* ============================================================
    PERCHED BIRD — small silhouette sitting in the captured polygon
    area on the landing scene. Facing left; only its wing flaps.
    ============================================================ */
@@ -569,17 +534,6 @@ button {
 .radio-face-glow.is-active {
   /* Steady on while music is playing — no pulse. */
   opacity: 1;
-}
-
-@keyframes sound-glow-pulse {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(0.92);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.18);
-    opacity: 0.85;
-  }
 }
 
 /* ============================================================

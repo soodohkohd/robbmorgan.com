@@ -110,12 +110,7 @@
       <img class="perched-bird perched-bird--companion" src="/bird2.webp?v=2" alt="" />
     </div>
 
-    <!-- Sound-playing glow — soft brass halo over the sound button.
-         Only visible when ambient audio is playing; pulses to feel
-         "in concert" with the music. -->
-    <div class="sound-glow" [class.is-active]="audioPlaying()" aria-hidden="true"></div>
-
-    <!-- Matching glow over the radio face/display strip — clipped
+<!-- Matching glow over the radio face/display strip — clipped
          to the captured parallelogram, pulses with the sound. -->
     <div class="radio-face-glow" [class.is-active]="audioPlaying()" aria-hidden="true"></div>
 
