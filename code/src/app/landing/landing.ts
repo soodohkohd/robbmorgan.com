@@ -110,15 +110,9 @@ export class Landing {
         }
       });
 
-      // Auto-start the ambient JSB music 3s after page load — but
-      // only on desktop. Mobile users get the cinematic scene strip
-      // without auto-playing audio (matches the mobile breakpoint
-      // used in landing.scss: 759px).
-      const isMobile = window.matchMedia('(max-width: 759px)').matches;
-      if (!isMobile) {
-        const audioStartId = window.setTimeout(() => this.ambient.autoStart(), 3000);
-        this.destroyRef.onDestroy(() => clearTimeout(audioStartId));
-      }
+      // Auto-start is disabled — visitors opt in by clicking the
+      // sound hotspot on the radio. The service still persists state
+      // across navigation + tab refresh once they enable it.
     }
   }
 
