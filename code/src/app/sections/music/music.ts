@@ -56,7 +56,7 @@ export class Music implements AfterViewInit {
     { title: "Codin' in Cali",   src: '/music/codin-in-cali.mp3',   cover: '/music/codin-in-cali.jpg',  style: 'West Coast G-Funk' },
     { title: "SoCal Livin'",     src: '/music/socal-livin.mp3',     cover: '/music/socal-livin.jpg',    style: 'West Coast G-Funk' },
     { title: 'Long Way Home',    src: '/music/long-way-home.mp3',   cover: '/music/long-way-home.jpg',  style: 'Midwest Hip Hop' },
-    { title: 'Just Like Me',     src: '/music/just-like-me.mp3',    cover: '/music/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: '/music/just-like-me.mp4' },
+    { title: 'Just Like Me',     src: '/music/just-like-me.mp3',    cover: '/music/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: 'https://robbmorganmedia.blob.core.windows.net/media/just-like-me.mp4' },
     { title: 'Sunshine Song',    src: '/music/sunshine-song.mp3',   cover: '/music/sunshine-song.jpg',  style: 'Acoustic Piano Pop' },
     { title: 'Sweetest Love',    src: '/music/sweetest-love.mp3',   cover: '/music/sweetest-love.jpg',  style: 'Contemporary Acoustic Pop' },
     { title: 'Come Back Home',   src: '/music/come-back-home.mp3',  cover: '/music/come-back-home.jpg', hidden: true },
