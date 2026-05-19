@@ -241,7 +241,7 @@ export class TheDesk {
       title: 'The Phone',
       bodyHtml: `
         <p>This is the second-longest story in the project, and it's mostly an image-processing one.</p>
-        <p>The desk has an iPhone on it. The phone has a screen. Periodically, a notification slides in across the top of the screen — a fake "New Message" banner. The challenge was making that banner look like it was <em>on</em> the phone, not floating above it.</p>
+        <p>The desk has an iPhone on it. The phone has a screen. Periodically, a notification fades in across the top of the screen — a fake "New Message" banner. The challenge was making that banner look like it was <em>on</em> the phone, not floating above it.</p>
         <p>The phone in the desk render is slightly tilted. The screen is a parallelogram, not a rectangle. A flat rectangular notification image placed on top of it would look like a sticker.</p>
 
         <h3>Pass 1: Perspective Warp</h3>
@@ -263,7 +263,7 @@ export class TheDesk {
         <p>The whole notification pipeline is one Python script I keep at <code>/tmp/warp_notification.py</code>. I tweaked it half a dozen times. Each tweak meant re-running the script, copying the output into <code>code/public/</code>, bumping a cache-buster query string in the HTML, and checking on the page. The cache-buster query string is now at <code>?v=16</code>. That number is, roughly, the number of times we got it wrong before getting it right.</p>
 
         <h3>The Notification Timer</h3>
-        <p>The fake notification slides in at random intervals — first one 15-30 seconds after page load, then every 120-360 seconds thereafter. A quiet message-arrival buzz plays when it appears (autoplay-blocked on the very first fire if the user hasn't interacted with the page yet, which is fine).</p>
+        <p>The fake notification fades in at random intervals — first one 15-30 seconds after page load, then every 120-360 seconds thereafter. A quiet message-arrival buzz plays when it appears (autoplay-blocked on the very first fire if the user hasn't interacted with the page yet, which is fine).</p>
         <p>The timer's wall-clock target is persisted in the same DeskStateService that handles birds and the typewriter. If you click into a content page mid-countdown and come back, the notification timer doesn't restart from the 15-30 second "first" delay — it picks up where it left off.</p>
       `,
     },

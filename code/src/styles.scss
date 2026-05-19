@@ -385,9 +385,9 @@ button {
 
 /* ============================================================
    iPHONE NOTIFICATION OVERLAY — random "New message" style banner
-   that slides into the top of the iPhone screen. The container
-   shares the mobile-apps hotspot bbox + clip-path so the banner
-   stays inside the phone outline even with the device's tilt.
+   that fades in and out at the top of the iPhone screen. The
+   container shares the mobile-apps hotspot bbox + clip-path so the
+   banner stays inside the phone outline even with the device's tilt.
    ============================================================ */
 
 .message-notification-image {
