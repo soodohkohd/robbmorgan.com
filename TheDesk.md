@@ -58,7 +58,7 @@ The first decision was the art. The desk image is a single PNG —
 walnut surface, window behind it with a view of the Southern California
 coast, monitor, books, all the objects already in place. I rendered four
 variants: morning, mid-day, evening, night. The window's sky color, the
-light falling on the desk, the warmth of the lamp — everything shifts.
+light falling on the desk, the warmth of the sun — everything shifts.
 
 Then came the hard part: making the objects on that flat image
 *clickable as individual objects*.

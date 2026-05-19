@@ -45,7 +45,7 @@ export class TheDesk {
       label: 'The Desk',
       title: 'The Desk Scene',
       bodyHtml: `
-        <p>The first decision was the art. The desk image is a single PNG — walnut surface, window behind it with a view of the Southern California coast, monitor, books, all the objects already in place. I rendered four variants: morning, mid-day, evening, night. The window's sky color, the light falling on the desk, the warmth of the lamp — everything shifts.</p>
+        <p>The first decision was the art. The desk image is a single PNG — walnut surface, window behind it with a view of the Southern California coast, monitor, books, all the objects already in place. I rendered four variants: morning, mid-day, evening, night. The window's sky color, the light falling on the desk, the warmth of the sun — everything shifts.</p>
         <p>Then came the hard part: making the objects on that flat image <em>clickable as individual objects</em>.</p>
         <p>The naive solution would have been rectangular hit zones. But a book stack isn't a rectangle. A radio isn't a rectangle. The picture frame is <em>skewed</em>. A rectangular hotspot over a skewed picture frame either overshoots the desk or undershoots the frame, and either way it looks amateurish.</p>
         <p>So every hotspot became a polygon. Each interactive object on the desk is a <code>&lt;button&gt;</code> with a <code>clip-path</code> polygon that traces its actual silhouette. The book stack's polygon walks the outer perimeter of all three books with a 14-vertex shape. The terracotta plant pot is a 21-vertex shape. The radio uses an SVG path with quadratic Bezier curves for its rounded top corners.</p>
