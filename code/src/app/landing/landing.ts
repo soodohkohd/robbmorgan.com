@@ -643,7 +643,7 @@ The monitor should show a typing session now. Hot reload picks it up.
       route: '/mobile-apps',
       // Rounded-corner quad (iPhone-style). objectBoundingBox 0-1
       // units; corner radius ~0.05.
-      path: 'M 0.290,0.047 Q 0.306,0 0.356,0.006 L 0.950,0.080 Q 1,0.086 0.991,0.135 L 0.838,0.951 Q 0.829,1 0.779,0.993 L 0.050,0.889 Q 0,0.882 0.016,0.835 Z',
+      path: 'M 0.285,0.047 Q 0.302,0 0.352,0.007 L 0.951,0.085 Q 1,0.092 0.990,0.141 L 0.829,0.951 Q 0.819,1 0.770,0.991 L 0.049,0.865 Q 0,0.856 0.017,0.809 Z',
     },
     {
       key: 'roots',

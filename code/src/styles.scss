@@ -387,11 +387,11 @@ button {
 .message-notification-image {
   position: absolute;
   /* Perspective-warped PNG with the softening tint baked in.
-     Fills the captured red-box bbox exactly. */
+     Fills the captured notification-area bbox exactly. */
   left: 63.3%;
   top: 73.5%;
   width: 8.1%;
-  height: 3.85%;
+  height: 3.6%;
   pointer-events: none;
   opacity: 0;
   /* Slow fade in/out — 1s each direction, symmetric. */

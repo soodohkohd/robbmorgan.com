@@ -160,10 +160,10 @@
 }
 
 .hotspot-outline[data-spot="mobile-apps"] {
-  left: 60.4%;
-  top: 73.2%;
-  width: 11.1%;
-  height: 18.7%;
+  left: 60.0%;
+  top: 72.9%;
+  width: 11.6%;
+  height: 19.5%;
 }
 
 .hotspot-outline[data-spot="web-apps"] {
@@ -313,15 +313,15 @@
 }
 .hotspot[data-spot="mobile-apps"] {
   /* iPhone, tilted on the desk, rounded corners. Corners in image %:
-       TL (63.8, 73.2)   TR (71.5, 74.8)
-       BL (60.4, 89.7)   BR (69.6, 91.9)
+       TL (63.5, 72.9)   TR (71.6, 74.7)
+       BL (60.0, 89.6)   BR (69.5, 92.4)
      Clip-path references the SVG <clipPath id="mobile-apps-clip">
      emitted by the sibling .hotspot-outline element — so both the
      fill (clip) and stroke share the exact same rounded shape. */
-  left: 60.4%;
-  top: 73.2%;
-  width: 11.1%;
-  height: 18.7%;
+  left: 60.0%;
+  top: 72.9%;
+  width: 11.6%;
+  height: 19.5%;
   clip-path: url(#mobile-apps-clip);
 
   /* Center the label on the polygon's visual middle (centroid of the
@@ -558,19 +558,6 @@
       stroke: rgba(220, 50, 50, 0.95) !important;
       filter: none !important;
     }
-  }
-
-  .hotspot-debug-tag {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    font-family: ui-monospace, Menlo, monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    pointer-events: none;
   }
 
 }

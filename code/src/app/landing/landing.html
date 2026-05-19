@@ -79,10 +79,11 @@
     <img
       class="message-notification-image"
       [class.is-visible]="notificationVisible()"
-      src="/notification.png?v=10"
+      src="/notification.png?v=16"
       alt=""
       aria-hidden="true"
     />
+
 
     <!-- Bird-flight area: covers the full scene. The SVG <clipPath>
          below defines six disjoint visible-sky polygons (path-1..6,
@@ -93,8 +94,7 @@
         <clipPath id="bird-flight-mask" clipPathUnits="objectBoundingBox">
           <polygon points="0.857,0.002 1.000,0.004 1.000,0.435 0.850,0.422 0.853,0.224 0.872,0.196 0.875,0.160 0.870,0.119 0.856,0.090" />
           <polygon points="0.825,0.263 0.824,0.459 0.805,0.461" />
-          <polygon points="0.819,0.253 0.800,0.453 0.751,0.439 0.767,0.195" />
-          <polygon points="0.763,0.193 0.745,0.435 0.665,0.412 0.678,0.171" />
+          <polygon points="0.821,0.251 0.806,0.391 0.799,0.476 0.718,0.462 0.677,0.499 0.674,0.530 0.660,0.533 0.664,0.405 0.668,0.330 0.672,0.271 0.676,0.172 0.686,0.170 0.688,0.129 0.693,0.127 0.699,0.148 0.701,0.110 0.711,0.130 0.712,0.105 0.739,0.098 0.724,0.123 0.734,0.113 0.735,0.128 0.730,0.141 0.735,0.157 0.742,0.150 0.755,0.130 0.748,0.164 0.750,0.179 0.769,0.193 0.775,0.176 0.783,0.170" />
           <polygon points="0.670,0.175 0.651,0.507 0.651,0.160" />
           <polygon points="0.305,0.004 0.311,0.528 0.303,0.528 0.299,0.404 0.296,0.389 0.290,0.381 0.280,0.373 0.275,0.367 0.269,0.355 0.261,0.352 0.252,0.349 0.241,0.345 0.226,0.345 0.205,0.344 0.190,0.347 0.173,0.349 0.153,0.353 0.134,0.360 0.151,0.263 0.166,0.173 0.186,0.002" />
         </clipPath>
@@ -181,9 +181,6 @@
         (click)="onSpotClick(spot)"
       >
         <span class="hotspot-label">{{ labelFor(spot) }}</span>
-        @if (debug()) {
-          <span class="hotspot-debug-tag">{{ spot.key }}</span>
-        }
       </button>
       @if (spot.polygon) {
         <svg
