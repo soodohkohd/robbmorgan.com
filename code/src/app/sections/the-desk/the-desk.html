@@ -36,7 +36,7 @@
         <button
           type="button"
           class="chapter-nav-btn chapter-nav-prev"
-          (click)="select(prev.slug)"
+          (click)="select(prev.slug, true)"
         >
           <span class="chapter-nav-direction">← Previous</span>
           <span class="chapter-nav-label">{{ prev.label }}</span>
@@ -48,7 +48,7 @@
         <button
           type="button"
           class="chapter-nav-btn chapter-nav-next"
-          (click)="select(next.slug)"
+          (click)="select(next.slug, true)"
         >
           <span class="chapter-nav-direction">Next →</span>
           <span class="chapter-nav-label">{{ next.label }}</span>

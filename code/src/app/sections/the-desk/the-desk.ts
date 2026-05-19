@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, viewChild } from '@angular/core';
 import { SectionShell } from '../section-shell/section-shell';
 
 interface Chapter {
@@ -19,6 +19,8 @@ interface Chapter {
   styleUrl: './the-desk.scss',
 })
 export class TheDesk {
+  private shell = viewChild(SectionShell);
+
   readonly chapters: readonly Chapter[] = [
     {
       slug: 'vision',
@@ -407,12 +409,43 @@ export class TheDesk {
     return i >= 0 && i < this.chapters.length - 1 ? this.chapters[i + 1] : null;
   });
 
-  /** Switch to a chapter and scroll back to the top of the page so the
-   *  new chapter is read from its first paragraph, not the previous
-   *  scroll position. */
-  select(slug: string): void {
+  /** Switch to a chapter. From the top pill nav, scroll all the way
+   *  to 0 (title expands back). From the bottom prev/next buttons,
+   *  scroll to the exact minimize-threshold (head.offsetTop) AND
+   *  explicitly tell the SectionShell to minimize. The natural scroll
+   *  handler won't fire isMinimized true at scrollY === threshold
+   *  (it requires scrollY > threshold + 24 hysteresis), so we seal
+   *  the state via the public minimizeNow() method. Pills then sit
+   *  immediately below the compact title bar at viewport_y =
+   *  compact_height.
+   *
+   *  The user can still scroll up past the threshold to re-expand
+   *  the title — the SectionShell's onScroll handles that naturally. */
+  select(slug: string, keepMinimized = false): void {
     this.selectedSlug.set(slug);
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+
+    if (keepMinimized) {
+      // 1. forceMinimize() locks the title compact and bypasses the
+      //    natural scroll handler — so step 2's scroll-to-0 can't
+      //    un-minimize it.
+      // 2. Smooth-scroll to the top.
+      // 3. After 500ms, smooth-scroll to head.offsetTop + 25 (the
+      //    natural minimize trigger).
+      // 4. Once that second scroll has had time to settle, release
+      //    the force. The natural scroll handler resumes; the user
+      //    is now at a scroll position past the threshold, so the
+      //    header stays compact via the normal flow. Scrolling up
+      //    past the threshold un-minimizes it as usual.
+      this.shell()?.forceMinimize();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        const head = document.querySelector('.page-head') as HTMLElement | null;
+        const target = head ? head.offsetTop + 25 : 25;
+        window.scrollTo({ top: target, behavior: 'smooth' });
+        setTimeout(() => this.shell()?.releaseForce(), 500);
+      }, 500);
+    } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
