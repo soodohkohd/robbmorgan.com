@@ -41,6 +41,25 @@
     inset -28px 0 38px -8px rgba(0, 0, 0, 0.75);
 }
 
+/* Loading veil — opaque cover that matches :host's background. Sits
+   above every dynamic scene child (birds, monitor code, notification,
+   steam, hotspots) and the inset-shadow ::after, so the desk PNG and
+   its dynamic siblings can lay out underneath without being visible.
+   Once sceneReady() fires (desk image actually loaded — not the blank
+   slot seed), the veil fades to opacity 0 and pointer-events drop. */
+.scene-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--walnut-deep);
+  z-index: 200;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 600ms var(--ease-soft);
+}
+.scene-veil.is-hidden {
+  opacity: 0;
+}
+
 .scene-image {
   position: absolute;
   inset: 0;

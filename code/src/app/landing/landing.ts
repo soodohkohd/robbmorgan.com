@@ -377,11 +377,16 @@ export class Landing {
    *  if it actually holds the current sceneSrc — otherwise the
    *  tiny seeded blankImg in the inactive slot could fire a load
    *  event after a route round-trip and steal active away from the
-   *  real desk image, leaving the scene blank. */
+   *  real desk image, leaving the scene blank.
+   *
+   *  sceneReady is gated on the loaded src matching sceneSrc so the
+   *  blank-image seed in the inactive slot doesn't instantly flip
+   *  ready=true on mount and defeat the loading veil. */
   onSlotLoad(slot: 'a' | 'b'): void {
-    this.sceneReady.set(true);
     const slotSrc = slot === 'a' ? this.slotASrc() : this.slotBSrc();
-    if (slot !== this.activeSlot() && slotSrc === this.sceneSrc()) {
+    if (slotSrc !== this.sceneSrc()) return;
+    this.sceneReady.set(true);
+    if (slot !== this.activeSlot()) {
       this.activeSlot.set(slot);
     }
   }

@@ -402,6 +402,18 @@
         >{{ $index + 1 }}</span>
       }
     }
+
+    <!-- Loading veil: opaque overlay matching the page background.
+         Covers the scene + all dynamic children (birds, monitor code,
+         notification, steam, hotspots) until the real desk image
+         finishes loading, then fades out. Prevents the brief moment
+         where dynamic elements render against a black background
+         before the scene PNG paints. -->
+    <div
+      class="scene-veil"
+      [class.is-hidden]="sceneReady()"
+      aria-hidden="true"
+    ></div>
   </section>
 
   <!-- Mobile fallback -->
