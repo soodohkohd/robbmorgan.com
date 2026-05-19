@@ -2,6 +2,7 @@ import { Component, DestroyRef, computed, effect, inject, signal, untracked } fr
 import { Router, RouterLink } from '@angular/router';
 
 import { AmbientAudioService } from '../ambient-audio.service';
+import { DeskStateService } from './desk-state.service';
 
 type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 
@@ -40,6 +41,7 @@ export class Landing {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private ambient = inject(AmbientAudioService);
+  private deskState = inject(DeskStateService);
   /** Mirrors the service's playing signal — used by labelFor() to
    *  render OFF / ON. */
   audioPlaying = this.ambient.playing;
@@ -122,9 +124,12 @@ export class Landing {
     });
 
     if (typeof window !== 'undefined') {
-      // Pre-populate the buffer so the monitor starts mid-session
-      // instead of typing in from empty.
-      this.codeBuffer.set(this.codeSource);
+      // Monitor: resume the typewriter from where it left off last
+      // time the desk was visible. On a fresh tab the service is
+      // empty, so seed with the full codeSource so the first paint
+      // doesn't start empty.
+      this.codeBuffer.set(this.deskState.codeBuffer || this.codeSource);
+      this.codeCursor = this.deskState.codeCursor;
 
       // Time-of-day refresh every minute
       const todId = window.setInterval(() => {
@@ -136,15 +141,24 @@ export class Landing {
       // through codeSource forever. Buffer trimmed so the rendered
       // <pre> doesn't grow without bound.
       const typeId = window.setInterval(() => this.tickTypewriter(), this.codeTickMs);
-      this.destroyRef.onDestroy(() => clearInterval(typeId));
+      this.destroyRef.onDestroy(() => {
+        clearInterval(typeId);
+        // Save state for the next visit.
+        this.deskState.codeBuffer = this.codeBuffer();
+        this.deskState.codeCursor = this.codeCursor;
+      });
 
-      // Random iPhone notification scheduler. Notifications only
-      // exist on the desk view — leaving the landing page destroys
-      // this component, which clears the pending timeout, hides the
-      // banner (signal is gone with the component), and silences any
-      // in-flight chime via the cleanup below. Returning to the desk
-      // restarts a fresh schedule via this constructor.
-      this.scheduleNextNotification(true);
+      // Notifications: honor a previously-scheduled fire time so the
+      // 120-360s timer keeps ticking across desk ↔ content trips.
+      // Falls back to the 15-30s "first" delay only when there's no
+      // saved time (e.g. this is a fresh tab).
+      const now = Date.now();
+      if (this.deskState.nextNotificationAt !== undefined) {
+        const remaining = this.deskState.nextNotificationAt - now;
+        this.scheduleNotificationIn(remaining > 0 ? remaining : 0);
+      } else {
+        this.scheduleNextNotification(true);
+      }
       this.destroyRef.onDestroy(() => {
         if (this.notificationTimeoutId !== undefined) {
           clearTimeout(this.notificationTimeoutId);
@@ -155,9 +169,25 @@ export class Landing {
         }
       });
 
-      // Birds: kick off the first flight as soon as the scene mounts,
-      // then re-fire on a 90-120s random cadence after each pass ends.
-      this.startBirdFlight();
+      // Birds: resume if mid-flight, honor a saved next-flight time,
+      // or kick off a fresh pass.
+      const flightStartedAt = this.deskState.flightStartedAt;
+      const nextFlightAt = this.deskState.nextFlightAt;
+      if (flightStartedAt !== undefined
+          && now - flightStartedAt < this.flightDurationMs) {
+        // Resume mid-flight: negative animation-delay makes CSS
+        // pick up at the position the bird was in when we left.
+        const elapsed = now - flightStartedAt;
+        this.birdAnimationDelay.set(`-${elapsed}ms`);
+        this.birdsFlying.set(true);
+      } else if (nextFlightAt !== undefined && nextFlightAt > now) {
+        // Still in the inter-flight wait — schedule for the remaining time.
+        this.birdsTimeoutId = window.setTimeout(
+          () => this.startBirdFlight(), nextFlightAt - now);
+      } else {
+        // Fresh start (no saved state OR everything's expired).
+        this.startBirdFlight();
+      }
       this.destroyRef.onDestroy(() => {
         if (this.birdsTimeoutId !== undefined) {
           clearTimeout(this.birdsTimeoutId);
@@ -172,11 +202,18 @@ export class Landing {
 
   /** Toggle the .birds-flying class. requestAnimationFrame double-tap
    *  forces the animation to restart even if the signal was already
-   *  true (CSS only re-runs keyframes when the class toggles off→on). */
+   *  true (CSS only re-runs keyframes when the class toggles off→on).
+   *  Records the start time so the bird can be resumed mid-cycle after
+   *  a route round-trip. */
   private startBirdFlight(): void {
+    this.birdAnimationDelay.set('0s');
     this.birdsFlying.set(false);
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => this.birdsFlying.set(true));
+      requestAnimationFrame(() => {
+        this.birdsFlying.set(true);
+        this.deskState.flightStartedAt = Date.now();
+        this.deskState.nextFlightAt = undefined;
+      });
     });
   }
 
@@ -186,6 +223,8 @@ export class Landing {
     if (event.animationName !== 'bird-soar') return;
     this.birdsFlying.set(false);
     const delay = 90_000 + Math.random() * 30_000;
+    this.deskState.flightStartedAt = undefined;
+    this.deskState.nextFlightAt = Date.now() + delay;
     this.birdsTimeoutId = window.setTimeout(() => this.startBirdFlight(), delay);
   }
 
@@ -210,7 +249,16 @@ export class Landing {
     const delay = isFirst
       ? 15_000 + Math.random() * 15_000
       : 120_000 + Math.random() * 240_000;
+    this.scheduleNotificationIn(delay);
+  }
+
+  /** Schedule the next notification fire `delay` ms from now and
+   *  persist the absolute target time so the timer survives a route
+   *  round-trip back to the desk. */
+  private scheduleNotificationIn(delay: number): void {
+    this.deskState.nextNotificationAt = Date.now() + delay;
     this.notificationTimeoutId = window.setTimeout(() => {
+      this.deskState.nextNotificationAt = undefined;
       this.notificationVisible.set(true);
       this.playNotificationSound();
 
@@ -298,6 +346,10 @@ export class Landing {
      fire on a random 90-120s delay after the previous one ends.
      The CSS class .birds-flying gates the keyframe animation. */
   birdsFlying = signal(false);
+  /** Inline animation-delay (negative ms) used when resuming a
+   *  mid-flight pass after returning from a content page. */
+  birdAnimationDelay = signal<string>('0s');
+  private readonly flightDurationMs = 40_000;
   private birdsTimeoutId?: number;
 
   /* ---------- Monitor "Claude Code session" overlay ----------

@@ -106,8 +106,14 @@
       (animationend)="onBirdFlightEnd($event)"
       aria-hidden="true"
     >
-      <img class="perched-bird" src="/bird.webp?v=8" alt="" />
-      <img class="perched-bird perched-bird--companion" src="/bird2.webp?v=2" alt="" />
+      <img class="perched-bird"
+           src="/bird.webp?v=8"
+           [style.animation-delay]="birdAnimationDelay()"
+           alt="" />
+      <img class="perched-bird perched-bird--companion"
+           src="/bird2.webp?v=2"
+           [style.animation-delay]="birdAnimationDelay()"
+           alt="" />
     </div>
 
 <!-- Matching glow over the radio face/display strip — clipped
