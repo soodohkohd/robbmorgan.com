@@ -107,11 +107,24 @@
       aria-hidden="true"
     >
       <img class="perched-bird"
+           [class.is-hidden]="!leaderActive()"
            src="/bird.webp?v=8"
+           [style.--start-x]="leaderStart().x + 'cqw'"
+           [style.--start-y]="leaderStart().y + 'cqh'"
            [style.animation-delay]="birdAnimationDelay()"
            alt="" />
       <img class="perched-bird perched-bird--companion"
+           [class.is-hidden]="!companionActive()"
            src="/bird2.webp?v=2"
+           [style.--start-x]="companionStart().x + 'cqw'"
+           [style.--start-y]="companionStart().y + 'cqh'"
+           [style.animation-delay]="birdAnimationDelay()"
+           alt="" />
+      <img class="perched-bird perched-bird--companion-2"
+           [class.is-hidden]="!companion2Active()"
+           src="/bird3.webp?v=1"
+           [style.--start-x]="companion2Start().x + 'cqw'"
+           [style.--start-y]="companion2Start().y + 'cqh'"
            [style.animation-delay]="birdAnimationDelay()"
            alt="" />
     </div>

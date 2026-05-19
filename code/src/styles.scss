@@ -474,12 +474,12 @@ button {
   animation: bird-soar 40s linear;
 }
 
+/* Each bird's start position is supplied per-element via --start-x
+   and --start-y inline styles (randomized in landing.ts on every
+   flight). End positions are fixed so all birds converge into
+   bird-path-6 by the end of the cycle. */
 @keyframes bird-soar {
-  /* Linear right→left translate. Start is 80% down the right edge
-     of bird-path-1 (image-% ≈ 100, 35). End is point-4 of bird-path-6
-     (image-% = 30.0, 40.4). The clip-path hides the bird everywhere
-     except the six visible sky polygons. */
-  0%   { transform: translate(100cqw, 35cqh); }
+  0%   { transform: translate(var(--start-x), var(--start-y)); }
   100% { transform: translate(29.9cqw, 40.4cqh); }
 }
 
@@ -493,13 +493,31 @@ button {
   animation: bird-soar-companion 40s linear;
 }
 
+/* Third bird, further behind + above + smaller still. Uses bird3.webp
+   (frames rotated by 7 — half cycle) so its wings are maximally out
+   of sync with both other birds. */
+.perched-bird--companion-2 {
+  width: 0.46cqw;
+}
+
+.bird-flight-area.birds-flying .perched-bird--companion-2 {
+  animation: bird-soar-companion-2 40s linear;
+}
+
+@keyframes bird-soar-companion-2 {
+  0%   { transform: translate(var(--start-x), var(--start-y)); }
+  100% { transform: translate(27cqw, 37.5cqh); }
+}
 
 @keyframes bird-soar-companion {
-  /* Start +1.2cqw right, 1.8cqh above leader. By end, companion has
-     converged inside bird-path-6 (x=29 fits the polygon at y=38.6,
-     where its right edge sits around 29.4). */
-  0%   { transform: translate(101.2cqw, 33.2cqh); }
+  0%   { transform: translate(var(--start-x), var(--start-y)); }
   100% { transform: translate(29cqw, 38.6cqh); }
+}
+
+/* Inactive birds in a flight are completely removed so no animation
+   ticks and no animationend fires for them. */
+.perched-bird.is-hidden {
+  display: none;
 }
 
 /* ============================================================

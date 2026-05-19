@@ -169,8 +169,15 @@ export class Landing {
         }
       });
 
-      // Birds: resume if mid-flight, honor a saved next-flight time,
-      // or kick off a fresh pass.
+      // Birds: restore per-bird state from service so a mid-flight
+      // remount keeps the same formation visible.
+      this.leaderActive.set(this.deskState.birdActives[0]);
+      this.companionActive.set(this.deskState.birdActives[1]);
+      this.companion2Active.set(this.deskState.birdActives[2]);
+      this.leaderStart.set(this.deskState.birdStarts[0]);
+      this.companionStart.set(this.deskState.birdStarts[1]);
+      this.companion2Start.set(this.deskState.birdStarts[2]);
+
       const flightStartedAt = this.deskState.flightStartedAt;
       const nextFlightAt = this.deskState.nextFlightAt;
       if (flightStartedAt !== undefined
@@ -179,6 +186,7 @@ export class Landing {
         // pick up at the position the bird was in when we left.
         const elapsed = now - flightStartedAt;
         this.birdAnimationDelay.set(`-${elapsed}ms`);
+        this.flightInProgress = true;
         this.birdsFlying.set(true);
       } else if (nextFlightAt !== undefined && nextFlightAt > now) {
         // Still in the inter-flight wait — schedule for the remaining time.
@@ -200,16 +208,64 @@ export class Landing {
     }
   }
 
-  /** Toggle the .birds-flying class. requestAnimationFrame double-tap
-   *  forces the animation to restart even if the signal was already
-   *  true (CSS only re-runs keyframes when the class toggles off→on).
-   *  Records the start time so the bird can be resumed mid-cycle after
-   *  a route round-trip. */
+  /** Pick how many birds fly and where they start, then trigger the
+   *  CSS animation. First flight is always all 3; subsequent flights
+   *  pick a random 1/2/3-bird subset with randomized non-overlapping
+   *  start positions. */
   private startBirdFlight(): void {
     this.birdAnimationDelay.set('0s');
     this.birdsFlying.set(false);
+
+    // Decide active set
+    let activeIndices: Set<number>;
+    if (!this.deskState.firstFlightDone) {
+      activeIndices = new Set([0, 1, 2]);
+      this.deskState.firstFlightDone = true;
+    } else {
+      const count = 1 + Math.floor(Math.random() * 3); // 1, 2, or 3
+      const indices = [0, 1, 2];
+      // Fisher-Yates partial shuffle
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      activeIndices = new Set(indices.slice(0, count));
+    }
+
+    // Generate non-overlapping start positions for the active birds
+    const positions = this.generateBirdStartPositions(activeIndices.size);
+
+    const actives: [boolean, boolean, boolean] = [
+      activeIndices.has(0),
+      activeIndices.has(1),
+      activeIndices.has(2),
+    ];
+    const starts = [
+      this.leaderStart(),
+      this.companionStart(),
+      this.companion2Start(),
+    ];
+    let posIdx = 0;
+    for (let i = 0; i < 3; i++) {
+      if (actives[i]) {
+        starts[i] = positions[posIdx++];
+      }
+    }
+
+    this.leaderActive.set(actives[0]);
+    this.companionActive.set(actives[1]);
+    this.companion2Active.set(actives[2]);
+    this.leaderStart.set(starts[0]);
+    this.companionStart.set(starts[1]);
+    this.companion2Start.set(starts[2]);
+
+    // Persist for desk ↔ content round-trip
+    this.deskState.birdActives = actives;
+    this.deskState.birdStarts = [starts[0], starts[1], starts[2]];
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        this.flightInProgress = true;
         this.birdsFlying.set(true);
         this.deskState.flightStartedAt = Date.now();
         this.deskState.nextFlightAt = undefined;
@@ -217,12 +273,41 @@ export class Landing {
     });
   }
 
-  /** Fires once when either bird's translate animation completes
-   *  (both run for the same duration, so we ignore the second). */
+  /** Returns `count` start positions (cqw, cqh) within
+   *  x ∈ [101, 110] and y ∈ [30, 40], with min vertical separation
+   *  of 2.5 cqh so the birds don't visually overlap. Falls back to
+   *  evenly-spaced fixed values if 200 random tries can't find a fit. */
+  private generateBirdStartPositions(count: number): Array<{ x: number; y: number }> {
+    const positions: Array<{ x: number; y: number }> = [];
+    let attempts = 0;
+    while (positions.length < count && attempts < 200) {
+      const x = 101 + Math.random() * 9;
+      const y = 30 + Math.random() * 10;
+      if (positions.every(p => Math.abs(p.y - y) > 2.5)) {
+        positions.push({ x, y });
+      }
+      attempts++;
+    }
+    while (positions.length < count) {
+      const i = positions.length;
+      positions.push({ x: 101 + i * 3, y: 30 + i * 3.5 });
+    }
+    return positions;
+  }
+
+  /** Fires when any of the three birds' translate animations completes.
+   *  Debounced via flightInProgress so simultaneous animationend events
+   *  only schedule the next flight once. Inter-flight delay 30-120s. */
   onBirdFlightEnd(event: AnimationEvent): void {
-    if (event.animationName !== 'bird-soar') return;
+    if (!this.flightInProgress) return;
+    const name = event.animationName;
+    if (name !== 'bird-soar'
+        && name !== 'bird-soar-companion'
+        && name !== 'bird-soar-companion-2') return;
+    this.flightInProgress = false;
     this.birdsFlying.set(false);
-    const delay = 90_000 + Math.random() * 30_000;
+
+    const delay = 30_000 + Math.random() * 90_000;
     this.deskState.flightStartedAt = undefined;
     this.deskState.nextFlightAt = Date.now() + delay;
     this.birdsTimeoutId = window.setTimeout(() => this.startBirdFlight(), delay);
@@ -341,16 +426,29 @@ export class Landing {
   private notificationTimeoutId?: number;
   private notificationSound?: HTMLAudioElement;
 
-  /* ---------- Two birds flying right-to-left ----------
-     First pass kicks off immediately on mount; subsequent passes
-     fire on a random 90-120s delay after the previous one ends.
-     The CSS class .birds-flying gates the keyframe animation. */
+  /* ---------- Three birds flying right-to-left ----------
+     First pass uses ALL three birds; subsequent passes (30-120s
+     random delay) pick a random 1/2/3-bird subset and randomize
+     each active bird's starting position so the formation differs
+     each flight. Non-overlapping vertical spacing enforced via
+     a min-separation guard in the position generator. */
   birdsFlying = signal(false);
   /** Inline animation-delay (negative ms) used when resuming a
    *  mid-flight pass after returning from a content page. */
   birdAnimationDelay = signal<string>('0s');
+  /** Per-bird active flag (leader, companion, companion-2). */
+  leaderActive = signal(true);
+  companionActive = signal(true);
+  companion2Active = signal(true);
+  /** Per-bird randomized start position (cqw, cqh). */
+  leaderStart = signal<{ x: number; y: number }>({ x: 100, y: 35 });
+  companionStart = signal<{ x: number; y: number }>({ x: 101.2, y: 33.2 });
+  companion2Start = signal<{ x: number; y: number }>({ x: 103, y: 31 });
   private readonly flightDurationMs = 40_000;
   private birdsTimeoutId?: number;
+  /** Debounce so onBirdFlightEnd only schedules the next flight
+   *  once, even when multiple birds fire animationend simultaneously. */
+  private flightInProgress = false;
 
   /* ---------- Monitor "Claude Code session" overlay ----------
      Cycles through a fake Claude Code chat one char at a time. The

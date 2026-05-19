@@ -26,4 +26,17 @@ export class DeskStateService {
 
   /** Wall-clock ms when the next iPhone notification should fire. */
   nextNotificationAt?: number;
+
+  /** True once the initial all-three-bird flight has fired this tab session. */
+  firstFlightDone = false;
+  /** Per-bird active flag for the current/most-recent flight (leader,
+   *  companion, companion-2). Persists so a mid-flight remount keeps
+   *  the right subset visible. */
+  birdActives: [boolean, boolean, boolean] = [true, true, true];
+  /** Per-bird start position (cqw, cqh) for the current/most-recent flight. */
+  birdStarts: [{ x: number; y: number }, { x: number; y: number }, { x: number; y: number }] = [
+    { x: 100, y: 35 },
+    { x: 101.2, y: 33.2 },
+    { x: 103, y: 31 },
+  ];
 }
