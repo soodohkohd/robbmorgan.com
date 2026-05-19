@@ -240,6 +240,12 @@ button {
   height: 30.6%;
   clip-path: polygon(0% 0.3%, 100% 0%, 100% 98.7%, 1.0% 100%);
   pointer-events: none;
+  /* Decorative content only — block text selection so a drag-select
+     from outside the monitor can't pick up the fake session and let
+     someone copy it. pointer-events:none above already blocks the
+     contextmenu / mousedown paths. */
+  user-select: none;
+  -webkit-user-select: none;
   background: #1e1e1e;
   overflow: hidden;
 
