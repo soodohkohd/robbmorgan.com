@@ -1,0 +1,279 @@
+/* ---------- chapter selector pills ----------
+   Wraps onto multiple rows when the chapter count exceeds the row
+   width. Each pill carries a small numbered chip on the left so the
+   user can see chapter order at a glance even when wrapped. */
+
+.chapter-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.chapter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem 0.5rem 0.45rem;
+  border-radius: 999px;
+  background: var(--parchment-card);
+  color: var(--walnut);
+  border: 1px solid rgba(58, 42, 31, 0.22);
+  cursor: pointer;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft),
+    color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    outline: none;
+  }
+
+  &.is-active {
+    background: var(--brass);
+    color: var(--walnut-deep);
+    border-color: var(--brass);
+    box-shadow: 0 1px 4px rgba(38, 24, 18, 0.18);
+
+    .chapter-pill-num {
+      background: var(--walnut-deep);
+      color: var(--brass);
+    }
+  }
+}
+
+.chapter-pill-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--parchment-soft);
+  color: var(--walnut-deep);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1;
+}
+
+/* ---------- selected chapter title + prose ---------- */
+
+.chapter-title {
+  margin: 0 0 1.25rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  line-height: 1.15;
+  color: var(--walnut-deep);
+  border-bottom: 2px solid var(--brass);
+  padding-bottom: 0.75rem;
+}
+
+/* ---------- chapter body (innerHTML prose) ---------- */
+
+.chapter-body {
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.65;
+  max-width: 72ch;
+
+  /* Elements inside .chapter-body are inserted via [innerHTML], so
+     they don't carry the component's view-encapsulation attribute.
+     ::ng-deep drops the attribute requirement so the selectors below
+     actually reach the rendered HTML. */
+  ::ng-deep {
+    .lede {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.55;
+      color: var(--walnut-deep);
+      margin: 0 0 1.25rem;
+    }
+
+    h3 {
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin: 2.25rem 0 0.8rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(176, 136, 80, 0.45);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      line-height: 1.2;
+    }
+    h3::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      background: var(--brass);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+    > h3:first-child {
+      margin-top: 0.25rem;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    p { margin: 0 0 0.95rem; }
+
+    strong { font-weight: 700; color: var(--walnut-deep); }
+    em     { font-style: italic; color: var(--walnut-deep); }
+
+    a {
+      color: var(--walnut);
+      text-decoration-color: var(--brass);
+      text-underline-offset: 2px;
+      &:hover { color: var(--brass); }
+    }
+
+    ol, ul {
+      margin: 0 0 1.1rem;
+      padding-left: 1.5rem;
+    }
+    li { margin: 0.4rem 0; }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.86em;
+      background: rgba(58, 42, 31, 0.08);
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+      color: var(--walnut-deep);
+    }
+
+    /* Quoted back-and-forth dialogue. The palette chapter uses a
+       longer multi-paragraph blockquote; format both single- and
+       multi-paragraph variants the same way. */
+    blockquote {
+      margin: 1rem 0 1.4rem;
+      padding: 0.85rem 1.1rem;
+      border-left: 3px solid var(--brass);
+      background: var(--parchment-card);
+      border-radius: 0 4px 4px 0;
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--walnut-deep);
+    }
+    blockquote p { margin: 0 0 0.6rem; }
+    blockquote p:last-child { margin-bottom: 0; }
+
+    /* Tables (palette chapter) */
+    table {
+      width: 100%;
+      margin: 0.8rem 0 1.4rem;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      font-style: normal;
+      border: 1px solid var(--walnut);
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(58, 42, 31, 0.45);
+      vertical-align: top;
+    }
+    th {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--walnut-deep);
+      background: rgba(176, 136, 80, 0.32);
+      border-color: var(--walnut);
+      font-weight: 700;
+    }
+    tbody tr:nth-child(even) td { background: rgba(176, 136, 80, 0.08); }
+
+    .closing {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--brass);
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--walnut-deep);
+    }
+  }
+}
+
+/* ---------- prev/next chapter navigation ---------- */
+
+.chapter-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(58, 42, 31, 0.22);
+}
+
+.chapter-nav-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1.1rem;
+  background: var(--parchment-card);
+  color: var(--walnut);
+  border: 1px solid rgba(58, 42, 31, 0.22);
+  border-radius: 8px;
+  cursor: pointer;
+  max-width: 16rem;
+  text-align: left;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    outline: none;
+  }
+}
+
+.chapter-nav-next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.chapter-nav-direction {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.chapter-nav-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--walnut-deep);
+}
+
+.chapter-nav-spacer {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 599px) {
+  .chapter-nav { flex-direction: column; }
+  .chapter-nav-next { text-align: left; margin-left: 0; }
+}

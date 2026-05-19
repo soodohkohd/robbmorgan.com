@@ -51,5 +51,10 @@ export const routes: Routes = [
     loadComponent: () => import('./sections/photos/photos').then(m => m.Photos),
     title: 'Take a Break — Robb Morgan',
   },
+  {
+    path: 'the-desk',
+    loadComponent: () => import('./sections/the-desk/the-desk').then(m => m.TheDesk),
+    title: 'The Desk — Robb Morgan',
+  },
   { path: '**', redirectTo: '' },
 ];

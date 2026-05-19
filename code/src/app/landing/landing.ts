@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, isDevMode, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { AmbientAudioService } from '../ambient-audio.service';
@@ -9,7 +9,7 @@ type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 type SpotKey =
   | 'web-apps' | 'mobile-apps' | 'novels' | 'blog'
   | 'resume'   | 'music'       | 'contact' | 'roots'
-  | 'break'
+  | 'break'    | 'desk'
   | 'sound'    // toggles ambient JSB playback (no navigation)
   | 'keyboard'; // not a destination — opens the time-of-day picker
 
@@ -411,9 +411,13 @@ export class Landing {
   }
 
   /** Append ?debug=1 to the URL to make all overlays visible + show a
-   *  mouse-coord readout and the polygon-capture panel. */
+   *  mouse-coord readout and the polygon-capture panel. Gated on
+   *  isDevMode() so the query param has no effect in production
+   *  builds — the polygon-authoring UX is for local development only. */
   debug = signal(
-    typeof location !== 'undefined' && /[?&]debug(=|&|$)/.test(location.search)
+    isDevMode()
+      && typeof location !== 'undefined'
+      && /[?&]debug(=|&|$)/.test(location.search)
   );
 
   mouseX = signal(0);
@@ -701,6 +705,14 @@ The monitor should show a typing session now. Hot reload picks it up.
       label: 'Scenes',
       // No route — clicking opens the time-of-day picker overlay.
       polygon: '1.2,8.8 92.3,0 100,87.3 0,100',
+    },
+    {
+      key: 'desk',
+      label: 'The Desk',
+      route: '/the-desk',
+      // Small spot on the desk surface itself — routes to the
+      // behind-the-scenes story of how this site was built.
+      polygon: '0,3.4 97.3,0 100,96.6 0,100',
     },
     {
       key: 'sound',

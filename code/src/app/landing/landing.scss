@@ -145,6 +145,7 @@
   [data-spot="keyboard"],
   [data-spot="roots"],
   [data-spot="break"],
+  [data-spot="desk"],
   [data-spot="sound"]
 ) {
   &:hover, &:focus-visible {
@@ -246,6 +247,13 @@
   top: 49.4%;
   width: 2.2%;
   height: 4.1%;
+}
+
+.hotspot-outline[data-spot="desk"] {
+  left: 34.6%;
+  top: 47.5%;
+  width: 7.3%;
+  height: 8.7%;
 }
 
 .hotspot:hover + .hotspot-outline,
@@ -499,6 +507,24 @@
   }
 }
 
+/* Small parallelogram on the desk surface itself. Routes to the
+   behind-the-scenes story of how this site was built. Corners in
+   image %:
+     1 (34.6, 47.8)   2 (41.7, 47.5)
+     3 (41.9, 55.9)   4 (34.6, 56.2) */
+.hotspot[data-spot="desk"] {
+  left: 34.6%;
+  top: 47.5%;
+  width: 7.3%;
+  height: 8.7%;
+  clip-path: polygon(
+    0%     3.4%,
+    97.3%  0%,
+    100%   96.6%,
+    0%     100%
+  );
+}
+
 /* Terracotta pot on the left edge of the desk. Routes to the certs
    page (CalArts + HarvardX). 21-vertex polygon. */
 .hotspot[data-spot="roots"] {
@@ -542,6 +568,7 @@
   [data-spot="keyboard"],
   [data-spot="roots"],
   [data-spot="break"],
+  [data-spot="desk"],
   [data-spot="sound"]
 ) {
   .hotspot-label {

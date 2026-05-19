@@ -1,0 +1,61 @@
+<app-section-shell
+  eyebrow="The Desk of"
+  title="Robb Morgan"
+  lede="The behind-the-scenes story of how this site was built — the iterations, the struggles, the back-and-forth, the details nobody will notice."
+>
+  <img
+    slot="icon"
+    class="portrait-icon"
+    src="/robb-morgan.png"
+    alt="Robb Morgan - The Desk"
+    title="Robb Morgan - The Desk"
+  />
+
+  <!-- Chapter selector pills -->
+  <div class="chapter-index" role="tablist" aria-label="Chapters">
+    @for (chapter of chapters; track chapter.slug; let i = $index) {
+      <button
+        type="button"
+        class="chapter-pill"
+        role="tab"
+        [class.is-active]="selectedSlug() === chapter.slug"
+        [attr.aria-selected]="selectedSlug() === chapter.slug"
+        (click)="select(chapter.slug)"
+      ><span class="chapter-pill-num">{{ i + 1 }}</span>{{ chapter.label }}</button>
+    }
+  </div>
+
+  <!-- Selected chapter -->
+  <article class="chapter" [attr.data-chapter]="selectedSlug()">
+    <h2 class="chapter-title">{{ selectedChapter().title }}</h2>
+    <div class="chapter-body" [innerHTML]="selectedChapter().bodyHtml"></div>
+
+    <!-- Prev/next chapter navigation -->
+    <nav class="chapter-nav" aria-label="Chapter navigation">
+      @if (prevChapter(); as prev) {
+        <button
+          type="button"
+          class="chapter-nav-btn chapter-nav-prev"
+          (click)="select(prev.slug)"
+        >
+          <span class="chapter-nav-direction">← Previous</span>
+          <span class="chapter-nav-label">{{ prev.label }}</span>
+        </button>
+      } @else {
+        <span class="chapter-nav-spacer" aria-hidden="true"></span>
+      }
+      @if (nextChapter(); as next) {
+        <button
+          type="button"
+          class="chapter-nav-btn chapter-nav-next"
+          (click)="select(next.slug)"
+        >
+          <span class="chapter-nav-direction">Next →</span>
+          <span class="chapter-nav-label">{{ next.label }}</span>
+        </button>
+      } @else {
+        <span class="chapter-nav-spacer" aria-hidden="true"></span>
+      }
+    </nav>
+  </article>
+</app-section-shell>
