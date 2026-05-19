@@ -134,11 +134,11 @@ export class Landing {
   }
 
   private scheduleNextNotification(isFirst = false): void {
-    // First notification 15-20s after page load; recurring every
-    // 30-45s thereafter.
+    // First notification 15-30s after page load; recurring every
+    // 45-90s thereafter.
     const delay = isFirst
-      ? 15_000 + Math.random() * 5_000
-      : 30_000 + Math.random() * 15_000;
+      ? 15_000 + Math.random() * 15_000
+      : 45_000 + Math.random() * 45_000;
     this.notificationTimeoutId = window.setTimeout(() => {
       this.notificationVisible.set(true);
       this.playNotificationSound();
@@ -202,8 +202,8 @@ export class Landing {
      sessionStorage so a tab refresh tries to resume. */
 
   /* ---------- iPhone "New Message" overlay ----------
-     A single pre-rendered notification image that fades in/out
-     at random intervals over the iPhone screen. */
+     Single pre-rendered notification image that fades in/out at
+     random intervals over the iPhone screen. */
   notificationVisible = signal(false);
   private notificationTimeoutId?: number;
   private notificationSound?: HTMLAudioElement;

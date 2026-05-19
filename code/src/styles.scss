@@ -390,7 +390,7 @@ button {
   left: 63.3%;
   top: 73.5%;
   width: 8.1%;
-  height: 4.0%;
+  height: 3.85%;
   pointer-events: none;
   opacity: 0;
   /* Slow fade in/out — 1s each direction, symmetric. */
@@ -493,7 +493,7 @@ button {
      rim; top capped lower so the steam column doesn't rise as
      high as before. */
   left: 90%;
-  top: 28%;
+  top: 30%;
   width: 9%;
   height: 26%;
   pointer-events: none;
@@ -515,28 +515,32 @@ button {
   opacity: 0;
   /* All puffs share the same keyframe; per-puff vars set scale +
      drift so the variants below differ. */
-  animation: puff-rise 9s linear infinite;
+  animation: puff-rise 6.5s linear infinite;
 }
 
 /* Each puff: position, size, blur, animation-delay, and override
    width/height. Negative delays at evenly spaced offsets through
-   the 9s cycle keep ~5+ puffs visible at any moment. */
+   the 6.5s cycle keep ~5+ puffs visible at any moment. */
 .coffee-steam .puff-1 { left: 50%; width: 78%; height: 36%; filter: blur(4px);   animation-delay:  0s;     }
-.coffee-steam .puff-2 { left: 44%; width: 60%; height: 30%; filter: blur(3.5px); animation-delay: -1.1s;   }
-.coffee-steam .puff-3 { left: 56%; width: 70%; height: 34%; filter: blur(4.5px); animation-delay: -2.25s;  }
-.coffee-steam .puff-4 { left: 48%; width: 82%; height: 38%; filter: blur(5px);   animation-delay: -3.4s;   }
-.coffee-steam .puff-5 { left: 52%; width: 55%; height: 30%; filter: blur(3.5px); animation-delay: -4.5s;   }
-.coffee-steam .puff-6 { left: 45%; width: 72%; height: 36%; filter: blur(4px);   animation-delay: -5.6s;   }
-.coffee-steam .puff-7 { left: 54%; width: 65%; height: 32%; filter: blur(4px);   animation-delay: -6.75s;  }
-.coffee-steam .puff-8 { left: 50%; width: 78%; height: 38%; filter: blur(4.5px); animation-delay: -7.9s;   }
+.coffee-steam .puff-2 { left: 44%; width: 60%; height: 30%; filter: blur(3.5px); animation-delay: -0.8s;   }
+.coffee-steam .puff-3 { left: 56%; width: 70%; height: 34%; filter: blur(4.5px); animation-delay: -1.6s;   }
+.coffee-steam .puff-4 { left: 48%; width: 82%; height: 38%; filter: blur(5px);   animation-delay: -2.45s;  }
+.coffee-steam .puff-5 { left: 52%; width: 55%; height: 30%; filter: blur(3.5px); animation-delay: -3.25s;  }
+.coffee-steam .puff-6 { left: 45%; width: 72%; height: 36%; filter: blur(4px);   animation-delay: -4.05s;  }
+.coffee-steam .puff-7 { left: 54%; width: 65%; height: 32%; filter: blur(4px);   animation-delay: -4.85s;  }
+.coffee-steam .puff-8 { left: 50%; width: 78%; height: 38%; filter: blur(4.5px); animation-delay: -5.7s;   }
+
 
 @keyframes puff-rise {
-  0%   { transform: translate(-50%, 12%)            scale(0.45, 0.55); opacity: 0; }
-  10%  { transform: translate(-50%, 0%)             scale(0.7, 0.75);  opacity: 0.5; }
-  35%  { transform: translate(calc(-50% + 5px), -55%)  scale(1.0, 1.0);   opacity: 0.55; }
-  65%  { transform: translate(calc(-50% + 12px), -130%) scale(1.35, 1.2); opacity: 0.4; }
-  88%  { transform: translate(calc(-50% + 18px), -195%) scale(1.65, 1.4); opacity: 0.15; }
-  100% { transform: translate(calc(-50% + 24px), -230%) scale(1.85, 1.5); opacity: 0; }
+  /* Wide at the base (just emerging from the mug), tapering as the
+     puff rises so the column reads as a chimney/plume rather than
+     an inverted-cone dissipating cloud. */
+  0%   { transform: translate(-50%, 12%)                scale(1.25, 1.15); opacity: 0; }
+  10%  { transform: translate(-50%, 0%)                 scale(1.15, 1.10); opacity: 0.55; }
+  35%  { transform: translate(calc(-50% + 4px), -55%)   scale(0.95, 1.00); opacity: 0.55; }
+  65%  { transform: translate(calc(-50% + 10px), -130%) scale(0.70, 0.85); opacity: 0.4; }
+  88%  { transform: translate(calc(-50% + 16px), -195%) scale(0.50, 0.70); opacity: 0.15; }
+  100% { transform: translate(calc(-50% + 20px), -230%) scale(0.35, 0.60); opacity: 0; }
 }
 
 /* Hotspot edit panel — shares visual language with .capture-panel
