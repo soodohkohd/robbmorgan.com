@@ -443,10 +443,11 @@ button {
 
 .sound-glow {
   position: absolute;
-  /* Centered on the sound button at (~27.4%, ~51.4%) in the scene. */
-  left: 27.4%;
+  /* Centered slightly left of the sound button so the glow sits
+     over the visible button rather than its hover bbox center. */
+  left: 27.1%;
   top: 51.4%;
-  width: 6cqw;
+  width: 5cqw;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -456,9 +457,9 @@ button {
   background:
     radial-gradient(circle,
       rgba(255, 225, 150, 0.65) 0%,
-      rgba(255, 200, 110, 0.40) 22%,
-      rgba(212, 158, 80,  0.22) 50%,
-      transparent 80%);
+      rgba(255, 200, 110, 0.40) 20%,
+      rgba(212, 158, 80,  0.22) 44%,
+      transparent 70%);
   border-radius: 50%;
   filter: blur(1.5px);
 }
@@ -466,6 +467,108 @@ button {
 .sound-glow.is-active {
   opacity: 1;
   animation: sound-glow-pulse 2.2s ease-in-out infinite;
+}
+
+/* ============================================================
+   PERCHED BIRD — small silhouette sitting in the captured polygon
+   area on the landing scene. Facing left; only its wing flaps.
+   ============================================================ */
+
+/* Bird flight area — clips the bird image to the captured polygon
+   (visible sky region only). container-type: size lets the bird's
+   keyframes use cqw/cqh relative to THIS area, not the whole scene. */
+.bird-flight-area {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  container-type: size;
+  /* Six disjoint visible-sky regions defined in <clipPath> in the
+     template. Translate values in .perched-bird keyframes are in
+     cqw/cqh = % of scene; SVG polygon coords use objectBoundingBox
+     units (0-1) on the same box, so they map 1:1. */
+  clip-path: url(#bird-flight-mask);
+}
+
+.perched-bird {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* 0.63% of the scene width — 30% smaller than 0.9cqw. */
+  width: 0.63cqw;
+  height: auto;
+  object-fit: contain;
+  visibility: hidden;
+}
+
+.bird-flight-area.birds-flying .perched-bird {
+  visibility: visible;
+  animation: bird-soar 40s linear;
+}
+
+@keyframes bird-soar {
+  /* Linear right→left translate. Start is 80% down the right edge
+     of bird-path-1 (image-% ≈ 100, 35). End is point-4 of bird-path-6
+     (image-% = 30.0, 40.4). The clip-path hides the bird everywhere
+     except the six visible sky polygons. */
+  0%   { transform: translate(100cqw, 35cqh); }
+  100% { transform: translate(29.9cqw, 40.4cqh); }
+}
+
+/* Companion bird flying slightly above & behind the leader.
+   Uses bird2.webp (frames rotated by 3) so wings are out of sync. */
+.perched-bird--companion {
+  width: 0.576cqw;
+}
+
+.bird-flight-area.birds-flying .perched-bird--companion {
+  animation: bird-soar-companion 40s linear;
+}
+
+
+@keyframes bird-soar-companion {
+  /* Start +1.2cqw right, 1.8cqh above leader. By end, companion has
+     converged inside bird-path-6 (x=29 fits the polygon at y=38.6,
+     where its right edge sits around 29.4). */
+  0%   { transform: translate(101.2cqw, 33.2cqh); }
+  100% { transform: translate(29cqw, 38.6cqh); }
+}
+
+/* ============================================================
+   RADIO FACE GLOW — soft warm glow over the radio's display strip
+   when ambient music is playing. Clipped to the captured tilted
+   parallelogram so it follows the radio's perspective. Pulses in
+   step with .sound-glow.
+   ============================================================ */
+
+.radio-face-glow {
+  position: absolute;
+  /* Captured polygon bbox for the radio's face/display strip. */
+  left: 16.1%;
+  top: 42.9%;
+  width: 8.2%;
+  height: 2.0%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  /* Clip to the tilted strip polygon. */
+  clip-path: polygon(0% 70%, 100% 0%, 100% 30%, 0% 100%);
+  /* Warm horizontal gradient — brightest in the middle, fading
+     toward both ends. Looks like a backlit dial face. */
+  background:
+    radial-gradient(ellipse 75% 200% at center,
+      rgba(255, 225, 150, 0.85) 0%,
+      rgba(255, 200, 110, 0.55) 45%,
+      rgba(212, 158, 80,  0.22) 80%,
+      transparent 100%);
+  filter: blur(1px);
+}
+
+.radio-face-glow.is-active {
+  /* Steady on while music is playing — no pulse. */
+  opacity: 1;
 }
 
 @keyframes sound-glow-pulse {

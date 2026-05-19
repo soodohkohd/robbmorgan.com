@@ -96,16 +96,27 @@ export class Landing {
     // Whenever sceneSrc() changes, route the new src into the
     // INACTIVE slot. The active slot stays put until the new one
     // finishes loading — then onSlotLoad swaps which one is active.
+    //
+    // Edge case: if the inactive slot already holds the target src
+    // (browser cache + back-and-forth swaps), no (load) event fires,
+    // so the swap has to happen here directly.
     effect(() => {
       const newSrc = this.sceneSrc();
       untracked(() => {
         const active = this.activeSlot();
         const activeSrc = active === 'a' ? this.slotASrc() : this.slotBSrc();
         if (newSrc === activeSrc) return;
-        if (active === 'a') {
-          this.slotBSrc.set(newSrc);
-        } else {
+
+        const inactive: 'a' | 'b' = active === 'a' ? 'b' : 'a';
+        const inactiveSrc = inactive === 'a' ? this.slotASrc() : this.slotBSrc();
+
+        if (inactiveSrc === newSrc) {
+          // Inactive slot already shows the target — just swap.
+          this.activeSlot.set(inactive);
+        } else if (inactive === 'a') {
           this.slotASrc.set(newSrc);
+        } else {
+          this.slotBSrc.set(newSrc);
         }
       });
     });
@@ -144,10 +155,38 @@ export class Landing {
         }
       });
 
+      // Birds: kick off the first flight as soon as the scene mounts,
+      // then re-fire on a 90-120s random cadence after each pass ends.
+      this.startBirdFlight();
+      this.destroyRef.onDestroy(() => {
+        if (this.birdsTimeoutId !== undefined) {
+          clearTimeout(this.birdsTimeoutId);
+        }
+      });
+
       // Auto-start is disabled — visitors opt in by clicking the
       // sound hotspot on the radio. The service still persists state
       // across navigation + tab refresh once they enable it.
     }
+  }
+
+  /** Toggle the .birds-flying class. requestAnimationFrame double-tap
+   *  forces the animation to restart even if the signal was already
+   *  true (CSS only re-runs keyframes when the class toggles off→on). */
+  private startBirdFlight(): void {
+    this.birdsFlying.set(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.birdsFlying.set(true));
+    });
+  }
+
+  /** Fires once when either bird's translate animation completes
+   *  (both run for the same duration, so we ignore the second). */
+  onBirdFlightEnd(event: AnimationEvent): void {
+    if (event.animationName !== 'bird-soar') return;
+    this.birdsFlying.set(false);
+    const delay = 90_000 + Math.random() * 30_000;
+    this.birdsTimeoutId = window.setTimeout(() => this.startBirdFlight(), delay);
   }
 
   /** Play the message-arrival chime. Lazy-creates the audio so it's
@@ -167,10 +206,10 @@ export class Landing {
 
   private scheduleNextNotification(isFirst = false): void {
     // First notification 15-30s after page load; recurring every
-    // 45-90s thereafter.
+    // 120-360s thereafter.
     const delay = isFirst
       ? 15_000 + Math.random() * 15_000
-      : 45_000 + Math.random() * 45_000;
+      : 120_000 + Math.random() * 240_000;
     this.notificationTimeoutId = window.setTimeout(() => {
       this.notificationVisible.set(true);
       this.playNotificationSound();
@@ -249,6 +288,13 @@ export class Landing {
   notificationVisible = signal(false);
   private notificationTimeoutId?: number;
   private notificationSound?: HTMLAudioElement;
+
+  /* ---------- Two birds flying right-to-left ----------
+     First pass kicks off immediately on mount; subsequent passes
+     fire on a random 90-120s delay after the previous one ends.
+     The CSS class .birds-flying gates the keyframe animation. */
+  birdsFlying = signal(false);
+  private birdsTimeoutId?: number;
 
   /* ---------- Monitor "Claude Code session" overlay ----------
      Cycles through a fake Claude Code chat one char at a time. The
