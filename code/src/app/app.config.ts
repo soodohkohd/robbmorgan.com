@@ -12,13 +12,12 @@ import {
   withInMemoryScrolling,
 } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 
+import { Analytics } from './analytics.service';
 import { routes } from './app.routes';
 
 const SITE_ORIGIN = 'https://robbmorgan.com';
-const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/desk-scene-afternoon.png`;
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/desk-scene-afternoon.webp`;
 
 /**
  * Azure Application Insights — public client-side connection string. The
@@ -46,23 +45,9 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideAppInitializer(() => {
-      if (typeof window === 'undefined') return;
-
       const router = inject(Router);
-      const angularPlugin = new AngularPlugin();
-      const appInsights = new ApplicationInsights({
-        config: {
-          connectionString: APP_INSIGHTS_CONNECTION_STRING,
-          extensions: [angularPlugin],
-          extensionConfig: {
-            [angularPlugin.identifier]: { router },
-          },
-          // The Angular plugin handles route changes; disable the default
-          // history-API auto-tracking to avoid duplicate page views.
-          enableAutoRouteTracking: false,
-        },
-      });
-      appInsights.loadAppInsights();
+      const analytics = inject(Analytics);
+      analytics.init(APP_INSIGHTS_CONNECTION_STRING, router);
     }),
     // Route-aware <meta> + OG/Twitter card updater. The defaults baked
     // into index.html cover scrapers that don't execute JS (most older

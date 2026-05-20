@@ -72,7 +72,7 @@ export class TheDesk implements AfterViewInit {
         <p>Append <code>?debug=1</code> to the URL and the entire scene shifts into a hotspot-authoring environment:</p>
 
         <figure class="chapter-figure">
-          <img src="/debug-mode.png" alt="The desk scene in debug mode — every hotspot polygon outlined in red, the polygon-capture panel docked in the upper-left, the live coordinate readout in the upper-right." loading="lazy" decoding="async" />
+          <img src="/debug-mode.webp" alt="The desk scene in debug mode — every hotspot polygon outlined in red, the polygon-capture panel docked in the upper-left, the live coordinate readout in the upper-right." loading="lazy" decoding="async" />
           <figcaption>Debug mode in action — red polygon outlines on every hotspot, the capture panel docked upper-left, the live coord readout upper-right.</figcaption>
         </figure>
 

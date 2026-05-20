@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, signal } from '@angular/core';
+import { Analytics } from '../../analytics.service';
 import { SectionShell } from '../section-shell/section-shell';
 
 interface MobileApp {
@@ -111,7 +112,7 @@ export class MobileApps implements AfterViewInit {
       subtitle: 'Astroid Hunter',
       developer: 'Robb Morgan',
       category: 'Game',
-      icon: '/mobile/rocket/icon.png',
+      icon: '/mobile/rocket/icon.webp',
       iconAlt: 'Rocket app icon',
       video: {
         src: 'https://robbmorganmedia.blob.core.windows.net/media/rocket.mp4',
@@ -127,6 +128,7 @@ export class MobileApps implements AfterViewInit {
   /** Flat list used to look up the currently selected app from either
    *  the published or current-project pill groups. */
   private readonly allApps = [...this.apps, ...this.currentProjects];
+  private analytics = inject(Analytics);
 
   selectedSlug = signal<string>(this.allApps[0].slug);
   selectedApp = computed<MobileApp>(
@@ -150,6 +152,7 @@ export class MobileApps implements AfterViewInit {
    *  and minimizes the title on its own. */
   select(slug: string): void {
     this.selectedSlug.set(slug);
+    this.analytics.track('mobile_app_select', { slug });
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
   }

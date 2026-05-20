@@ -2,6 +2,7 @@ import { Component, DestroyRef, computed, effect, inject, isDevMode, signal, unt
 import { Router, RouterLink } from '@angular/router';
 
 import { AmbientAudioService } from '../ambient-audio.service';
+import { Analytics } from '../analytics.service';
 import { DeskStateService } from './desk-state.service';
 
 type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
@@ -43,6 +44,7 @@ export class Landing {
   private destroyRef = inject(DestroyRef);
   private ambient = inject(AmbientAudioService);
   private deskState = inject(DeskStateService);
+  private analytics = inject(Analytics);
   /** Mirrors the service's playing signal — used by labelFor() to
    *  render OFF / ON. */
   audioPlaying = this.ambient.playing;
@@ -76,7 +78,7 @@ export class Landing {
   /** Active time-of-day driving the scene image. Picker selection wins
    *  if open; otherwise falls back to local time. */
   activeTime = computed<TimeOfDay>(() => this.pickerSelection() ?? this.timeOfDay());
-  sceneSrc = computed(() => `/desk-scene-${this.activeTime()}.png`);
+  sceneSrc = computed(() => `/desk-scene-${this.activeTime()}.webp`);
 
   /* ---------- Crossfade scene swap ----------
      Two stacked <img> elements. When sceneSrc() changes, the new
@@ -361,6 +363,7 @@ export class Landing {
    *  state persists across route navigation and tab refresh. */
   toggleSound(): void {
     this.ambient.toggle();
+    this.analytics.track('sound_toggle', { playing: this.ambient.playing() });
   }
 
   /** Dynamic label for state-driven hotspots (currently just sound).
@@ -381,6 +384,7 @@ export class Landing {
 
   private revealNotMe(): void {
     this.notMeRevealed.set(true);
+    this.analytics.track('easter_egg_not_me');
     if (this.notMeTimeoutId !== undefined) {
       clearTimeout(this.notMeTimeoutId);
     }
@@ -774,6 +778,7 @@ The monitor should show a typing session now. Hot reload picks it up.
       this.editingSpot.set(spot);
       return;
     }
+    this.analytics.track('hotspot_click', { spot: spot.key });
     if (spot.key === 'keyboard') {
       if (this.pickerOpen()) this.closePicker();
       else this.pickerOpen.set(true);
@@ -818,6 +823,7 @@ The monitor should show a typing session now. Hot reload picks it up.
 
   setPickerSelection(value: TimeOfDay): void {
     this.pickerSelection.set(value);
+    this.analytics.track('time_of_day_set', { time: value, via: 'picker' });
   }
 
   /** Mobile tap-to-cycle: advances activeTime through the four scenes
@@ -828,6 +834,7 @@ The monitor should show a typing session now. Hot reload picks it up.
     const idx = this.timeOptions.findIndex(o => o.value === current);
     const next = this.timeOptions[(idx + 1) % this.timeOptions.length].value;
     this.pickerSelection.set(next);
+    this.analytics.track('time_of_day_set', { time: next, via: 'mobile_cycle' });
   }
 
   closePicker(): void {

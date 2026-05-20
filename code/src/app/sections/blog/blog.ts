@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, signal } from '@angular/core';
+import { Analytics } from '../../analytics.service';
 import { SectionShell } from '../section-shell/section-shell';
 
 interface Post {
@@ -33,7 +34,7 @@ export class Blog implements AfterViewInit {
       label: 'IC Track',
       title: 'Climbing the IC Ladder Is a Gamble.',
       date: 'May 19, 2026',
-      image: '/posts/ic-track.png',
+      image: '/posts/ic-track.webp',
       imageAlt: 'Two career ladders side by side — the IC track has question marks on its upper rungs and looks unstable, the management track is solid',
       bodyHtml: `
         <p>Every enterprise I have worked in has the same recruiting slide. Two parallel ladders. Engineer to Senior to Staff to Principal to Distinguished on the left. Engineer to Manager to Director to VP on the right. Equal status. Equal pay. Pick your path.</p>
@@ -55,7 +56,7 @@ export class Blog implements AfterViewInit {
       label: 'AI-DLC',
       title: 'AI-DLC Is Not a CoE. And a CoE Is Not a Methodology.',
       date: 'May 1, 2026',
-      image: '/posts/ai-dlc.png',
+      image: '/posts/ai-dlc.webp',
       imageAlt: 'AI-DLC vs. Center of Excellence',
       bodyHtml: `
         <p>Every few years, a new acronym shows up in the enterprise and a perfectly good conversation gets flattened into a slide deck. AI-DLC is the latest one. And like most three-letter terms that travel faster than they're understood, it is being used to mean two completely different things in the same meeting.</p>
@@ -79,7 +80,7 @@ export class Blog implements AfterViewInit {
       label: 'Your Resume',
       title: 'Your Resume Never Made It to a Human.',
       date: 'April 14, 2026',
-      image: '/posts/your-resume.png',
+      image: '/posts/your-resume.webp',
       imageAlt: 'Resume going through an algorithmic shredder',
       bodyHtml: `
         <p>If you are an experienced professional applying to roles and hearing nothing back, this is for you. What I am about to describe is not a theory. It is happening at scale, and it is probably happening to you.</p>
@@ -99,7 +100,7 @@ export class Blog implements AfterViewInit {
       label: 'Pipeline',
       title: 'The Pipeline Is a Product. Start Treating It Like One.',
       date: 'March 10, 2026',
-      image: '/posts/pipeline-as-a-product.png',
+      image: '/posts/pipeline-as-a-product.webp',
       imageAlt: 'A deployment pipeline as a first-class product',
       bodyHtml: `
         <p>Every enterprise I've worked in has the same quiet problem. Dozens of teams, each running their own pipelines, built their own way, documented by whoever had time that week, and secured by whoever remembered to add a scan before going live. Nobody owns it. Nobody versions it. And when an auditor asks how your code gets from laptop to production, the answer involves a lot of nervous eye contact.</p>
@@ -120,7 +121,7 @@ export class Blog implements AfterViewInit {
       label: 'Talent',
       title: 'In-House Talent vs. Consultants',
       date: 'February 27, 2026',
-      image: '/posts/in-house-talent-vs-consultants.png',
+      image: '/posts/in-house-talent-vs-consultants.webp',
       imageAlt: 'In-house engineers and outside consultants collaborating',
       bodyHtml: `
         <p>After three decades working across industries, I've learned it's never really a competition — it's a conversation.</p>
@@ -154,7 +155,7 @@ export class Blog implements AfterViewInit {
       label: 'Build vs. Buy',
       title: 'Build vs. Buy: Why AI Strategy Requires Engineers, Not Just Vendors.',
       date: 'February 20, 2026',
-      image: '/posts/build-vs-buy.png',
+      image: '/posts/build-vs-buy.webp',
       imageAlt: 'Build vs. buy in AI strategy',
       bodyHtml: `
         <p>As a Principal Solutions Engineer and Architect with a focus on AI, I spend a lot of time evaluating emerging technologies. One pattern I continue to see is how quickly organizations fall for polished vendor pitches, especially when those pitches are wrapped in the language of artificial intelligence. Add a few buzzwords, a slick demo, and a promise of transformation, and suddenly the buying process moves faster than the strategy behind it.</p>
@@ -184,12 +185,15 @@ export class Blog implements AfterViewInit {
     }
   }
 
+  private analytics = inject(Analytics);
+
   /** Pill click: switch post, then smooth-scroll to 1px past the
    *  shell's minimize threshold. The SectionShell's onScroll handler
    *  catches the crossover (scrollY > threshold + 24px hysteresis)
    *  and minimizes the title on its own. */
   select(slug: string): void {
     this.selectedSlug.set(slug);
+    this.analytics.track('blog_post_select', { slug });
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
   }

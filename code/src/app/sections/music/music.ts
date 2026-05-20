@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { SectionShell } from '../section-shell/section-shell';
 import { AmbientAudioService } from '../../ambient-audio.service';
+import { Analytics } from '../../analytics.service';
 
 interface Track {
   title: string;
@@ -35,6 +36,7 @@ interface Track {
 export class Music implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private ambient = inject(AmbientAudioService);
+  private analytics = inject(Analytics);
 
   constructor() {
     // Pause the desk-scene ambient track while the Music page is
@@ -54,7 +56,7 @@ export class Music implements AfterViewInit {
   readonly tracks: readonly Track[] = [
     { title: 'Floating',         src: '/music/floating.mp3',        cover: '/music/floating.jpg',       style: 'Alt-Pop' },
     { title: "Codin' in Cali",   src: '/music/codin-in-cali.mp3',   cover: '/music/codin-in-cali.jpg',  style: 'West Coast G-Funk' },
-    { title: "SoCal Livin'",     src: '/music/socal-livin.mp3',     cover: '/music/socal-livin.jpg',    style: 'West Coast G-Funk' },
+    { title: "SoCal Livin'",     src: '/music/socal-livin.mp3',     cover: '/music/socal-livin.webp',    style: 'West Coast G-Funk' },
     { title: 'Long Way Home',    src: '/music/long-way-home.mp3',   cover: '/music/long-way-home.jpg',  style: 'Midwest Hip Hop' },
     { title: 'Just Like Me',     src: '/music/just-like-me.mp3',    cover: '/music/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: 'https://robbmorganmedia.blob.core.windows.net/media/just-like-me.mp4' },
     { title: 'Sunshine Song',    src: '/music/sunshine-song.mp3',   cover: '/music/sunshine-song.jpg',  style: 'Acoustic Piano Pop' },
@@ -83,6 +85,9 @@ export class Music implements AfterViewInit {
     this.audios().forEach(ref => {
       if (ref.nativeElement !== playing) ref.nativeElement.pause();
     });
+    const src = playing.getAttribute('src') ?? '';
+    const title = this.tracks.find(t => t.src === src)?.title;
+    if (title) this.analytics.track('music_play', { title });
   }
 
   /** Open the video modal for a track that has a videoUrl. Pauses every
@@ -91,6 +96,7 @@ export class Music implements AfterViewInit {
     if (!track.videoUrl) return;
     this.audios().forEach(ref => ref.nativeElement.pause());
     this.modalTrack.set(track);
+    this.analytics.track('music_video_open', { title: track.title });
     // iOS Safari often ignores the autoplay attribute when the <video>
     // is added via conditional render — explicitly play() after the
     // element is in the DOM so the user-gesture token still applies.

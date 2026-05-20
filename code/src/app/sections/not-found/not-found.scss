@@ -1,0 +1,38 @@
+:host { display: block; }
+
+.not-found-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.6em;
+  color: var(--brass);
+}
+
+.not-found-body {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+
+  p { margin: 0 0 1rem; }
+}
+
+.not-found-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  a {
+    color: var(--walnut-deep);
+    text-decoration: underline;
+    text-decoration-color: var(--brass);
+    text-underline-offset: 3px;
+    font-weight: 600;
+  }
+}

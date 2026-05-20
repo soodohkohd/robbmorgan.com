@@ -628,46 +628,11 @@
   top: 56%;
 }
 
-/* ---------- DEBUG MODE (visible on ?debug=1) ---------- */
-.scene.debug {
-  .hotspot {
-    background: rgba(220, 50, 50, 0.18) !important;
-    box-shadow: 0 0 0 2px rgba(220, 50, 50, 0.85) !important;
-  }
-
-  /* For polygon hotspots, box-shadow is clipped — so force the SVG
-     outline to be always-visible and recolor its stroke red so the
-     actual polygon edges are visible. */
-  .hotspot-outline {
-    opacity: 1;
-    polygon, path {
-      stroke: rgba(220, 50, 50, 0.95) !important;
-      filter: none !important;
-    }
-  }
-
-}
-
-.coord-readout {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 50;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 13px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  pointer-events: none;
-}
-
-/* Time-of-day picker styles live in global styles.scss to keep this
-   component under its 8 kB style budget. */
-
-/* Polygon-capture debug tool styles live in global styles.scss to
-   keep this component under its 8 kB style budget — they only run
-   on ?debug=1 and aren't part of the production UI. */
+/* Debug-mode styles (.scene.debug, .coord-readout), time-of-day
+   picker styles, and polygon-capture tool styles all live in global
+   styles.scss to keep this component under its 8 KB style budget.
+   They only render on ?debug=1 (dev mode only) or in modal/picker
+   overlays, so global scope is harmless. */
 
 /* Page-leaving fade — applies the transition only when navigating
    AWAY from the desk, so the return trip hard-shows the scene with
@@ -682,143 +647,7 @@
   transition: opacity var(--dur-slow) var(--ease-soft);
 }
 
-/* ============================================================
-   MOBILE FALLBACK
-   ============================================================ */
-
-.mobile-card { display: none; }
-
-@media (max-width: 759px) {
-  :host { background: var(--parchment); }
-  .scene { display: none; }
-  .mobile-card { display: block; min-height: 100dvh; }
-}
-
-.mobile-scene-strip {
-  /* Renders as a <button> so tap cycles through scenes; reset the
-     default button chrome so it looks like the previous decorative
-     strip while staying keyboard-focusable. */
-  appearance: none;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  display: block;
-  cursor: pointer;
-
-  position: relative;
-  width: 100%;
-  height: 32vh;
-  min-height: 200px;
-  max-height: 320px;
-  overflow: hidden;
-
-  &:focus-visible {
-    outline: 2px solid var(--brass);
-    outline-offset: -2px;
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 25%;
-    transition: opacity var(--dur-base) var(--ease-soft);
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 50%;
-    background: linear-gradient(to bottom, transparent, var(--parchment));
-    pointer-events: none;
-  }
-}
-
-/* Small "tap to cycle" chip in the bottom-right of the scene strip.
-   Shows the current time-of-day with a refresh glyph so the cycle
-   feature is discoverable without an explicit instruction line. */
-.mobile-scene-chip {
-  position: absolute;
-  right: clamp(0.75rem, 3vw, 1.25rem);
-  bottom: clamp(0.75rem, 3vw, 1.25rem);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(21, 12, 8, 0.55);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #f3e6c6;
-  font-family: var(--sans);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  pointer-events: none;
-
-  .mobile-scene-chip-arrow {
-    font-size: 0.85rem;
-    line-height: 1;
-    opacity: 0.85;
-  }
-}
-
-.mobile-head {
-  margin: -2rem auto 0;
-  position: relative;
-  z-index: 1;
-  padding: 0 clamp(1.25rem, 5vw, 2rem);
-  text-align: center;
-  max-width: 540px;
-
-  .eyebrow {
-    font-family: var(--sans);
-    font-size: 0.74rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--brass);
-    margin: 0 0 0.4rem;
-  }
-  h1 { font-style: italic; margin: 0 0 0.7rem; }
-  .lede { color: var(--ink-soft); margin: 0 0 1.5rem; }
-}
-
-.mobile-nav {
-  max-width: 480px;
-  margin: 1rem auto 3rem;
-  padding: 0 clamp(1.25rem, 5vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.mobile-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-radius: 10px;
-  background: var(--parchment-soft);
-  border: 1px solid rgba(58, 42, 31, 0.12);
-  font-family: var(--serif);
-  font-size: 1.15rem;
-  color: var(--walnut-deep);
-  text-decoration: none;
-  transition:
-    background var(--dur-quick) var(--ease-soft),
-    border-color var(--dur-quick) var(--ease-soft),
-    transform var(--dur-quick) var(--ease-soft);
-
-  &:hover, &:active {
-    background: #e8d8b3;
-    border-color: var(--brass-soft);
-    transform: translateY(-1px);
-  }
-}
-
-.mobile-link-arrow {
-  font-family: var(--sans);
-  color: var(--brass);
-  font-size: 1rem;
-}
+/* Mobile-card styles live in global styles.scss ("LANDING — mobile
+   card") to keep this file under budget. The :host bg override stays
+   here — :host outranks any plain `app-landing` global rule. */
+@media (max-width: 759px) { :host { background: var(--parchment); } }

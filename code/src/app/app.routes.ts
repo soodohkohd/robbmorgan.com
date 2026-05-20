@@ -72,5 +72,10 @@ export const routes: Routes = [
     title: 'The Desk — Robb Morgan',
     data: { description: 'Behind the scenes of robbmorgan.com: thirteen chapters on how the cinematic desk scene was built, from polygon hotspots to bird animations to AI-paired coding.' },
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./sections/not-found/not-found').then(m => m.NotFound),
+    title: 'Page Not Found — Robb Morgan',
+    data: { description: 'The page you tried to reach doesn’t exist on robbmorgan.com. Head back to the desk.' },
+  },
 ];
