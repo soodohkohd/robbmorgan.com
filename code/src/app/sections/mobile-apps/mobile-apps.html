@@ -68,6 +68,7 @@
         <video
           class="app-video"
           [src]="selectedApp().video!.src"
+          [attr.poster]="selectedApp().video!.poster ?? null"
           controls
           preload="metadata"
           playsinline

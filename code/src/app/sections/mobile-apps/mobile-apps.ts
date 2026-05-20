@@ -19,7 +19,7 @@ interface MobileApp {
   /** Screenshots strip (for shipped apps). */
   screenshots?: readonly { src: string; alt: string }[];
   /** Demo video (for in-progress projects). */
-  video?: { src: string };
+  video?: { src: string; poster?: string };
   /** App Store link. Omit for in-progress projects. */
   appStoreUrl?: string;
 }
@@ -107,7 +107,10 @@ export class MobileApps {
       category: 'Game',
       icon: '/mobile/rocket/icon.png',
       iconAlt: 'Rocket app icon',
-      video: { src: '/mobile/rocket/rocket.mp4' },
+      video: {
+        src: 'https://robbmorganmedia.blob.core.windows.net/media/rocket.mp4',
+        poster: '/mobile/rocket/rocket-poster.jpg',
+      },
       bodyHtml: `
         <p>Rocket is a vertical-format mobile arcade shooter inspired by the asteroid-blasting classics. You pilot a rocket along the bottom of the screen while greyscale asteroids tumble down from above in three sizes — large, medium, and small. Shoot them for points, with smaller (and harder to hit) rocks scoring more: 10 for a large, 50 for a medium, 100 for a small. A direct hit on a large asteroid fragments it into two mediums and a small, and a medium splits into two smalls, so every shot cascades into a denser, faster threat. You start with two lives and 50 missiles, with a cap of three missiles in flight at a time. Yellow ammo capsules drop as your supply dwindles — catch one to refill, miss it and that tier shuts off. A collision costs a life and resets the playfield; running out of ammo costs a life too (but refills you partway). Earn an extra life every 10,000 points. The game ends when lives reach zero, then it's tap-to-replay and a glance at the top-10 leaderboard.</p>
         <p>The app is built in Flutter (Dart 3.11 / Flutter 3.41), targeting iOS and Android from a single codebase. The entire game loop runs on a single Flutter <code>Ticker</code> driving a <code>ChangeNotifier</code>-based game controller — asteroid motion, missile travel, collisions, and ammo logic are all elapsed-time checks inside one tick rather than a fan-out of <code>Timer.periodic</code> callbacks, which keeps frame pacing predictable and lifecycle handling clean when the app is backgrounded. High scores persist locally via <code>SharedPreferences</code>, the parallax starfield is hand-painted with <code>CustomPainter</code>, and launcher icons are generated from a single source PNG via <code>flutter_launcher_icons</code>. The project was originally written in NativeScript/Angular and has since been fully ported to Flutter, which is now the canonical source.</p>
