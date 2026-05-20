@@ -1,4 +1,4 @@
-import { Component, computed, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, signal } from '@angular/core';
 import { SectionShell } from '../section-shell/section-shell';
 
 interface Chapter {
@@ -18,8 +18,12 @@ interface Chapter {
   templateUrl: './the-desk.html',
   styleUrl: './the-desk.scss',
 })
-export class TheDesk {
-  private shell = viewChild(SectionShell);
+export class TheDesk implements AfterViewInit {
+  /** Document-Y of the page-head's top edge, captured once at mount
+   *  when nothing is sticky-stuck. We can't recompute on each click:
+   *  sticky elements' `offsetTop` returns the CURRENT stuck position
+   *  once stuck, so re-reading drifts the value upward on each call. */
+  private headTop = 0;
 
   readonly chapters: readonly Chapter[] = [
     {
@@ -409,44 +413,45 @@ export class TheDesk {
     return i >= 0 && i < this.chapters.length - 1 ? this.chapters[i + 1] : null;
   });
 
-  /** Switch to a chapter. From the top pill nav, scroll all the way
-   *  to 0 (title expands back). From the bottom prev/next buttons,
-   *  scroll to the exact minimize-threshold (head.offsetTop) AND
-   *  explicitly tell the SectionShell to minimize. The natural scroll
-   *  handler won't fire isMinimized true at scrollY === threshold
-   *  (it requires scrollY > threshold + 24 hysteresis), so we seal
-   *  the state via the public minimizeNow() method. Pills then sit
-   *  immediately below the compact title bar at viewport_y =
-   *  compact_height.
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return;
+    // Measured at mount, before any scroll restoration could glue the
+    // page-head to top:0. getBoundingClientRect().top + scrollY gives
+    // the page-head's true document-Y while it's still in flow.
+    const head = document.querySelector('.page-head') as HTMLElement | null;
+    if (head) {
+      this.headTop = head.getBoundingClientRect().top + window.scrollY;
+    }
+  }
+
+  /** Switch chapter and scroll the page.
    *
-   *  The user can still scroll up past the threshold to re-expand
-   *  the title — the SectionShell's onScroll handles that naturally. */
-  select(slug: string, keepMinimized = false): void {
+   *  - Default (pills, Next button): smooth-scroll to 1px past the
+   *    shell's minimize threshold so the title shrinks and the user
+   *    lands at the top of the new chapter.
+   *  - `scrollToBottom = true` (Previous button): scroll to the bottom
+   *    of the new chapter so the user lands on the prev/next nav —
+   *    i.e., right where they would have been when they clicked Next
+   *    out of that chapter. requestAnimationFrame waits for Angular to
+   *    render the new content so scrollHeight reflects the new chapter
+   *    rather than the outgoing one. */
+  select(slug: string, scrollToBottom = false): void {
     this.selectedSlug.set(slug);
     if (typeof window === 'undefined') return;
-
-    if (keepMinimized) {
-      // 1. forceMinimize() locks the title compact and bypasses the
-      //    natural scroll handler — so step 2's scroll-to-0 can't
-      //    un-minimize it.
-      // 2. Smooth-scroll to the top.
-      // 3. After 500ms, smooth-scroll to head.offsetTop + 25 (the
-      //    natural minimize trigger).
-      // 4. Once that second scroll has had time to settle, release
-      //    the force. The natural scroll handler resumes; the user
-      //    is now at a scroll position past the threshold, so the
-      //    header stays compact via the normal flow. Scrolling up
-      //    past the threshold un-minimizes it as usual.
-      this.shell()?.forceMinimize();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollToBottom) {
+      // rAF races Angular's change detection on long chapters: the
+      // callback can fire BEFORE the new chapter has rendered, so
+      // scrollHeight is still the old (shorter or longer) value. A
+      // short setTimeout lands us after CD + layout settle so the
+      // scroll target reflects the new chapter's true bottom.
       setTimeout(() => {
-        const head = document.querySelector('.page-head') as HTMLElement | null;
-        const target = head ? head.offsetTop + 25 : 25;
-        window.scrollTo({ top: target, behavior: 'smooth' });
-        setTimeout(() => this.shell()?.releaseForce(), 500);
-      }, 500);
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 150);
     } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, signal } from '@angular/core';
 import { SectionShell } from '../section-shell/section-shell';
 
 interface MobileApp {
@@ -30,7 +30,13 @@ interface MobileApp {
   templateUrl: './mobile-apps.html',
   styleUrl: './mobile-apps.scss',
 })
-export class MobileApps {
+export class MobileApps implements AfterViewInit {
+  /** Document-Y of the page-head's top edge, captured once at mount
+   *  when nothing is sticky-stuck. We can't recompute on each click:
+   *  sticky elements' `offsetTop` returns the CURRENT stuck position
+   *  once stuck, so re-reading drifts the value upward on each call. */
+  private headTop = 0;
+
   readonly apps: readonly MobileApp[] = [
     {
       slug: 'life-clock',
@@ -127,7 +133,24 @@ export class MobileApps {
     () => this.allApps.find(a => a.slug === this.selectedSlug()) ?? this.allApps[0],
   );
 
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return;
+    // Measured at mount, before any scroll restoration could glue the
+    // page-head to top:0. getBoundingClientRect().top + scrollY gives
+    // the page-head's true document-Y while it's still in flow.
+    const head = document.querySelector('.page-head') as HTMLElement | null;
+    if (head) {
+      this.headTop = head.getBoundingClientRect().top + window.scrollY;
+    }
+  }
+
+  /** Pill click: switch app, then smooth-scroll to 1px past the
+   *  shell's minimize threshold. The SectionShell's onScroll handler
+   *  catches the crossover (scrollY > threshold + 24px hysteresis)
+   *  and minimizes the title on its own. */
   select(slug: string): void {
     this.selectedSlug.set(slug);
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
   }
 }

@@ -25,11 +25,6 @@ export class SectionShell implements AfterViewInit {
 
   private pageHead = viewChild<ElementRef<HTMLElement>>('pageHead');
   isMinimized = signal(false);
-  /** When true, the natural scroll handler is bypassed and isMinimized
-   *  stays locked at whatever the parent set it to. Parent pages use
-   *  this to hold the header compact through a multi-step scroll
-   *  sequence, then release it so normal scroll behavior resumes. */
-  private isForced = signal(false);
 
   ngAfterViewInit(): void {
     if (typeof window === 'undefined') return;
@@ -45,7 +40,6 @@ export class SectionShell implements AfterViewInit {
     const hysteresis = 24;
 
     const onScroll = () => {
-      if (this.isForced()) return; // parent owns the state right now
       const y = window.scrollY;
       if (this.isMinimized()) {
         if (y < threshold) this.isMinimized.set(false);
@@ -57,20 +51,5 @@ export class SectionShell implements AfterViewInit {
     window.addEventListener('scroll', onScroll, { passive: true });
     this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
     onScroll();
-  }
-
-  /** Lock the header in minimized form. The natural scroll handler
-   *  is bypassed until releaseForce() is called. */
-  forceMinimize(): void {
-    this.isForced.set(true);
-    this.isMinimized.set(true);
-  }
-
-  /** Release the forced lock. The natural scroll handler resumes on
-   *  the next scroll event; if the parent left the page at a scroll
-   *  position past the threshold, the header stays compact via the
-   *  normal flow. */
-  releaseForce(): void {
-    this.isForced.set(false);
   }
 }
