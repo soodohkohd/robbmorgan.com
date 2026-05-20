@@ -22,7 +22,7 @@ export class WebApps {
       slug: 'epic-pipeline',
       label: 'EPIC Pipeline',
       intro:
-        'EPIC is an enterprise CI/CD framework on Azure DevOps — an orchestrator, an engine, and a stage library that build, test, scan, provision, and deploy any project from a single config file.',
+        'EPIC (<strong>E</strong>nterprise <strong>P</strong>ipeline for <strong>I</strong>nfrastructure and <strong>C</strong>loud) is a CI/CD framework on Azure DevOps — an orchestrator, an engine, and a stage library that build, test, scan, provision, and deploy any project from a single config file.',
       bodyHtml: this.adoPipelineHtml(),
     },
     {

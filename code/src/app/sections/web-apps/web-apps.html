@@ -29,7 +29,7 @@
   <article class="topic" [attr.data-topic]="selectedSlug()">
     <h2 class="topic-title">{{ selectedTopic().label }}</h2>
     @if (selectedTopic().intro) {
-      <p class="topic-intro">{{ selectedTopic().intro }}</p>
+      <p class="topic-intro" [innerHTML]="selectedTopic().intro"></p>
     }
     <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
   </article>
