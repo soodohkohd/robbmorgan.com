@@ -5,7 +5,7 @@ import { Injectable, signal } from '@angular/core';
  * `providedIn: 'root'`) so toggling sound ON on the landing page
  * keeps playing as the user clicks into sub-pages and back.
  *
- * Tracks loop: JSB.mp3 → JSB2.mp3 → JSB.mp3 → … forever.
+ * Tracks loop through the `tracks` array in order, then wrap around forever.
  *
  * State is mirrored to sessionStorage so a tab refresh tries to
  * resume the previous state. On a fresh session (no entry), the
@@ -21,6 +21,8 @@ export class AmbientAudioService {
     '/music/JSB2.mp3',
     '/music/JSP3.mp3',
     '/music/JSP4.mp3',
+    '/music/JSB5.mp3',
+    '/music/JSB6.mp3',
   ];
 
   private audio?: HTMLAudioElement;
