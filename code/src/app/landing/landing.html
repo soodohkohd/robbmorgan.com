@@ -1,4 +1,4 @@
-<main class="landing" [class.opening]="opening()" aria-label="Robb Morgan">
+<main class="landing" [class.opening]="opening()" [class.returning]="returning()" aria-label="Robb Morgan">
 
   <!-- Cinematic scene (desktop & tablet) -->
   <section
@@ -7,6 +7,8 @@
     [class.ready]="sceneReady()"
     [class.debug]="debug()"
     [class.capturing]="captureState() === 'capturing'"
+    [style.--zoom-x.%]="zoomOrigin().x"
+    [style.--zoom-y.%]="zoomOrigin().y"
     (mousemove)="onSceneMouseMove($event)"
     (click)="onSceneClick($event)"
   >
@@ -179,7 +181,7 @@
         [attr.data-spot]="spot.key"
         [attr.aria-label]="'Open ' + spot.label"
         [class.show-label]="spot.key === 'not-me' && notMeRevealed()"
-        (click)="onSpotClick(spot)"
+        (click)="onSpotClick(spot, $event)"
       >
         <span class="hotspot-label">{{ labelFor(spot) }}</span>
       </button>
@@ -446,4 +448,9 @@
     </nav>
   </section>
 
+  <!-- Opening-veil: white overlay that fades IN as the scene zooms +
+       fades OUT. Sits above everything in .landing so the route swap
+       happens behind a fully-white screen. Sibling of .scene (not
+       inside it) so it doesn't share the .scene transform. -->
+  <div class="opening-veil" aria-hidden="true"></div>
 </main>

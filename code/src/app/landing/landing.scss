@@ -24,6 +24,16 @@
   container-type: inline-size;
   /* Hard-show on entry; only fades during .opening (see below). */
   opacity: 1;
+  /* Transform-origin tracks the clicked hotspot via inline custom
+     props (set on .scene in landing.html). The transition is declared
+     here on the base rule so both .opening (added) AND .returning
+     (removed) trigger the zoom animation. .returning suppresses the
+     transition on initial mount so the scaled state snaps in instead
+     of animating from scale 1 → 1.6 the wrong direction. */
+  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
+  transition:
+    opacity var(--dur-zoom) var(--ease-soft),
+    transform var(--dur-zoom) var(--ease-soft);
 }
 
 /* Inset drop shadows on the scene's left + right edges, falling
@@ -50,11 +60,13 @@
 .scene-veil {
   position: absolute;
   inset: 0;
+  /* Matches :host page background (walnut-deep) so the "fade FROM
+     bg-color" on return-to-desk is seamless against the letterbox. */
   background: var(--walnut-deep);
   z-index: 200;
   opacity: 1;
   pointer-events: none;
-  transition: opacity 600ms var(--ease-soft);
+  transition: opacity var(--dur-zoom) var(--ease-soft);
 }
 .scene-veil.is-hidden {
   opacity: 0;
@@ -674,8 +686,42 @@
    no fade-in. Children of .scene (bird flight, monitor code, steam,
    notifications, etc.) inherit the opacity drop. */
 .landing.opening .scene {
+  /* POV-push toward the clicked hotspot. Origin is set inline by the
+     click handler via --zoom-x / --zoom-y (% of the scene). Transition
+     is inherited from the base .scene rule above. */
   opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-soft);
+  transform: scale(1.35);
+}
+
+/* Returning from a content page: mount with the same scale + origin as
+   the outgoing zoom, then drop the .returning class on the next frame
+   so the base .scene transition runs the scale back to 1. While
+   .returning is on, transition is suppressed so the scaled state
+   appears instantly (no animating-from-scale-1 flash). */
+.landing.returning .scene {
+  transform: scale(1.35);
+  transition: none;
+}
+
+/* White opening veil: fades in as the scene fades + zooms out. Sits
+   above everything so the route swap happens behind a solid white
+   screen. .returning never engages this — the return uses the black
+   .scene-veil that already lives inside .scene. */
+.opening-veil {
+  /* fixed (not absolute) so it covers the full viewport including the
+     letterbox bars around .scene when the window aspect doesn't match
+     the desk image's. Color matches the content pages' page background
+     (parchment) so the route swap is seamless. */
+  position: fixed;
+  inset: 0;
+  background: var(--parchment);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-zoom) var(--ease-soft);
+}
+.landing.opening .opening-veil {
+  opacity: 1;
 }
 .landing.opening .hotspot-label {
   opacity: 0;

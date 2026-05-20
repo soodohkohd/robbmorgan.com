@@ -23,6 +23,12 @@
   --dur-quick:    180ms;
   --dur-base:     320ms;
   --dur-slow:     520ms;
+  /* Landing-page transition zoom — used by .scene transform/opacity,
+     the parchment .opening-veil, and the walnut .scene-veil so they
+     all fade in lock-step. Tuned against the JS navigate delay in
+     landing.ts. ~850ms keeps the cinematic directional feel without
+     making repeat navigation a chore. */
+  --dur-zoom:     850ms;
 }
 
 /* ---------- base ---------- */

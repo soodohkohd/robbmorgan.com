@@ -49,6 +49,16 @@ export class Landing {
 
   sceneReady = signal(false);
   opening = signal(false);
+  /** True for one paint cycle after a navigation back to landing, so the
+   *  scene mounts at scale(1.6) (origin = the last-clicked hotspot) and
+   *  then transitions back to scale(1). Flipped to false after the
+   *  initial paint so the CSS transition kicks in. */
+  returning = signal(false);
+  /** Transform-origin for the .opening (and .returning) zoom — set to
+   *  the clicked hotspot's center (as % of the scene) so the scene
+   *  appears to push toward whatever the user clicked, and zoom back
+   *  out from the same point on return. Defaults to the middle. */
+  zoomOrigin = signal<{ x: number; y: number }>({ x: 50, y: 50 });
 
   /* ---------- Time-of-day scene swap ----------
      05:00–10:00 → morning
@@ -125,6 +135,20 @@ export class Landing {
     });
 
     if (typeof window !== 'undefined') {
+      // Return-zoom: if the user is navigating BACK from a content page
+      // (the service has a saved zoom origin from the last open()), mount
+      // the scene already zoomed to that point and trigger the CSS
+      // transition back to scale(1) on the next paint. Two RAFs ensure
+      // the browser has committed the scaled state before we remove the
+      // .returning class, so the transition actually runs.
+      if (this.deskState.lastZoomOrigin) {
+        this.zoomOrigin.set(this.deskState.lastZoomOrigin);
+        this.returning.set(true);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => this.returning.set(false));
+        });
+      }
+
       // Monitor: resume the typewriter from where it left off last
       // time the desk was visible. On a fresh tab the service is
       // empty, so seed with the full codeSource so the first paint
@@ -712,6 +736,14 @@ The monitor should show a typing session now. Hot reload picks it up.
       polygon: '2.5,0 17.3,5.4 39.5,11.4 64.2,12.8 82.7,10.7 100,5.4 90.1,85.9 84.0,94.0 70.4,98.7 50.6,100 28.4,96.6 11.1,91.9 0,83.2',
     },
     {
+      key: 'desk',
+      label: 'The Desk',
+      route: '/the-desk',
+      // Small spot on the desk surface itself — routes to the
+      // behind-the-scenes story of how this site was built.
+      polygon: '0,3.4 97.3,0 100,96.6 0,100',
+    },
+    {
       key: 'contact',
       label: 'Contact',
       route: '/contact',
@@ -723,14 +755,6 @@ The monitor should show a typing session now. Hot reload picks it up.
       label: 'Scenes',
       // No route — clicking opens the time-of-day picker overlay.
       polygon: '1.2,8.8 92.3,0 100,87.3 0,100',
-    },
-    {
-      key: 'desk',
-      label: 'The Desk',
-      route: '/the-desk',
-      // Small spot on the desk surface itself — routes to the
-      // behind-the-scenes story of how this site was built.
-      polygon: '0,3.4 97.3,0 100,96.6 0,100',
     },
     {
       key: 'not-me',
@@ -755,7 +779,10 @@ The monitor should show a typing session now. Hot reload picks it up.
     this.opening.set(true);
     const reduced = typeof matchMedia === 'function'
       && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const delay = reduced ? 0 : 380;
+    // Tuned against --dur-zoom in styles.scss (~92% of the transition
+    // duration) so navigate fires just before the parchment veil
+    // completes — new page mounts as the veil hands off.
+    const delay = reduced ? 0 : 780;
     setTimeout(() => this.router.navigateByUrl(route), delay);
   }
 
@@ -763,7 +790,7 @@ The monitor should show a typing session now. Hot reload picks it up.
    *  picker for the keyboard. In debug mode, never navigates —
    *  opens the edit panel for the clicked spot instead (so the
    *  developer can re-capture or hide the hotspot). */
-  onSpotClick(spot: Spot): void {
+  onSpotClick(spot: Spot, event: MouseEvent): void {
     if (this.debug()) {
       // While the user is mid-capture, swallow hotspot clicks so the
       // corner-placement click on the scene takes effect instead.
@@ -784,7 +811,24 @@ The monitor should show a typing session now. Hot reload picks it up.
       this.revealNotMe();
       return;
     }
-    if (spot.route) this.open(spot.route);
+    if (spot.route) {
+      // Compute the clicked hotspot's center as % of the .scene so the
+      // outgoing zoom appears to push toward whatever the user clicked,
+      // and persist it to the desk-state service so the return trip can
+      // zoom OUT from the same point.
+      const btn = event.currentTarget as HTMLElement | null;
+      const scene = btn?.closest('.scene') as HTMLElement | null;
+      if (btn && scene) {
+        const sb = scene.getBoundingClientRect();
+        const bb = btn.getBoundingClientRect();
+        const cx = ((bb.left + bb.width / 2) - sb.left) / sb.width * 100;
+        const cy = ((bb.top + bb.height / 2) - sb.top) / sb.height * 100;
+        const origin = { x: cx, y: cy };
+        this.zoomOrigin.set(origin);
+        this.deskState.lastZoomOrigin = origin;
+      }
+      this.open(spot.route);
+    }
   }
 
   /** "Update" from the edit panel — hides the spot for the session

@@ -59,8 +59,8 @@ export class Music implements AfterViewInit {
     { title: 'Just Like Me',     src: '/music/just-like-me.mp3',    cover: '/music/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: 'https://robbmorganmedia.blob.core.windows.net/media/just-like-me.mp4' },
     { title: 'Sunshine Song',    src: '/music/sunshine-song.mp3',   cover: '/music/sunshine-song.jpg',  style: 'Acoustic Piano Pop' },
     { title: 'Sweetest Love',    src: '/music/sweetest-love.mp3',   cover: '/music/sweetest-love.jpg',  style: 'Contemporary Acoustic Pop' },
-    { title: 'Come Back Home',   src: '/music/come-back-home.mp3',  cover: '/music/come-back-home.jpg', hidden: true },
     { title: 'Whispers of Time', src: '/music/whispers-of-time.mp3', cover: '/music/whispers-of-time.jpg', style: 'Midwest Hip Hop', subtitle: 'Soundtrack' },
+    { title: 'Come Back Home',   src: '/music/come-back-home.mp3',  cover: '/music/come-back-home.jpg', style: 'Soulful Piano Ballad' },
   ];
 
   /** Tracks rendered in the template — filters out anything flagged hidden. */
