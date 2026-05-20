@@ -22,7 +22,6 @@ export class AmbientAudioService {
     '/music/JSP3.mp3',
     '/music/JSP4.mp3',
     '/music/JSB5.mp3',
-    '/music/JSB6.mp3',
   ];
 
   private audio?: HTMLAudioElement;
