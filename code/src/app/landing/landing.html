@@ -426,6 +426,10 @@
       (click)="cycleScene()"
     >
       <img [src]="sceneSrc()" alt="" decoding="async" />
+      <span class="mobile-scene-chip" aria-hidden="true">
+        <span class="mobile-scene-chip-time">{{ activeTime() }}</span>
+        <span class="mobile-scene-chip-arrow">↻</span>
+      </span>
     </button>
 
     <header class="mobile-head">

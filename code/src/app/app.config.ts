@@ -4,11 +4,21 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter, Router, withInMemoryScrolling } from '@angular/router';
+import { Meta } from '@angular/platform-browser';
+import {
+  NavigationEnd,
+  provideRouter,
+  Router,
+  withInMemoryScrolling,
+} from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 
 import { routes } from './app.routes';
+
+const SITE_ORIGIN = 'https://robbmorgan.com';
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/desk-scene-afternoon.png`;
 
 /**
  * Azure Application Insights — public client-side connection string. The
@@ -53,6 +63,44 @@ export const appConfig: ApplicationConfig = {
         },
       });
       appInsights.loadAppInsights();
+    }),
+    // Route-aware <meta> + OG/Twitter card updater. The defaults baked
+    // into index.html cover scrapers that don't execute JS (most older
+    // crawlers); this updater handles the in-app SPA navigations and
+    // modern crawlers (LinkedIn 2024+, Slack, Discord) that do execute
+    // JS before reading the head. Each route's description comes from
+    // `data.description` defined in app.routes.ts.
+    provideAppInitializer(() => {
+      if (typeof window === 'undefined') return;
+      const router = inject(Router);
+      const meta = inject(Meta);
+
+      router.events
+        .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+        .subscribe((event) => {
+          // Walk to the deepest activated child to find its data.
+          let route = router.routerState.snapshot.root;
+          while (route.firstChild) route = route.firstChild;
+          const description =
+            (route.data?.['description'] as string | undefined) ??
+            'Robb Morgan — writer, builder. Resume, novels, code, mobile apps, music, photos, and field notes from three decades in technology.';
+          const url = `${SITE_ORIGIN}${event.urlAfterRedirects}`;
+          const title = document.title;
+
+          meta.updateTag({ name: 'description', content: description });
+          meta.updateTag({ property: 'og:title', content: title });
+          meta.updateTag({ property: 'og:description', content: description });
+          meta.updateTag({ property: 'og:url', content: url });
+          meta.updateTag({ property: 'og:image', content: DEFAULT_OG_IMAGE });
+          meta.updateTag({ name: 'twitter:title', content: title });
+          meta.updateTag({ name: 'twitter:description', content: description });
+          meta.updateTag({ name: 'twitter:image', content: DEFAULT_OG_IMAGE });
+
+          // Canonical link — Angular's Meta service doesn't manage <link>,
+          // so we patch the existing element directly.
+          const canonical = document.querySelector('link[rel="canonical"]');
+          if (canonical) canonical.setAttribute('href', url);
+        });
     }),
   ],
 };

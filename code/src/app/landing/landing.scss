@@ -735,6 +735,35 @@
   }
 }
 
+/* Small "tap to cycle" chip in the bottom-right of the scene strip.
+   Shows the current time-of-day with a refresh glyph so the cycle
+   feature is discoverable without an explicit instruction line. */
+.mobile-scene-chip {
+  position: absolute;
+  right: clamp(0.75rem, 3vw, 1.25rem);
+  bottom: clamp(0.75rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(21, 12, 8, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #f3e6c6;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+
+  .mobile-scene-chip-arrow {
+    font-size: 0.85rem;
+    line-height: 1;
+    opacity: 0.85;
+  }
+}
+
 .mobile-head {
   margin: -2rem auto 0;
   position: relative;
