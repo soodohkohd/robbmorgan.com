@@ -39,9 +39,4 @@ export class DeskStateService {
     { x: 101.2, y: 33.2 },
     { x: 103, y: 31 },
   ];
-
-  /** Origin of the most recent open() zoom (as % of the scene), so when
-   *  the user navigates back to landing we can zoom OUT from the same
-   *  point. Undefined on first mount of the tab session. */
-  lastZoomOrigin?: { x: number; y: number };
 }
