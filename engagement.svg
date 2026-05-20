@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 200" width="920" height="200" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif">
+  <style>
+    .title       { font-size: 17px; font-weight: 700; fill: #2a2a2a; }
+    .subtitle    { font-size: 11px; fill: #6a6a6a; }
+    .summary     { font-size: 12px; fill: #4a4a4a; font-weight: 600; }
+    .section-title { font-size: 14px; font-weight: 700; fill: #2a2a2a; }
+    .section-total { font-size: 12px; font-weight: 400; fill: #8a8a8a; }
+    .bar-label   { font-size: 12px; fill: #4a4a4a; }
+    .bar         { fill: #b8860b; }
+    .bar-value   { font-size: 12px; font-weight: 600; fill: #2a2a2a; }
+    .empty       { font-size: 12px; fill: #8a8a8a; font-style: italic; }
+  </style>
+
+  <text x="40" y="30" class="title">Engagement — past 7 days</text>
+  <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-05-20</text>
+  <text x="40" y="72" class="summary">No custom events captured yet.</text>
+
+  <text x="40" y="120" class="empty">No custom events captured in the past 7 days yet.</text>
+</svg>
