@@ -140,6 +140,13 @@ export class Landing {
       }, 60_000);
       this.destroyRef.onDestroy(() => clearInterval(todId));
 
+      // Monitor clock: 30s tick so a minute rollover lands within
+      // half a minute. Cheap — single Date() construction + signal set.
+      const clockId = window.setInterval(() => {
+        this.clockTime.set(this.formatClock(new Date()));
+      }, 30_000);
+      this.destroyRef.onDestroy(() => clearInterval(clockId));
+
       // Monitor typewriter — one char every codeTickMs, looping
       // through codeSource forever. Buffer trimmed so the rendered
       // <pre> doesn't grow without bound.
@@ -456,6 +463,21 @@ export class Landing {
   notificationVisible = signal(false);
   private notificationTimeoutId?: number;
   private notificationSound?: HTMLAudioElement;
+
+  /* ---------- Embedded monitor clock ----------
+     Soft-white digital HH:MM clock painted over the lower portion
+     of the monitor screen. The colon separator blinks via CSS;
+     the hh/mm values refresh from this signal every 30s so a
+     minute rollover always lands within half a minute. */
+  clockTime = signal(this.formatClock(new Date()));
+
+  /** 24-hour HH:MM (military time). getHours() natively returns 0-23. */
+  private formatClock(d: Date): { hh: string; mm: string } {
+    return {
+      hh: String(d.getHours()).padStart(2, '0'),
+      mm: String(d.getMinutes()).padStart(2, '0'),
+    };
+  }
 
   /* ---------- Three birds flying right-to-left ----------
      First pass uses ALL three birds; subsequent passes (30-120s

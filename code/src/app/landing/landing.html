@@ -73,6 +73,16 @@
       </div>
     </div>
 
+    <!-- Embedded digital clock on the lower portion of the monitor
+         screen. Bbox + clip-path match the monitor's slight perspective
+         so the clock plane reads as on the screen surface, not over it.
+         Paints above .monitor-code so it isn't subject to the blur. -->
+    <div class="monitor-clock" aria-hidden="true">
+      <span class="monitor-clock-hh">{{ clockTime().hh }}</span>
+      <span class="monitor-clock-sep">:</span>
+      <span class="monitor-clock-mm">{{ clockTime().mm }}</span>
+    </div>
+
     <!-- iPhone "New Message" notification — pre-rendered image
          (opaque, perspective-warped, tint baked in). One element
          only so alignment is guaranteed. -->

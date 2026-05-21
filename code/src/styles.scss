@@ -384,6 +384,73 @@ button {
 }
 
 /* ============================================================
+   LANDING — monitor clock (embedded HH:MM digital clock)
+   Offloaded from code/src/app/landing/landing.scss to keep that
+   file under its per-component style budget. Selectors are unique
+   to the landing component; safe to keep global.
+
+   Sits inside the monitor's screen plane (lower portion), painted
+   ABOVE .monitor-code so the soft-white digits aren't subject to
+   the screen blur. The bbox + clip-path mirror the monitor's slight
+   right-side rise so the clock reads as part of the screen, not a
+   floating overlay. Colon separator blinks at 1 Hz.
+   ============================================================ */
+.monitor-clock {
+  position: absolute;
+  /* Captured bbox — sits on the monitor's lower bezel/chin just
+     below the screen, so the clock reads as a built-in LED display
+     embedded in the monitor body. Clip-path dropped here so the
+     rounded panel + halo aren't cropped; the polygon's skew at this
+     scale was visually negligible. */
+  left: 46.5%;
+  top: 48.9%;
+  width: 5.5%;
+  height: 3.0%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.04em;
+  padding: 0.22em 0.7em;
+  box-sizing: border-box;
+
+  /* Recessed LED-panel feel: darker interior, soft inner shadow at
+     the top + subtle hairline rim, and a thin highlight along the
+     bottom edge as if light catches the chamfer below the cutout.
+     Outer ring is a soft grey edging — sells "panel inset into the
+     bezel" rather than "rectangle drawn on top". */
+  border-radius: 0.55em;
+  background: rgba(6, 10, 16, 0.55);
+  box-shadow:
+    inset 0 1px 2.5px rgba(0, 0, 0, 0.60),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.06),
+    0 0 0 0.8px rgba(70, 75, 85, 0.55),
+    0 0 2px 0.8px rgba(70, 75, 85, 0.25),
+    0 0.5px 0 rgba(255, 255, 255, 0.05);
+
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-weight: 400;
+  font-size: clamp(5px, 1.0cqi, 16px);
+  letter-spacing: 0.04em;
+  /* Darker neutral grey — reads as etched / printed digits on the
+     bezel rather than a back-lit LED. Halo dropped to a faint
+     contour shadow to keep it embedded, not glowing. */
+  color: rgba(110, 118, 128, 0.85);
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.monitor-clock-sep {
+  animation: monitor-clock-blink 1s steps(2) infinite;
+}
+
+@keyframes monitor-clock-blink {
+  50% { opacity: 0; }
+}
+
+/* ============================================================
    iPHONE NOTIFICATION OVERLAY — random "New message" style banner
    that fades in and out at the top of the iPhone screen. The
    container shares the mobile-apps hotspot bbox + clip-path so the
