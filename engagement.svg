@@ -16,43 +16,43 @@
   <text x="40" y="72" class="summary">18 hotspot clicks · 2 post opens · 1 music plays · 1 app views · 1 easter eggs</text>
 
   <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 18 events</tspan></text>
-  <text x="40" y="120" class="bar-label">NOT ME!</text>
+  <text x="40" y="120" class="bar-label">Music</text>
   <rect x="260" y="108" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="120" class="bar-value">3</text>
-  <text x="40" y="144" class="bar-label">Music</text>
+  <text x="40" y="144" class="bar-label">NOT ME!</text>
   <rect x="260" y="132" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="144" class="bar-value">3</text>
   <text x="40" y="168" class="bar-label">Sound toggle</text>
   <rect x="260" y="156" width="386.7" height="16" rx="2" class="bar"/>
   <text x="654.7" y="168" class="bar-value">2</text>
-  <text x="40" y="192" class="bar-label">The Desk</text>
+  <text x="40" y="192" class="bar-label">Novels</text>
   <rect x="260" y="180" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="192" class="bar-value">1</text>
-  <text x="40" y="216" class="bar-label">Contact</text>
+  <text x="40" y="216" class="bar-label">Take a Break</text>
   <rect x="260" y="204" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="216" class="bar-value">1</text>
-  <text x="40" y="240" class="bar-label">Novels</text>
+  <text x="40" y="240" class="bar-label">Thoughts</text>
   <rect x="260" y="228" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="240" class="bar-value">1</text>
-  <text x="40" y="264" class="bar-label">Take a Break</text>
+  <text x="40" y="264" class="bar-label">Mobile Apps</text>
   <rect x="260" y="252" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="264" class="bar-value">1</text>
-  <text x="40" y="288" class="bar-label">Thoughts</text>
+  <text x="40" y="288" class="bar-label">Code</text>
   <rect x="260" y="276" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="288" class="bar-value">1</text>
-  <text x="40" y="312" class="bar-label">Mobile Apps</text>
+  <text x="40" y="312" class="bar-label">Scenes</text>
   <rect x="260" y="300" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="312" class="bar-value">1</text>
-  <text x="40" y="336" class="bar-label">Code</text>
+  <text x="40" y="336" class="bar-label">Resume</text>
   <rect x="260" y="324" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="336" class="bar-value">1</text>
-  <text x="40" y="360" class="bar-label">Scenes</text>
+  <text x="40" y="360" class="bar-label">Certs</text>
   <rect x="260" y="348" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="360" class="bar-value">1</text>
-  <text x="40" y="384" class="bar-label">Resume</text>
+  <text x="40" y="384" class="bar-label">The Desk</text>
   <rect x="260" y="372" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="384" class="bar-value">1</text>
-  <text x="40" y="408" class="bar-label">Certs</text>
+  <text x="40" y="408" class="bar-label">Contact</text>
   <rect x="260" y="396" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="408" class="bar-value">1</text>
   <text x="40" y="448" class="section-title">Thoughts posts (which essays get opened) <tspan class="section-total">— 2 events</tspan></text>
