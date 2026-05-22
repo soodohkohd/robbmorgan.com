@@ -24,6 +24,26 @@ AI_RG = "sdk"
 DAYS = 7
 OUT = Path(__file__).parent / "engagement.svg"
 
+# Hotspot key → user-visible label. Mirrors spots[] in
+# code/src/app/landing/landing.ts. The engagement event emits the
+# stable key; the report displays the label so charts read naturally
+# ("Certs" rather than "roots"). Keep in sync if a key/label changes.
+SPOT_LABELS = {
+    "resume":      "Resume",
+    "web-apps":    "Code",
+    "mobile-apps": "Mobile Apps",
+    "roots":       "Certs",
+    "novels":      "Novels",
+    "blog":        "Thoughts",
+    "music":       "Music",
+    "break":       "Take a Break",
+    "desk":        "The Desk",
+    "contact":     "Contact",
+    "keyboard":    "Scenes",
+    "not-me":      "NOT ME!",
+    "sound":       "Sound toggle",
+}
+
 
 def run_az(*args: str) -> str:
     result = subprocess.run(["az", *args], capture_output=True, text=True)
@@ -161,8 +181,10 @@ def main() -> None:
     # Build per-section bar lists. Order matters — most-actionable first.
     sections = []
 
+    hotspot_rows = [(SPOT_LABELS.get(spot, spot), count)
+                    for spot, count in count_by(events.get("hotspot_click", []), "spot")]
     sections.append(("Hotspot clicks (which desk objects get explored)",
-                     count_by(events.get("hotspot_click", []), "spot")))
+                     hotspot_rows))
 
     sections.append(("Thoughts posts (which essays get opened)",
                      count_by(events.get("blog_post_select", []), "slug")))
@@ -170,14 +192,9 @@ def main() -> None:
     sections.append(("Mobile apps (which apps get viewed)",
                      count_by(events.get("mobile_app_select", []), "slug")))
 
-    # Music: combine audio plays + video opens into one section, mark video
-    # rows with a suffix so they're distinguishable.
-    music_rows = (
-        [(t, c) for t, c in count_by(events.get("music_play", []), "title")] +
-        [(f"{t} (video)", c) for t, c in count_by(events.get("music_video_open", []), "title")]
-    )
-    music_rows.sort(key=lambda x: -x[1])
-    sections.append(("Music plays (audio + video opens)", music_rows))
+    # Audio plays only — video opens are tracked as the easter egg below.
+    sections.append(("Music plays (audio)",
+                     count_by(events.get("music_play", []), "title")))
 
     # Time-of-day picker usage — bucket by "time via via" for a single label
     tod_rows = [(f"{time} ({via})", c) for (time, via), c in count_pairs(events.get("time_of_day_set", []), "time", "via")]
@@ -188,10 +205,16 @@ def main() -> None:
                   for v, c in count_by(events.get("sound_toggle", []), "playing")]
     sections.append(("Ambient sound toggle", sound_rows))
 
-    # Easter egg — just a count, no breakdown
-    egg = len(events.get("easter_egg_not_me", []))
-    if egg:
-        sections.append(("Easter egg: NOT ME!", [("times revealed", egg)]))
+    # Easter egg (bottom of report) — clicking the "Just Like Me" cover on
+    # Music opens the music video. Tracked as music_video_open; only that
+    # track has a videoUrl so this event uniquely captures the egg.
+    # Always rendered (with a 0 placeholder row when no one's tripped it
+    # yet) so the count stays visible at-a-glance. NOT-ME hotspot reveals
+    # are not the egg — those already show up in the hotspot section.
+    egg_rows = count_by(events.get("music_video_open", []), "title")
+    if not egg_rows:
+        egg_rows = [("(no reveals yet)", 0)]
+    sections.append(("Easter egg — Just Like Me video reveal", egg_rows))
 
     # Summary line shows top-level counts so the headline is at-a-glance.
     summary_parts = []
@@ -200,7 +223,7 @@ def main() -> None:
         ("post opens", "blog_post_select"),
         ("music plays", "music_play"),
         ("app views", "mobile_app_select"),
-        ("easter eggs", "easter_egg_not_me"),
+        ("easter eggs", "music_video_open"),
     ]:
         n = len(events.get(key, []))
         if n:

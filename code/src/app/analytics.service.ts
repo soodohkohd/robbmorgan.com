@@ -37,8 +37,17 @@ export class Analytics {
    *  `customEvents | where name == "..."` rows with the props as
    *  `customDimensions`. Silently no-ops if init hasn't run (SSR,
    *  ad-blockers that gut the SDK, etc.) — instrumentation never
-   *  blocks the user. */
+   *  blocks the user.
+   *
+   *  Flushed immediately after queueing. The default batch interval
+   *  is 15 s, which loses events that fire right before SPA route
+   *  changes — e.g. `hotspot_click` feeds straight into `open()` →
+   *  `router.navigateByUrl`, and the queued event was getting eaten
+   *  during the navigation cascade. With the flush call, the SDK
+   *  posts immediately; pageviews and custom events now both land. */
   track(name: string, properties?: Record<string, string | number | boolean>): void {
-    this.appInsights?.trackEvent({ name }, properties);
+    if (!this.appInsights) return;
+    this.appInsights.trackEvent({ name }, properties);
+    this.appInsights.flush();
   }
 }
