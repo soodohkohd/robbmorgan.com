@@ -13,22 +13,22 @@
 
   <text x="40" y="30" class="title">Engagement — past 7 days</text>
   <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-05-22</text>
-  <text x="40" y="72" class="summary">27 hotspot clicks · 2 post opens · 4 music plays · 1 app views · 1 easter eggs</text>
+  <text x="40" y="72" class="summary">28 hotspot clicks · 2 post opens · 4 music plays · 1 app views · 1 easter eggs</text>
 
-  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 27 events</tspan></text>
-  <text x="40" y="120" class="bar-label">Music</text>
+  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 28 events</tspan></text>
+  <text x="40" y="120" class="bar-label">Thoughts</text>
   <rect x="260" y="108" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="120" class="bar-value">4</text>
-  <text x="40" y="144" class="bar-label">Thoughts</text>
+  <text x="40" y="144" class="bar-label">Music</text>
   <rect x="260" y="132" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="144" class="bar-value">4</text>
-  <text x="40" y="168" class="bar-label">Resume</text>
-  <rect x="260" y="156" width="435.0" height="16" rx="2" class="bar"/>
-  <text x="703.0" y="168" class="bar-value">3</text>
-  <text x="40" y="192" class="bar-label">Sound toggle</text>
+  <text x="40" y="168" class="bar-label">Sound toggle</text>
+  <rect x="260" y="156" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="168" class="bar-value">4</text>
+  <text x="40" y="192" class="bar-label">Scenes</text>
   <rect x="260" y="180" width="435.0" height="16" rx="2" class="bar"/>
   <text x="703.0" y="192" class="bar-value">3</text>
-  <text x="40" y="216" class="bar-label">Scenes</text>
+  <text x="40" y="216" class="bar-label">Resume</text>
   <rect x="260" y="204" width="435.0" height="16" rx="2" class="bar"/>
   <text x="703.0" y="216" class="bar-value">3</text>
   <text x="40" y="240" class="bar-label">NOT ME!</text>
@@ -89,10 +89,10 @@
   <text x="40" y="808" class="bar-label">night (picker)</text>
   <rect x="260" y="796" width="193.3" height="16" rx="2" class="bar"/>
   <text x="461.3" y="808" class="bar-value">1</text>
-  <text x="40" y="848" class="section-title">Ambient sound toggle <tspan class="section-total">— 3 events</tspan></text>
+  <text x="40" y="848" class="section-title">Ambient sound toggle <tspan class="section-total">— 4 events</tspan></text>
   <text x="40" y="872" class="bar-label">sound off</text>
   <rect x="260" y="860" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="872" class="bar-value">3</text>
+  <text x="848.0" y="872" class="bar-value">4</text>
   <text x="40" y="912" class="section-title">Easter egg — Just Like Me video reveal <tspan class="section-total">— 1 event</tspan></text>
   <text x="40" y="936" class="bar-label">Just Like Me</text>
   <rect x="260" y="924" width="580.0" height="16" rx="2" class="bar"/>
