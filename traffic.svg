@@ -42,9 +42,9 @@
   <rect x="527.1" y="231.2" width="71.4" height="28.8" class="bar" />
   <text x="562.9" y="223.2" class="value-label">4</text>
   <text x="562.9" y="278" class="day-label">May 21</text>
-  <rect x="618.6" y="216.8" width="71.4" height="43.2" class="bar" />
-  <text x="654.3" y="208.8" class="value-label">6</text>
+  <rect x="618.6" y="202.4" width="71.4" height="57.6" class="bar" />
+  <text x="654.3" y="194.4" class="value-label">8</text>
   <text x="654.3" y="278" class="day-label">May 22*</text>
   <text x="40" y="304" class="footer">No data May 16–May 17: App Insights resource didn't yet exist (created 2026-05-18).</text>
-  <text x="40" y="320" class="footer">* today (partial). Period total: 57 unique users (some span multiple days, so this is ≤ sum of daily bars).</text>
+  <text x="40" y="320" class="footer">* today (partial). Period total: 59 unique users (some span multiple days, so this is ≤ sum of daily bars).</text>
 </svg>

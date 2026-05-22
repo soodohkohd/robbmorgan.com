@@ -33,7 +33,7 @@ export class Blog implements AfterViewInit {
       slug: 'performance-review',
       label: 'The Review',
       title: 'Your Performance Review Is a Verdict.',
-      date: 'May 21, 2026',
+      date: 'May 22, 2026',
       image: '/posts/performance-review.webp',
       imageAlt: "A conference room with engineers' names and ratings projected on a screen, being shuffled along a forced distribution curve",
       bodyHtml: `
