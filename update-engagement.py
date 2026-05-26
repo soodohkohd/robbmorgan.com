@@ -3,25 +3,34 @@
 update-engagement.py — regenerate engagement.svg from App Insights
 custom events. Companion to update-traffic.py.
 
-Surfaces what users actually DO on the site over the past 7 days:
-which hotspots get clicked, which blog posts get read, which music
-tracks play, etc. Each event type renders as a horizontal bar chart;
-empty sections are skipped.
+Surfaces what users actually DO on the site over a user-specified
+timeframe: which hotspots get clicked, which blog posts get read, which
+music tracks play, etc. Each event type renders as a horizontal bar
+chart; empty sections are skipped. For single-day windows (default) it
+skips the SVG and just prints today's totals to stderr.
 
-Usage:  ./update-engagement.py
+Usage:
+  ./update-engagement.py             # today only (console, no SVG)
+  ./update-engagement.py today       # synonym for the above
+  ./update-engagement.py 7           # past 7 days
+  ./update-engagement.py 30          # past 30 days
+  ./update-engagement.py month       # month-to-date
+  ./update-engagement.py ytd         # year-to-date
+
 Requires: az CLI logged in, Python 3.8+.
 """
+
+from __future__ import annotations
 
 import json
 import subprocess
 import sys
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 AI_APP = "robbmorgan"
 AI_RG = "sdk"
-DAYS = 7
 OUT = Path(__file__).parent / "engagement.svg"
 
 # Hotspot key → user-visible label. Mirrors spots[] in
@@ -45,6 +54,39 @@ SPOT_LABELS = {
 }
 
 
+# ---------- Timeframe parsing ----------
+
+def parse_timeframe(arg: str | None) -> tuple[date, date, str]:
+    """Resolve the CLI arg into (start, end_exclusive, label)."""
+    today = datetime.now(timezone.utc).date()
+    end_exclusive = today + timedelta(days=1)
+
+    if arg is None or arg.lower() == "today":
+        return (today, end_exclusive, "today")
+
+    if arg.lower() == "ytd":
+        start = today.replace(month=1, day=1)
+        return (start, end_exclusive, f"{today.year} year-to-date")
+
+    if arg.lower() == "month":
+        start = today.replace(day=1)
+        return (start, end_exclusive, today.strftime("%B %Y") + " (month-to-date)")
+
+    try:
+        n = int(arg)
+        if n < 1:
+            raise ValueError
+    except ValueError:
+        print(f"Invalid timeframe: {arg!r}", file=sys.stderr)
+        print("Usage: ./update-engagement.py [N | today | month | ytd]", file=sys.stderr)
+        sys.exit(2)
+
+    start = today - timedelta(days=n - 1)
+    return (start, end_exclusive, f"past {n} day{'s' if n != 1 else ''}")
+
+
+# ---------- az CLI helpers ----------
+
 def run_az(*args: str) -> str:
     result = subprocess.run(["az", *args], capture_output=True, text=True)
     if result.returncode != 0:
@@ -53,28 +95,30 @@ def run_az(*args: str) -> str:
     return result.stdout
 
 
-def ai_query(kql: str) -> dict:
+def ai_query(kql: str, lookback_days: int) -> dict:
     # --offset is required: the CLI silently caps the time window otherwise.
+    offset = f"{max(35, lookback_days + 5)}d"
     raw = run_az(
         "monitor", "app-insights", "query",
         "--app", AI_APP, "-g", AI_RG,
         "--analytics-query", kql,
-        "--offset", "7d",
+        "--offset", offset,
         "-o", "json",
     )
     return json.loads(raw)
 
 
-def fetch_events():
-    """Pull every custom event from the last DAYS days. Returns a dict
-    of {event_name: [customDimensions, ...]} where customDimensions is
-    a parsed dict per event."""
+def fetch_events(start, end_exclusive):
+    """Pull every custom event in the window. Returns a dict of
+    {event_name: [customDimensions, ...]} where each customDimensions
+    is a parsed dict per event."""
     kql = (
-        "customEvents "
-        "| where timestamp > ago(7d) "
-        "| project name, customDimensions"
+        f"customEvents "
+        f"| where timestamp between (datetime({start.isoformat()}) .. datetime({end_exclusive.isoformat()})) "
+        f"| project name, customDimensions"
     )
-    data = ai_query(kql)
+    lookback = (end_exclusive - start).days
+    data = ai_query(kql, lookback)
     by_name = defaultdict(list)
     for row in data["tables"][0]["rows"]:
         name = row[0]
@@ -132,24 +176,25 @@ def render_bar_section(y: int, title: str, rows: list[tuple[str, int]]) -> tuple
     for label, count in rows:
         bar_w = (count / max_count) * BAR_MAX_W
         bar_y = y - 12
-        # Truncate long labels gracefully
         display_label = label if len(label) <= 32 else label[:29] + "…"
         out.append(f'  <text x="{LEFT}" y="{y}" class="bar-label">{display_label}</text>')
         out.append(f'  <rect x="{BAR_X}" y="{bar_y}" width="{bar_w:.1f}" height="16" rx="2" class="bar"/>')
         out.append(f'  <text x="{BAR_X + bar_w + 8:.1f}" y="{y}" class="bar-value">{count}</text>')
         y += 24
-    y += 16  # gap before next section
+    y += 16
     return ("\n".join(out), y)
 
 
-def render(today, sections, summary_line) -> str:
+def render(today, label, sections, summary_line) -> str:
     body_chunks = []
-    y = 96  # below title + subtitle + summary line
+    y = 96
     for title, rows in sections:
         frag, y = render_bar_section(y, title, rows)
         if frag:
             body_chunks.append(frag)
     chart_h = max(y + 24, 200)
+
+    empty_msg = f'  <text x="{LEFT}" y="120" class="empty">No custom events captured in {label}.</text>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CHART_W} {chart_h}" width="{CHART_W}" height="{chart_h}" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif">
   <style>
@@ -164,21 +209,18 @@ def render(today, sections, summary_line) -> str:
     .empty       {{ font-size: 12px; fill: #8a8a8a; font-style: italic; }}
   </style>
 
-  <text x="{LEFT}" y="30" class="title">Engagement — past {DAYS} days</text>
+  <text x="{LEFT}" y="30" class="title">Engagement — {label}</text>
   <text x="{LEFT}" y="48" class="subtitle">App Insights "{AI_APP}" custom events · generated {today.isoformat()}</text>
   <text x="{LEFT}" y="72" class="summary">{summary_line}</text>
 
-{chr(10).join(body_chunks) if body_chunks else f'  <text x="{LEFT}" y="120" class="empty">No custom events captured in the past {DAYS} days yet.</text>'}
+{chr(10).join(body_chunks) if body_chunks else empty_msg}
 </svg>
 """
 
 
-def main() -> None:
-    today = datetime.now(timezone.utc).date()
-    print("Querying App Insights custom events...", file=sys.stderr)
-    events = fetch_events()
+# ---------- main ----------
 
-    # Build per-section bar lists. Order matters — most-actionable first.
+def build_sections(events):
     sections = []
 
     hotspot_rows = [(SPOT_LABELS.get(spot, spot), count)
@@ -192,33 +234,49 @@ def main() -> None:
     sections.append(("Mobile apps (which apps get viewed)",
                      count_by(events.get("mobile_app_select", []), "slug")))
 
-    # Audio plays only — video opens are tracked as the easter egg below.
     sections.append(("Music plays (audio)",
                      count_by(events.get("music_play", []), "title")))
 
-    # Time-of-day picker usage — bucket by "time via via" for a single label
     tod_rows = [(f"{time} ({via})", c) for (time, via), c in count_pairs(events.get("time_of_day_set", []), "time", "via")]
     sections.append(("Time-of-day picker usage", tod_rows))
 
-    # Sound toggle (truthy=on, falsy=off)
     sound_rows = [(f"sound {'on' if str(v).lower() == 'true' else 'off'}", c)
                   for v, c in count_by(events.get("sound_toggle", []), "playing")]
     sections.append(("Ambient sound toggle", sound_rows))
 
-    # Easter egg (bottom of report) — clicking the "Just Like Me" cover on
-    # Music opens the music video. Tracked as music_video_open; only that
-    # track has a videoUrl so this event uniquely captures the egg.
-    # Always rendered (with a 0 placeholder row when no one's tripped it
-    # yet) so the count stays visible at-a-glance. NOT-ME hotspot reveals
-    # are not the egg — those already show up in the hotspot section.
+    # Easter egg — clicking the "Just Like Me" cover on Music opens the
+    # video. Always render so the count stays visible at-a-glance.
     egg_rows = count_by(events.get("music_video_open", []), "title")
     if not egg_rows:
         egg_rows = [("(no reveals yet)", 0)]
     sections.append(("Easter egg — Just Like Me video reveal", egg_rows))
 
-    # Summary line shows top-level counts so the headline is at-a-glance.
+    return sections
+
+
+def main() -> None:
+    arg = sys.argv[1] if len(sys.argv) > 1 else None
+    start, end_exclusive, label = parse_timeframe(arg)
+    today = datetime.now(timezone.utc).date()
+
+    print(f"Querying App Insights custom events ({label})...", file=sys.stderr)
+    events = fetch_events(start, end_exclusive)
+
+    print(f"  Window: {start.isoformat()} → {today.isoformat()} ({label}, UTC)", file=sys.stderr)
+    for name, items in events.items():
+        print(f"    {name}: {len(items)} events", file=sys.stderr)
+    if not events:
+        print("    (none yet — wait a few hours after deploy, or generate some interactions)", file=sys.stderr)
+
+    # For single-day default, skip SVG regeneration — console-only.
+    if (end_exclusive - start).days <= 1:
+        print("(single-day window — SVG not regenerated)", file=sys.stderr)
+        return
+
+    sections = build_sections(events)
+
     summary_parts = []
-    for label, key in [
+    for slabel, key in [
         ("hotspot clicks", "hotspot_click"),
         ("post opens", "blog_post_select"),
         ("music plays", "music_play"),
@@ -227,17 +285,10 @@ def main() -> None:
     ]:
         n = len(events.get(key, []))
         if n:
-            summary_parts.append(f"{n} {label}")
-    summary_line = " · ".join(summary_parts) if summary_parts else "No custom events captured yet."
+            summary_parts.append(f"{n} {slabel}")
+    summary_line = " · ".join(summary_parts) if summary_parts else f"No custom events captured in {label}."
 
-    # Print summary to stderr so the user sees what was processed.
-    print(f"  Window: past {DAYS} days (UTC)", file=sys.stderr)
-    for name, items in events.items():
-        print(f"    {name}: {len(items)} events", file=sys.stderr)
-    if not events:
-        print("    (none yet — wait a few hours after deploy, or generate some interactions)", file=sys.stderr)
-
-    svg = render(today, sections, summary_line)
+    svg = render(today, label, sections, summary_line)
     OUT.write_text(svg)
     print(f"Wrote {OUT}", file=sys.stderr)
 
