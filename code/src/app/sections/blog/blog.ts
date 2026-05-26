@@ -30,6 +30,37 @@ export class Blog implements AfterViewInit {
   private headTop = 0;
   readonly posts: readonly Post[] = [
     {
+      slug: 'em-dash',
+      label: 'Em-Dash',
+      title: 'Emily Dickinson Was Using Em-Dashes In 1862.',
+      date: 'May 26, 2026',
+      image: '/posts/em-dash.webp',
+      imageAlt: 'A vintage typewriter mid-sentence on a warm walnut desk, the emerging page showing em-dashes prominently in the text',
+      bodyHtml: `
+        <p>Punctuation that has earned its place for more than 160 years is now being treated as evidence that something was written by AI. Use an em-dash in your cover letter and you're suspicious. Use one in your LinkedIn post and you're a chatbot. Use a few in your novel and someone in the comments will accuse you of "letting AI write it."</p>
+        <p>It would be funny if it weren't quietly distorting how people write.</p>
+        <p>Emily Dickinson built her entire poetic voice on the em-dash. Her poems live and breathe on the pause it creates:</p>
+        <blockquote>
+          Because I could not stop for Death &mdash;<br>
+          He kindly stopped for me &mdash;<br>
+          The Carriage held but just Ourselves &mdash;<br>
+          And Immortality.
+        </blockquote>
+        <p>Strip the em-dashes out and the poem flattens into recitation. The pause is the meaning. That is not the artifact of a chatbot. That is craft, and it predates the integrated circuit by a hundred years.</p>
+        <p>And it isn't only the em-dash. AI gets accused of every legitimate literary device a good writer has ever used. Look at what people are now flagging as proof of AI:</p>
+        <ul>
+          <li><strong>Triplets for emphasis.</strong> "Thoughtful, deliberate, intentional." Writers have always done this. It's called rhythm.</li>
+          <li><strong>"Not just X. It's Y." for elevation.</strong> AI uses it. So did every essayist for the last hundred years.</li>
+          <li><strong>Pivots for transitions.</strong> Moving from a small claim to a bigger one. AI does it. So does every editorial in the Times.</li>
+          <li><strong>"Tapestry of," "realm of," "symphony of" for metaphor.</strong> Overwritten, sure. But also: poetry.</li>
+          <li><strong>The em-dash itself for rhythm.</strong> AI's favorite. And Emily Dickinson's.</li>
+        </ul>
+        <p>The actual problem with AI prose is not the devices. It's that AI uses every device at once, in every paragraph, with no taste behind the selection. A human writer who reaches for a triplet, a pivot, and a sweeping metaphor in the same sentence is overwriting. AI does it because next-token probability says all three score well.</p>
+        <p>Blaming the punctuation, the cadence, or the vocabulary for AI is like blaming the brush for the bad painting. The tool isn't the crime. Lazy use is.</p>
+        <p>Use your em-dashes. Use your triplets. Use the dramatic pivot when it actually pivots. And when someone tells you your writing "sounds AI," consider that they may not actually be reading. They may just be pattern-matching.</p>
+      `,
+    },
+    {
       slug: 'performance-review',
       label: 'The Review',
       title: 'Your Performance Review Is a Verdict.',
