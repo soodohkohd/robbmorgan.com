@@ -790,6 +790,89 @@ deserve mention.
 
 ---
 
+## The Rocket Game
+
+There's a tiny spot on the desk surface — easy to miss, labeled
+**GAME** — and it's the one hotspot that doesn't take you to a *page*.
+Click it and the whole site gets out of the way: a playable arcade
+game fills the frame. Steer a rocket along the bottom, blast greyscale
+asteroids falling from the top, catch ammo capsules before they drop
+past you, chase a high score. There's an X in the corner to come back
+to the desk when you're done.
+
+And it has a history.
+
+### Three lives of one game
+
+This game started years ago as a NativeScript/Angular mobile app.
+Later I rewrote it from scratch in Flutter — the canonical version,
+the one that runs on my phone, living in its own repository with its
+own game loop, its own asteroid physics, its own ammo rules. What
+you're playing here is the *third* incarnation: a faithful web port of
+that Flutter game, rebuilt in TypeScript to run in the browser.
+
+"Faithful" is the operative word. I didn't reimagine the game for the
+web — I ported the Dart game controller almost line-for-line. Same
+tunables, same fall speeds, same fragmentation math, same per-life
+ammo-capsule cascade. Large asteroids are worth 10 points and shatter
+into two mediums and a small; mediums are worth 50 and split into two
+smalls; smalls are worth 100 and the hardest to hit. Two lives to
+start, plus one every 10,000 points. Run out of ammo and you lose a
+life and refill to 25. All of it carried straight across from the
+Flutter source — the only thing I deliberately changed was bumping the
+asteroid speeds up 25% so the web version plays a touch hotter.
+
+### Canvas, not DOM
+
+The rest of this site is DOM and CSS — clip-paths, transitions,
+keyframes. The game is the one place that approach would fall apart.
+Dozens of asteroids, lasers, explosion particles, and a hundred-plus
+parallax stars, all moving every frame? You don't animate that with
+CSS. You draw it.
+
+So the play area is a single HTML5 `<canvas>` driven by a
+`requestAnimationFrame` loop. Every frame: advance the asteroids, move
+the lasers, run the collision checks, age the explosions, spawn
+replacements, then repaint the whole scene from scratch. The rocket and
+the asteroids are drawn as *vector shapes* — there are no sprite
+images. The rocket is a handful of canvas paths in the same teal accent
+the rest of the site uses; each asteroid is a twelve-vertex polygon
+perturbed from a circle so every rock gets its own irregular
+silhouette.
+
+The HUD (lives and score), the ammo bar, and the on-screen control pad
+stay as DOM — they're text and buttons, and they should be crisp and
+tappable. So the screen is a hybrid: imperative canvas for the
+fast-moving game world, declarative DOM for the chrome around it.
+
+### The details that make a canvas game feel right
+
+- **It renders at device-pixel resolution.** The canvas backing store
+  is scaled by `devicePixelRatio`, so the vector rocket and asteroids
+  stay sharp on a Retina display instead of going soft and blocky.
+- **It survives a backgrounded tab.** `requestAnimationFrame` stops
+  firing while a tab is hidden; when you return, the first frame's
+  time-delta is the entire gap. Left alone, that one frame would
+  fast-forward every asteroid clean off the screen. So the loop skips a
+  single delta after the tab becomes visible again, and caps any one
+  frame at 100 milliseconds. The Flutter version had the identical
+  problem with its `Ticker` — and the identical fix.
+- **Two control schemes.** On desktop you steer with the arrow keys and
+  fire with the space bar. On touch, the on-screen pad mirrors the
+  Flutter game's gestures exactly: tap a button to fire, hold it past a
+  threshold to steer, double-tap to fire on the press. Keyboard and pad
+  both feed the same movement flags the game loop reads.
+- **High scores persist in `localStorage`.** The Flutter app used the
+  device's shared-preferences store; the web port uses the browser's —
+  top ten, sorted, surviving across visits.
+
+Nobody needs an arcade game on a portfolio site. That's exactly why
+it's there. It's the same game I've now built three times across three
+platforms — because some things are worth keeping alive wherever you
+happen to land.
+
+---
+
 ## The Process
 
 I lost count of how many times we deployed. The deploy script

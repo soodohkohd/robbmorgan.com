@@ -146,6 +146,7 @@
   [data-spot="roots"],
   [data-spot="break"],
   [data-spot="desk"],
+  [data-spot="rocket"],
   [data-spot="not-me"],
   [data-spot="sound"]
 ) {
@@ -255,6 +256,13 @@
   top: 47.5%;
   width: 7.3%;
   height: 8.7%;
+}
+
+.hotspot-outline[data-spot="rocket"] {
+  left: 46.4%;
+  top: 48.9%;
+  width: 5.5%;
+  height: 2.9%;
 }
 
 .hotspot-outline[data-spot="not-me"] {
@@ -564,6 +572,21 @@
   );
 }
 
+/* Tiny rectangular spot on the desk surface. Routes to the web port of
+   the Rocket: Asteroid Hunter arcade game. */
+.hotspot[data-spot="rocket"] {
+  left: 46.4%;
+  top: 48.9%;
+  width: 5.5%;
+  height: 2.9%;
+  clip-path: polygon(
+    0%     0%,
+    100%   0%,
+    100%   100%,
+    0%     100%
+  );
+}
+
 /* Terracotta pot on the left edge of the desk. Routes to the certs
    page (CalArts + HarvardX). 21-vertex polygon. */
 .hotspot[data-spot="roots"] {
@@ -608,6 +631,7 @@
   [data-spot="roots"],
   [data-spot="break"],
   [data-spot="desk"],
+  [data-spot="rocket"],
   [data-spot="not-me"],
   [data-spot="sound"]
 ) {

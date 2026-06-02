@@ -10,7 +10,7 @@ type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
 type SpotKey =
   | 'web-apps' | 'mobile-apps' | 'novels' | 'blog'
   | 'resume'   | 'music'       | 'contact' | 'roots'
-  | 'break'    | 'desk'
+  | 'break'    | 'desk'        | 'rocket'
   | 'not-me'   // easter egg — briefly flashes "NOT ME!" on click
   | 'sound'    // toggles ambient JSB playback (no navigation)
   | 'keyboard'; // not a destination — opens the time-of-day picker
@@ -751,6 +751,14 @@ The monitor should show a typing session now. Hot reload picks it up.
       route: '/contact',
       // Skewed picture frame on the desk.
       polygon: '0,10.3 79.8,0 100,85.1 17.3,100',
+    },
+    {
+      key: 'rocket',
+      label: 'GAME',
+      route: '/rocket',
+      // Tiny rectangular spot on the desk — routes to the web port of
+      // the Rocket: Asteroid Hunter arcade game.
+      polygon: '0,0 100,0 100,100 0,100',
     },
     {
       key: 'keyboard',

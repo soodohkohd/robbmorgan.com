@@ -1,0 +1,105 @@
+<div class="rocket-root">
+  <!-- HUD: lives (left) + score (centered) -->
+  <div class="hud">
+    <div class="lives">
+      @if (livesSig() <= 3) {
+        @for (l of [].constructor(livesSig()); track $index) {
+          <svg class="mini-rocket" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2 C16 7 16 12 16 16 L8 16 C8 12 8 7 12 2 Z" />
+            <path d="M8 14 L5 20 L8 18 Z" />
+            <path d="M16 14 L19 20 L16 18 Z" />
+            <circle cx="12" cy="10" r="2.2" class="window" />
+          </svg>
+        }
+      } @else {
+        <svg class="mini-rocket" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2 C16 7 16 12 16 16 L8 16 C8 12 8 7 12 2 Z" />
+          <path d="M8 14 L5 20 L8 18 Z" />
+          <path d="M16 14 L19 20 L16 18 Z" />
+          <circle cx="12" cy="10" r="2.2" class="window" />
+        </svg>
+        <span class="lives-mult">&times;{{ livesSig() }}</span>
+      }
+    </div>
+    <div class="score"><span class="score-label">Score:</span> {{ scoreSig() }}</div>
+    <button class="close" type="button" (click)="exit()" aria-label="Back to the desk">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 6 L18 18 M18 6 L6 18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Play area -->
+  <div class="play-wrap">
+    <canvas #canvas class="play" (pointerdown)="onCanvasPointerDown()"></canvas>
+
+    <!-- Menu / Top Scores overlay (DOM) -->
+    @if (mode() === 'menu') {
+      <div class="menu">
+        <h1 class="menu-title">ROCKET</h1>
+        <p class="menu-sub">Asteroid Hunter</p>
+
+        @if (scores().length) {
+          <div class="scores">
+            <h2>TOP SCORES</h2>
+            <ol>
+              @for (s of scores(); track $index) {
+                <li>
+                  <span class="rank">{{ $index + 1 }}.</span>
+                  <span class="pts">{{ s.score }}</span>
+                  <span class="when">{{ formatDate(s.date) }}</span>
+                </li>
+              }
+            </ol>
+          </div>
+        } @else {
+          <p class="how">
+            Shoot the asteroids. Large fragments into mediums, mediums into
+            smalls &mdash; smaller is worth more. Catch the yellow ammo pills
+            before they fall past you. Don&rsquo;t get hit.
+          </p>
+        }
+
+        <button class="launch" type="button" (click)="launch()">LAUNCH</button>
+
+        <p class="controls-hint">
+          <span class="desktop-hint">Arrow keys to steer &middot; Space to fire</span>
+          <span class="touch-hint">Tap a button to fire &middot; hold to steer</span>
+        </p>
+      </div>
+    }
+  </div>
+
+  <!-- Ammo bar -->
+  <div class="ammo-bar">
+    <div class="ammo-fill" [style.width.%]="(ammoSig() / ammoMax) * 100"></div>
+  </div>
+
+  <!-- Control pad -->
+  <div class="control-pad">
+    <button
+      type="button"
+      class="stick"
+      [class.firing]="leftFiring()"
+      (pointerdown)="onPadPointerDown('left', $event)"
+      (pointerup)="onPadPointerUp('left')"
+      (pointercancel)="onPadPointerUp('left')"
+      (pointerleave)="onPadPointerUp('left')"
+      aria-label="Left / fire"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 6 L8 12 L14 18 Z" /></svg>
+    </button>
+    <button
+      type="button"
+      class="stick"
+      [class.firing]="rightFiring()"
+      (pointerdown)="onPadPointerDown('right', $event)"
+      (pointerup)="onPadPointerUp('right')"
+      (pointercancel)="onPadPointerUp('right')"
+      (pointerleave)="onPadPointerUp('right')"
+      aria-label="Right / fire"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 L16 12 L10 18 Z" /></svg>
+    </button>
+  </div>
+</div>

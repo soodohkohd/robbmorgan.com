@@ -67,6 +67,12 @@ export const routes: Routes = [
     data: { description: 'A coastline gallery — Southern California photos taken between drafts and deploys.' },
   },
   {
+    path: 'rocket',
+    loadComponent: () => import('./sections/rocket/rocket-game').then(m => m.RocketGame),
+    title: 'Rocket — Robb Morgan',
+    data: { description: 'Rocket: Asteroid Hunter — the web version of Robb Morgan’s arcade space shooter. Steer the rocket, blast falling asteroids, catch ammo capsules, and chase a high score.' },
+  },
+  {
     path: 'the-desk',
     loadComponent: () => import('./sections/the-desk/the-desk').then(m => m.TheDesk),
     title: 'The Desk — Robb Morgan',
