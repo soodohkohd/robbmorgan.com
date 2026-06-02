@@ -57,4 +57,64 @@
       </a>
     </li>
   </ul>
+
+  <!-- Contact form (posts to Web3Forms → email@robbmorgan.com) -->
+  <form class="contact-form" (submit)="submit($event)">
+    <h2 class="form-heading">Or send a message right here</h2>
+
+    <!-- Honeypot: bots fill this; Web3Forms silently drops those submissions. -->
+    <input
+      type="checkbox"
+      name="botcheck"
+      class="honeypot"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+    />
+
+    <!-- Stable marker in every email body — used by the inbox filter rule. -->
+    <input type="hidden" name="source" value="robbmorgan-contact-form" />
+
+    <label class="field">
+      <span class="field-label">Name</span>
+      <input type="text" name="name" required autocomplete="name" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input
+        type="email"
+        name="email"
+        required
+        autocomplete="email"
+        [class.has-error]="emailInvalid()"
+        (input)="onEmailInput()"
+      />
+      @if (emailInvalid()) {
+        <span class="field-error" role="alert">
+          Please enter a valid email address (e.g. name&#64;example.com).
+        </span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field-label">Message</span>
+      <textarea name="message" rows="5" required></textarea>
+    </label>
+
+    <button type="submit" class="submit-btn" [disabled]="state() === 'sending'">
+      {{ state() === 'sending' ? 'Sending…' : 'Send message' }}
+    </button>
+
+    @if (state() === 'success') {
+      <p class="form-status is-success" role="status">
+        Thanks — your message is on its way. I'll be in touch.
+      </p>
+    }
+    @if (state() === 'error') {
+      <p class="form-status is-error" role="alert">
+        Something went wrong sending that. Please try again, or reach me on LinkedIn above.
+      </p>
+    }
+  </form>
 </app-section-shell>
