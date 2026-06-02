@@ -19,8 +19,10 @@
 # Python virtualenvs
 .venv*
 
-# Google Search Console report script (update-search.py)
+# Google Search Console report script (update-search.py) — all secrets
 /gsc-credentials.json
+/oauth-client.json
+/gsc-token.json
 
 # Angular CLI and build artefacts
 /.angular-cli.json

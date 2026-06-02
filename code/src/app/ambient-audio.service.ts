@@ -25,11 +25,11 @@ export class AmbientAudioService {
   private readonly storageKey = 'rm-ambient-audio-playing';
   private readonly orderKey = 'rm-ambient-audio-order';
   private readonly tracks: readonly string[] = [
-    '/music/JSB.mp3',
-    '/music/JSB2.mp3',
-    '/music/JSP3.mp3',
-    '/music/JSP4.mp3',
-    '/music/JSB5.mp3',
+    '/audio/JSB.mp3',
+    '/audio/JSB2.mp3',
+    '/audio/JSP3.mp3',
+    '/audio/JSP4.mp3',
+    '/audio/JSB5.mp3',
   ];
 
   /** Shuffled play order for this session — indices into `tracks`.

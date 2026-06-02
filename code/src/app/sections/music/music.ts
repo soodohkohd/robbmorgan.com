@@ -54,15 +54,15 @@ export class Music implements AfterViewInit {
     'Press play and have a listen.';
 
   readonly tracks: readonly Track[] = [
-    { title: 'Floating',         src: '/music/floating.mp3',        cover: '/music/floating.jpg',       style: 'Alt-Pop' },
-    { title: "Codin' in Cali",   src: '/music/codin-in-cali.mp3',   cover: '/music/codin-in-cali.jpg',  style: 'West Coast G-Funk' },
-    { title: "SoCal Livin'",     src: '/music/socal-livin.mp3',     cover: '/music/socal-livin.webp',    style: 'West Coast G-Funk' },
-    { title: 'Long Way Home',    src: '/music/long-way-home.mp3',   cover: '/music/long-way-home.jpg',  style: 'Midwest Hip Hop' },
-    { title: 'Just Like Me',     src: '/music/just-like-me.mp3',    cover: '/music/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: 'https://robbmorganmedia.blob.core.windows.net/media/just-like-me.mp4' },
-    { title: 'Sunshine Song',    src: '/music/sunshine-song.mp3',   cover: '/music/sunshine-song.jpg',  style: 'Acoustic Piano Pop' },
-    { title: 'Sweetest Love',    src: '/music/sweetest-love.mp3',   cover: '/music/sweetest-love.jpg',  style: 'Contemporary Acoustic Pop' },
-    { title: 'Whispers of Time', src: '/music/whispers-of-time.mp3', cover: '/music/whispers-of-time.jpg', style: 'Midwest Hip Hop', subtitle: 'Soundtrack' },
-    { title: 'Come Back Home',   src: '/music/come-back-home.mp3',  cover: '/music/come-back-home.jpg', style: 'Soulful Piano Ballad' },
+    { title: 'Floating',         src: '/audio/floating.mp3',        cover: '/audio/floating.jpg',       style: 'Alt-Pop' },
+    { title: "Codin' in Cali",   src: '/audio/codin-in-cali.mp3',   cover: '/audio/codin-in-cali.jpg',  style: 'West Coast G-Funk' },
+    { title: "SoCal Livin'",     src: '/audio/socal-livin.mp3',     cover: '/audio/socal-livin.webp',    style: 'West Coast G-Funk' },
+    { title: 'Long Way Home',    src: '/audio/long-way-home.mp3',   cover: '/audio/long-way-home.jpg',  style: 'Midwest Hip Hop' },
+    { title: 'Just Like Me',     src: '/audio/just-like-me.mp3',    cover: '/audio/just-like-me.jpg',   style: 'Soulful Blues Rock', videoUrl: 'https://robbmorganmedia.blob.core.windows.net/media/just-like-me.mp4' },
+    { title: 'Sunshine Song',    src: '/audio/sunshine-song.mp3',   cover: '/audio/sunshine-song.jpg',  style: 'Acoustic Piano Pop' },
+    { title: 'Sweetest Love',    src: '/audio/sweetest-love.mp3',   cover: '/audio/sweetest-love.jpg',  style: 'Contemporary Acoustic Pop' },
+    { title: 'Whispers of Time', src: '/audio/whispers-of-time.mp3', cover: '/audio/whispers-of-time.jpg', style: 'Midwest Hip Hop', subtitle: 'Soundtrack' },
+    { title: 'Come Back Home',   src: '/audio/come-back-home.mp3',  cover: '/audio/come-back-home.jpg', style: 'Soulful Piano Ballad' },
   ];
 
   /** Tracks rendered in the template — filters out anything flagged hidden. */

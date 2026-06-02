@@ -22,33 +22,43 @@ Usage:
   ./update-search.py month      # current month, month-to-date
   ./update-search.py ytd        # current year, year-to-date
   ./update-search.py 16m        # trailing 16 months (Google's max history)
+  ./update-search.py inspect    # per-route INDEXING status (URL Inspection API)
 
 Companion to update-traffic.py / update-engagement.py, but those hit
 Azure App Insights (your own analytics); this one hits Google's index.
 
 ------------------------------------------------------------------
-ONE-TIME SETUP (service account — headless, no browser after this)
+ONE-TIME SETUP (OAuth — recommended; you sign in as yourself once)
 ------------------------------------------------------------------
-1. Create a Google Cloud project (or reuse one) at
+This path authenticates as the human Search Console OWNER, so it
+sidesteps the service-account "email not found" propagation delay in
+Search Console's Add-user dialog. After a single browser consent it's
+fully headless (a refresh token is cached locally).
+
+1. Create/reuse a Google Cloud project at
    https://console.cloud.google.com/ and ENABLE the
    "Google Search Console API" (APIs & Services → Library).
-2. APIs & Services → Credentials → Create Credentials → Service
-   account. Give it any name; no roles needed. Open the service
-   account → Keys → Add key → JSON. Download the file and save it
-   as  gsc-credentials.json  in this repo root (it's gitignored).
-3. Copy the service account's email (looks like
-   name@project.iam.gserviceaccount.com) from that JSON file's
-   "client_email" field.
-4. In Google Search Console (search.google.com/search-console) for
-   robbmorgan.com → Settings → Users and permissions → Add user →
-   paste that service-account email, permission "Full" (or
-   "Restricted" — read is enough). Save.
-5. Run this script. (First run installs nothing; deps live in the
-   .venv-gsc/ virtualenv created alongside this script.)
+2. APIs & Services → OAuth consent screen → User type "External" →
+   fill the required app-name/email fields → Save. Under "Test users",
+   ADD YOUR OWN Google email (the one that owns robbmorgan.com in
+   Search Console). (Publishing isn't required; a test user can grant
+   consent.)
+3. APIs & Services → Credentials → Create Credentials → OAuth client
+   ID → Application type "Desktop app" → Create → Download JSON.
+   Save it as  oauth-client.json  in this repo root (gitignored).
+4. Run this script. A browser opens once; sign in with that same
+   Google account and approve read-only Search Console access. A
+   gsc-token.json is written and reused on every later run.
+
+ALTERNATIVE SETUP (service account — needs propagation, no browser):
+   Create a service account, download its JSON key as
+   gsc-credentials.json here, then add its client_email as a user in
+   Search Console → Settings → Users and permissions. The script uses
+   this automatically if no oauth-client.json/gsc-token.json is present.
 
 Run with the project venv:
   .venv-gsc/bin/python update-search.py 28
-(or just ./update-search.py — the shebang line targets that venv).
+(or just ./update-search.py — it re-execs into that venv).
 """
 
 from __future__ import annotations
@@ -59,9 +69,12 @@ import warnings
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-# The Google libs spam FutureWarnings about macOS system Python 3.9 being
-# EOL; they're harmless here and clutter the report. Silence them.
+# The Google + urllib3 libs spam warnings about macOS system Python 3.9
+# being EOL and LibreSSL not being OpenSSL; both are harmless here and
+# clutter the report. Silence them.
 warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", message=".*OpenSSL.*")
+warnings.filterwarnings("ignore", message=".*LibreSSL.*")
 
 ROOT = Path(__file__).parent
 
@@ -80,6 +93,15 @@ if not _IN_VENV and _VENV_PY.exists():
     except ImportError:
         os.execv(str(_VENV_PY), [str(_VENV_PY), *sys.argv])
 
+# Auth: two supported paths, OAuth preferred (it uses YOUR own owner
+# access, so it sidesteps the service-account "email not found"
+# propagation delay in Search Console's Add-user dialog).
+#   OAuth  — oauth-client.json (downloaded "Desktop" OAuth client) +
+#            gsc-token.json (auto-written after the one-time consent).
+#   ServiceAccount (fallback) — gsc-credentials.json (key file), only
+#            usable once its email is added as a Search Console user.
+OAUTH_CLIENT_PATH = Path(os.environ.get("GSC_OAUTH_CLIENT", ROOT / "oauth-client.json"))
+TOKEN_PATH = Path(os.environ.get("GSC_TOKEN", ROOT / "gsc-token.json"))
 CRED_PATH = Path(os.environ.get("GSC_CREDENTIALS", ROOT / "gsc-credentials.json"))
 # Optional explicit property override, e.g. GSC_SITE='sc-domain:robbmorgan.com'
 SITE_OVERRIDE = os.environ.get("GSC_SITE")
@@ -90,6 +112,13 @@ SCOPES = ["https://www.googleapis.com/auth/webmasters.readonly"]
 # couple of days are usually empty. We still ask through "today" so the
 # window matches what you expect, but flag the lag in the header.
 DATA_LAG_DAYS = 3
+
+# Routes to check in `inspect` mode — mirror app.routes.ts (drop the ''
+# wildcard 404). '' is the homepage. Keep in sync if routes change.
+ROUTES = [
+    "", "resume", "novels", "web-apps", "mobile-apps", "blog",
+    "music", "contact", "certs", "photos", "rocket", "the-desk",
+]
 
 
 # ---------- Timeframe parsing ----------
@@ -129,9 +158,49 @@ def parse_timeframe(arg: str | None) -> tuple[date, date, str]:
 
 # ---------- Search Console client ----------
 
+def _oauth_credentials():
+    """Authenticate as the human owner via OAuth.
+
+    First run opens a browser for a one-time consent and writes a
+    refresh token to gsc-token.json; later runs load + silently refresh
+    it, so the script stays headless. This path never touches Search
+    Console's user list, so it avoids the service-account propagation
+    delay entirely.
+    """
+    from google.oauth2.credentials import Credentials
+    from google.auth.transport.requests import Request
+    from google_auth_oauthlib.flow import InstalledAppFlow
+
+    creds = None
+    if TOKEN_PATH.exists():
+        creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+
+    if not creds or not creds.valid:
+        refreshed = False
+        if creds and creds.expired and creds.refresh_token:
+            try:
+                creds.refresh(Request())
+                refreshed = True
+            except Exception:
+                # An app left in "Testing" status expires its refresh token
+                # after 7 days; the refresh then fails with invalid_grant.
+                # Fall through to a fresh browser consent instead of dying.
+                creds = None
+        if not refreshed and not (creds and creds.valid):
+            print("Opening a browser for one-time Google sign-in…", file=sys.stderr)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                str(OAUTH_CLIENT_PATH), SCOPES
+            )
+            # port=0 grabs a free localhost port for the redirect.
+            creds = flow.run_local_server(port=0)
+        TOKEN_PATH.write_text(creds.to_json())
+        print(f"Saved login token to {TOKEN_PATH.name} (reused on future runs).",
+              file=sys.stderr)
+    return creds
+
+
 def build_service():
     try:
-        from google.oauth2 import service_account
         from googleapiclient.discovery import build
     except ImportError:
         print(
@@ -139,25 +208,32 @@ def build_service():
             "virtualenv next to this script — run via:\n"
             "  .venv-gsc/bin/python update-search.py\n"
             "or recreate the venv:\n"
-            "  python3 -m venv .venv-gsc && "
-            ".venv-gsc/bin/pip install google-api-python-client google-auth",
+            "  python3 -m venv .venv-gsc && .venv-gsc/bin/pip install "
+            "google-api-python-client google-auth google-auth-oauthlib",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    if not CRED_PATH.exists():
+    # Prefer OAuth (your own owner access); fall back to service account.
+    if OAUTH_CLIENT_PATH.exists() or TOKEN_PATH.exists():
+        creds = _oauth_credentials()
+    elif CRED_PATH.exists():
+        from google.oauth2 import service_account
+        creds = service_account.Credentials.from_service_account_file(
+            str(CRED_PATH), scopes=SCOPES
+        )
+    else:
         print(
-            f"No service-account key at {CRED_PATH}.\n"
-            "See the ONE-TIME SETUP block at the top of this file: create a "
-            "service account, download its JSON key here as gsc-credentials.json, "
-            "and add its email as a user in Search Console.",
+            "No credentials found. Set up ONE of:\n"
+            f"  • OAuth (recommended): download a 'Desktop' OAuth client JSON "
+            f"and save it as {OAUTH_CLIENT_PATH.name} in the repo root.\n"
+            f"  • Service account: save the key as {CRED_PATH.name} and add its "
+            "email as a Search Console user.\n"
+            "See the ONE-TIME SETUP block at the top of this file.",
             file=sys.stderr,
         )
         sys.exit(1)
 
-    creds = service_account.Credentials.from_service_account_file(
-        str(CRED_PATH), scopes=SCOPES
-    )
     # cache_discovery=False avoids a noisy warning on newer oauth stacks.
     return build("searchconsole", "v1", credentials=creds, cache_discovery=False)
 
@@ -274,10 +350,85 @@ def print_query_page(rows):
         print(f"  {kw:<34} {page:<22} {pos:>5.1f} {impr:>6}")
 
 
+# ---------- URL inspection (indexing status) ----------
+
+def site_origin(site: str) -> str:
+    """Turn a property string into a URL origin we can prepend routes to.
+
+    'https://robbmorgan.com/'      → 'https://robbmorgan.com'
+    'sc-domain:robbmorgan.com'     → 'https://robbmorgan.com'
+    """
+    if site.startswith("sc-domain:"):
+        return "https://" + site[len("sc-domain:"):]
+    return site.rstrip("/")
+
+
+def inspect_route(service, site, url):
+    """Call the URL Inspection API for one URL. Returns the
+    indexStatusResult dict, or {'_error': msg} on failure."""
+    body = {"inspectionUrl": url, "siteUrl": site, "languageCode": "en-US"}
+    try:
+        resp = service.urlInspection().index().inspect(body=body).execute()
+        return resp.get("inspectionResult", {}).get("indexStatusResult", {})
+    except Exception as e:  # quota, permission, transient — keep going
+        return {"_error": str(e).split("\n")[0][:80]}
+
+
+def run_inspect(service, site) -> None:
+    origin = site_origin(site)
+    print(f'Google Search Console · URL inspection · {site}', file=sys.stderr)
+    print('Checking whether each route is actually in Google\'s index '
+          '(URL Inspection API).\n', file=sys.stderr)
+
+    print(f"  {'page':<14} {'indexed?':<10} {'coverage state':<34} {'last crawl':<12}")
+    print(f"  {'-'*14} {'-'*10} {'-'*34} {'-'*12}")
+
+    indexed = 0
+    for path in ROUTES:
+        url = origin + "/" + path
+        r = inspect_route(service, site, url)
+        label = "/" + path if path else "/"
+
+        if "_error" in r:
+            print(f"  {label:<14} {'ERROR':<10} {r['_error']:<34} {'-':<12}")
+            continue
+
+        verdict = r.get("verdict", "?")              # PASS / NEUTRAL / FAIL
+        coverage = r.get("coverageState", "unknown")  # human-readable status
+        is_indexed = verdict == "PASS"
+        if is_indexed:
+            indexed += 1
+        mark = "YES" if is_indexed else "no"
+
+        crawl = r.get("lastCrawlTime", "")
+        crawl = crawl[:10] if crawl else "never"
+
+        print(f"  {label:<14} {mark:<10} {trunc(coverage,34):<34} {crawl:<12}")
+
+    print()
+    print(f"  {indexed}/{len(ROUTES)} routes indexed by Google.")
+    print()
+    print("Legend — common coverage states:", file=sys.stderr)
+    print("  'Submitted and indexed'           → live in Google. Good.", file=sys.stderr)
+    print("  'Crawled - currently not indexed'  → Google saw it, chose not to "
+          "index (thin/low-value, or still deciding).", file=sys.stderr)
+    print("  'Discovered - currently not indexed' → Google knows the URL but "
+          "hasn't crawled it yet.", file=sys.stderr)
+    print("  'URL is unknown to Google'         → never discovered. Submit via "
+          "sitemap / Request Indexing.", file=sys.stderr)
+
+
 # ---------- main ----------
 
 def main() -> None:
     arg = sys.argv[1] if len(sys.argv) > 1 else None
+
+    if arg and arg.lower() == "inspect":
+        service = build_service()
+        site = resolve_site(service)
+        run_inspect(service, site)
+        return
+
     start, end, label = parse_timeframe(arg)
 
     service = build_service()

@@ -35,7 +35,7 @@ export class Novels implements AfterViewInit {
       slug: 'whispers-of-time',
       label: 'Whispers of Time',
       title: 'Whispers of Time',
-      cover: '/novels/whispers-of-time.webp',
+      cover: '/book-covers/whispers-of-time.webp',
       coverAlt: 'Whispers of Time — book cover',
       description: [
         'Raymond Harris has everything he never wanted.',
@@ -53,7 +53,7 @@ export class Novels implements AfterViewInit {
       label: 'Concordance',
       inProgress: true,
       title: 'Concordance',
-      cover: '/novels/concordance.webp',
+      cover: '/book-covers/concordance.webp',
       coverAlt: 'Concordance — book cover (current project)',
       description: [
         'Eleven weeks after Dr. Nadia Reyes\'s ER adopts an AI diagnostic tool, she realizes she hasn\'t formed a medical opinion on her own in weeks.',

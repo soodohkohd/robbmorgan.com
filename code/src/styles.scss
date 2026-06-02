@@ -1102,3 +1102,27 @@ button {
   color: var(--brass);
   font-size: 1rem;
 }
+
+/* ============================================================
+   LANDING — crawlable section nav (.sr-only-nav)
+   Lives in global styles (not landing.scss) because it's a generic
+   screen-reader-only utility and keeps the landing component under its
+   per-component style budget. The .sr-only-nav <nav> in landing.html
+   holds real <a routerLink> links so Googlebot can crawl the section
+   pages (the desk hotspots navigate via JS click handlers, which
+   crawlers don't follow). This rule hides it from sighted users while
+   keeping it in the DOM + accessibility tree — the standard
+   "visually hidden" pattern, NOT display:none (which would drop it
+   from the a11y tree and weaken the crawl signal).
+   ============================================================ */
+.sr-only-nav {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

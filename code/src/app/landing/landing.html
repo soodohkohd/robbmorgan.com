@@ -1,5 +1,24 @@
 <main class="landing" [class.opening]="opening()" aria-label="Robb Morgan">
 
+  <!-- Crawlable section nav. Visually hidden (.sr-only-nav in styles.scss)
+       but present in the DOM as real <a href> links so Googlebot can
+       discover and crawl the section pages — the desk hotspots navigate
+       via JS click handlers, which crawlers don't follow. Also gives
+       screen-reader users a plain way to reach every section. -->
+  <nav class="sr-only-nav" aria-label="Site sections">
+    <a routerLink="/resume">Resume</a>
+    <a routerLink="/novels">Novels</a>
+    <a routerLink="/web-apps">Code</a>
+    <a routerLink="/mobile-apps">Mobile Apps</a>
+    <a routerLink="/blog">Thoughts</a>
+    <a routerLink="/music">Music</a>
+    <a routerLink="/photos">Photos</a>
+    <a routerLink="/certs">Certifications</a>
+    <a routerLink="/the-desk">The Desk</a>
+    <a routerLink="/rocket">Rocket Game</a>
+    <a routerLink="/contact">Contact</a>
+  </nav>
+
   <!-- Cinematic scene (desktop & tablet) -->
   <section
     class="scene"

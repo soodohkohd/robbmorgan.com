@@ -330,7 +330,7 @@ export class Landing {
   private playNotificationSound(): void {
     if (typeof window === 'undefined') return;
     if (!this.notificationSound) {
-      this.notificationSound = new Audio('/music/message.mp3');
+      this.notificationSound = new Audio('/audio/message.mp3');
       this.notificationSound.preload = 'auto';
       this.notificationSound.volume = 0.55;
     }
