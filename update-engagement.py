@@ -47,6 +47,7 @@ SPOT_LABELS = {
     "music":       "Music",
     "break":       "Take a Break",
     "desk":        "The Desk",
+    "rocket":      "Rocket game",
     "contact":     "Contact",
     "keyboard":    "Scenes",
     "not-me":      "NOT ME!",
@@ -251,6 +252,17 @@ def build_sections(events):
         egg_rows = [("(no reveals yet)", 0)]
     sections.append(("Easter egg — Just Like Me video reveal", egg_rows))
 
+    # Rocket game — launches (rocket_play) vs. games actually finished
+    # (rocket_game_over). The gap between them is the bail-out rate. Score
+    # is a per-event dimension, so we report totals rather than bucketing
+    # by individual score.
+    plays = len(events.get("rocket_play", []))
+    overs = len(events.get("rocket_game_over", []))
+    rocket_rows = []
+    if plays or overs:
+        rocket_rows = [("Games launched", plays), ("Games finished (game over)", overs)]
+    sections.append(("Rocket game (launches vs. finishes)", rocket_rows))
+
     return sections
 
 
@@ -281,6 +293,7 @@ def main() -> None:
         ("post opens", "blog_post_select"),
         ("music plays", "music_play"),
         ("app views", "mobile_app_select"),
+        ("rocket plays", "rocket_play"),
         ("easter eggs", "music_video_open"),
     ]:
         n = len(events.get(key, []))
