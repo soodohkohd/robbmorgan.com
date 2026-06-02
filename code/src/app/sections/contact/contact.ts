@@ -3,8 +3,8 @@ import { SectionShell } from '../section-shell/section-shell';
 import { Analytics } from '../../analytics.service';
 
 /** Web3Forms access key (free, unlimited — https://web3forms.com).
- *  The key only allows submissions to the inbox it's bound to
- *  (email@robbmorgan.com), so it's safe to ship in the client bundle. */
+ *  The key only allows submissions to the inbox it's bound to,
+ *  so it's safe to ship in the client bundle. */
 const WEB3FORMS_ACCESS_KEY = 'bb72c411-78dd-45c4-92d5-854220e66c8d';
 
 /** Stricter than the browser's native `type="email"` (which accepts
