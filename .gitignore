@@ -16,6 +16,12 @@
 /.env
 .DS_Store
 
+# Python virtualenvs
+.venv*
+
+# Google Search Console report script (update-search.py)
+/gsc-credentials.json
+
 # Angular CLI and build artefacts
 /.angular-cli.json
 /.ng/
