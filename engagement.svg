@@ -12,52 +12,52 @@
   </style>
 
   <text x="40" y="30" class="title">Engagement — past 30 days</text>
-  <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-06-07</text>
-  <text x="40" y="72" class="summary">125 hotspot clicks · 26 post opens · 31 music plays · 4 app views · 3 rocket plays · 2 easter eggs</text>
+  <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-06-09</text>
+  <text x="40" y="72" class="summary">126 hotspot clicks · 26 post opens · 31 music plays · 4 app views · 3 rocket plays · 2 easter eggs</text>
 
-  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 125 events</tspan></text>
+  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 126 events</tspan></text>
   <text x="40" y="120" class="bar-label">Sound toggle</text>
   <rect x="260" y="108" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="120" class="bar-value">44</text>
+  <text x="848.0" y="120" class="bar-value">45</text>
   <text x="40" y="144" class="bar-label">Music</text>
-  <rect x="260" y="132" width="210.9" height="16" rx="2" class="bar"/>
-  <text x="478.9" y="144" class="bar-value">16</text>
+  <rect x="260" y="132" width="206.2" height="16" rx="2" class="bar"/>
+  <text x="474.2" y="144" class="bar-value">16</text>
   <text x="40" y="168" class="bar-label">Thoughts</text>
-  <rect x="260" y="156" width="158.2" height="16" rx="2" class="bar"/>
-  <text x="426.2" y="168" class="bar-value">12</text>
+  <rect x="260" y="156" width="154.7" height="16" rx="2" class="bar"/>
+  <text x="422.7" y="168" class="bar-value">12</text>
   <text x="40" y="192" class="bar-label">Scenes</text>
-  <rect x="260" y="180" width="131.8" height="16" rx="2" class="bar"/>
-  <text x="399.8" y="192" class="bar-value">10</text>
-  <text x="40" y="216" class="bar-label">NOT ME!</text>
-  <rect x="260" y="204" width="92.3" height="16" rx="2" class="bar"/>
-  <text x="360.3" y="216" class="bar-value">7</text>
-  <text x="40" y="240" class="bar-label">Rocket game</text>
-  <rect x="260" y="228" width="92.3" height="16" rx="2" class="bar"/>
-  <text x="360.3" y="240" class="bar-value">7</text>
-  <text x="40" y="264" class="bar-label">The Desk</text>
-  <rect x="260" y="252" width="65.9" height="16" rx="2" class="bar"/>
-  <text x="333.9" y="264" class="bar-value">5</text>
-  <text x="40" y="288" class="bar-label">Contact</text>
-  <rect x="260" y="276" width="65.9" height="16" rx="2" class="bar"/>
-  <text x="333.9" y="288" class="bar-value">5</text>
-  <text x="40" y="312" class="bar-label">Resume</text>
-  <rect x="260" y="300" width="65.9" height="16" rx="2" class="bar"/>
-  <text x="333.9" y="312" class="bar-value">5</text>
+  <rect x="260" y="180" width="128.9" height="16" rx="2" class="bar"/>
+  <text x="396.9" y="192" class="bar-value">10</text>
+  <text x="40" y="216" class="bar-label">Rocket game</text>
+  <rect x="260" y="204" width="90.2" height="16" rx="2" class="bar"/>
+  <text x="358.2" y="216" class="bar-value">7</text>
+  <text x="40" y="240" class="bar-label">NOT ME!</text>
+  <rect x="260" y="228" width="90.2" height="16" rx="2" class="bar"/>
+  <text x="358.2" y="240" class="bar-value">7</text>
+  <text x="40" y="264" class="bar-label">Resume</text>
+  <rect x="260" y="252" width="64.4" height="16" rx="2" class="bar"/>
+  <text x="332.4" y="264" class="bar-value">5</text>
+  <text x="40" y="288" class="bar-label">The Desk</text>
+  <rect x="260" y="276" width="64.4" height="16" rx="2" class="bar"/>
+  <text x="332.4" y="288" class="bar-value">5</text>
+  <text x="40" y="312" class="bar-label">Contact</text>
+  <rect x="260" y="300" width="64.4" height="16" rx="2" class="bar"/>
+  <text x="332.4" y="312" class="bar-value">5</text>
   <text x="40" y="336" class="bar-label">Mobile Apps</text>
-  <rect x="260" y="324" width="52.7" height="16" rx="2" class="bar"/>
-  <text x="320.7" y="336" class="bar-value">4</text>
+  <rect x="260" y="324" width="51.6" height="16" rx="2" class="bar"/>
+  <text x="319.6" y="336" class="bar-value">4</text>
   <text x="40" y="360" class="bar-label">Novels</text>
-  <rect x="260" y="348" width="52.7" height="16" rx="2" class="bar"/>
-  <text x="320.7" y="360" class="bar-value">4</text>
-  <text x="40" y="384" class="bar-label">Take a Break</text>
-  <rect x="260" y="372" width="26.4" height="16" rx="2" class="bar"/>
-  <text x="294.4" y="384" class="bar-value">2</text>
-  <text x="40" y="408" class="bar-label">Code</text>
-  <rect x="260" y="396" width="26.4" height="16" rx="2" class="bar"/>
-  <text x="294.4" y="408" class="bar-value">2</text>
+  <rect x="260" y="348" width="51.6" height="16" rx="2" class="bar"/>
+  <text x="319.6" y="360" class="bar-value">4</text>
+  <text x="40" y="384" class="bar-label">Code</text>
+  <rect x="260" y="372" width="25.8" height="16" rx="2" class="bar"/>
+  <text x="293.8" y="384" class="bar-value">2</text>
+  <text x="40" y="408" class="bar-label">Take a Break</text>
+  <rect x="260" y="396" width="25.8" height="16" rx="2" class="bar"/>
+  <text x="293.8" y="408" class="bar-value">2</text>
   <text x="40" y="432" class="bar-label">Certs</text>
-  <rect x="260" y="420" width="26.4" height="16" rx="2" class="bar"/>
-  <text x="294.4" y="432" class="bar-value">2</text>
+  <rect x="260" y="420" width="25.8" height="16" rx="2" class="bar"/>
+  <text x="293.8" y="432" class="bar-value">2</text>
   <text x="40" y="472" class="section-title">Thoughts posts (which essays get opened) <tspan class="section-total">— 26 events</tspan></text>
   <text x="40" y="496" class="bar-label">performance-review</text>
   <rect x="260" y="484" width="580.0" height="16" rx="2" class="bar"/>
@@ -100,22 +100,22 @@
   <text x="40" y="864" class="bar-label">Codin' in Cali</text>
   <rect x="260" y="852" width="356.9" height="16" rx="2" class="bar"/>
   <text x="624.9" y="864" class="bar-value">8</text>
-  <text x="40" y="888" class="bar-label">Long Way Home</text>
+  <text x="40" y="888" class="bar-label">Sunshine Song</text>
   <rect x="260" y="876" width="89.2" height="16" rx="2" class="bar"/>
   <text x="357.2" y="888" class="bar-value">2</text>
   <text x="40" y="912" class="bar-label">Sweetest Love</text>
   <rect x="260" y="900" width="89.2" height="16" rx="2" class="bar"/>
   <text x="357.2" y="912" class="bar-value">2</text>
-  <text x="40" y="936" class="bar-label">Sunshine Song</text>
+  <text x="40" y="936" class="bar-label">Long Way Home</text>
   <rect x="260" y="924" width="89.2" height="16" rx="2" class="bar"/>
   <text x="357.2" y="936" class="bar-value">2</text>
   <text x="40" y="960" class="bar-label">Come Back Home</text>
   <rect x="260" y="948" width="89.2" height="16" rx="2" class="bar"/>
   <text x="357.2" y="960" class="bar-value">2</text>
-  <text x="40" y="984" class="bar-label">Just Like Me</text>
+  <text x="40" y="984" class="bar-label">Floating</text>
   <rect x="260" y="972" width="44.6" height="16" rx="2" class="bar"/>
   <text x="312.6" y="984" class="bar-value">1</text>
-  <text x="40" y="1008" class="bar-label">Floating</text>
+  <text x="40" y="1008" class="bar-label">Just Like Me</text>
   <rect x="260" y="996" width="44.6" height="16" rx="2" class="bar"/>
   <text x="312.6" y="1008" class="bar-value">1</text>
   <text x="40" y="1048" class="section-title">Time-of-day picker usage <tspan class="section-total">— 22 events</tspan></text>
@@ -143,10 +143,10 @@
   <text x="40" y="1240" class="bar-label">morning (picker)</text>
   <rect x="260" y="1228" width="145.0" height="16" rx="2" class="bar"/>
   <text x="413.0" y="1240" class="bar-value">1</text>
-  <text x="40" y="1280" class="section-title">Ambient sound toggle <tspan class="section-total">— 44 events</tspan></text>
+  <text x="40" y="1280" class="section-title">Ambient sound toggle <tspan class="section-total">— 45 events</tspan></text>
   <text x="40" y="1304" class="bar-label">sound off</text>
   <rect x="260" y="1292" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="1304" class="bar-value">44</text>
+  <text x="848.0" y="1304" class="bar-value">45</text>
   <text x="40" y="1344" class="section-title">Easter egg — Just Like Me video reveal <tspan class="section-total">— 2 events</tspan></text>
   <text x="40" y="1368" class="bar-label">Just Like Me</text>
   <rect x="260" y="1356" width="580.0" height="16" rx="2" class="bar"/>

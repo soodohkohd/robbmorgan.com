@@ -30,6 +30,31 @@ export class Blog implements AfterViewInit {
   private headTop = 0;
   readonly posts: readonly Post[] = [
     {
+      slug: 'return-to-office',
+      label: 'RTO',
+      title: 'Return To Office Was Never About Productivity.',
+      date: 'June 11, 2026',
+      image: '/posts/return-to-office.webp',
+      imageAlt: 'A split-screen illustration: on the left, an engineer working happily and focused from a bright home office in warm light; on the right, the same engineer slumped in a sterile fluorescent-lit cubicle, distracted and disengaged',
+      bodyHtml: `
+        <p>The productivity argument has been losing for three years. The data on remote work is overwhelming and consistent. Output is the same or higher. Engagement is the same or higher. Retention is the same or higher. And yet every quarter another big-name CEO posts a memo demanding people return to a building they have not missed.</p>
+        <p>So let me say what every senior engineer already knows.</p>
+        <p>RTO was never about productivity.</p>
+        <p>I have been more productive working remotely than I ever was in an office. The teams I work with have shipped more, debugged faster, written better, and delivered cleaner since we stopped commuting. That is not a hot take. It is just what happened. We were the experiment, and the experiment worked.</p>
+        <p>The mandates kept coming anyway. Look at the four real reasons:</p>
+        <ol>
+          <li><strong>Commercial real estate.</strong> A twenty-year lease signed at peak optimism does not unsign itself because the world moved on. Empty floors cost as much as full ones. RTO is the easiest way to make a finance problem look like a culture problem.</li>
+          <li><strong>Control.</strong> Some executives need to see you to believe you are working. The metric is presence, not output. The badge swipe is the KPI. This is a leadership failure, not a workforce failure.</li>
+          <li><strong>Quiet layoffs.</strong> Mandating RTO is the cheapest reduction in force ever invented. Announce a hard policy that you know your high performers will refuse, and a portion of your headcount walks out the door without a severance check. The org chart shrinks and the books look better.</li>
+          <li><strong>Optics.</strong> "Our people are back in the office" plays well in earnings calls. It signals discipline. It signals seriousness. It is theater for investors who do not work there.</li>
+        </ol>
+        <p>None of these are about you doing better work. None of these are about collaboration. None of these are about culture.</p>
+        <p>The fix is not complicated, and most companies will still not do it. Measure output. Reward results. Trust the adults you hired. Let your engineers work where they ship the best code, and you will keep more of the ones you cannot afford to lose.</p>
+        <p>If your office is half empty on Tuesdays, your CFO already knows what is happening. The badge swipes are not winning that argument. The real estate is.</p>
+        <p>Stop pretending the mandate is about us. It never was.</p>
+      `,
+    },
+    {
       slug: 'ai-everything',
       label: 'AI In It',
       title: 'Stop Putting AI In Everything.',
