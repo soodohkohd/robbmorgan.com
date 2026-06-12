@@ -36,6 +36,66 @@
     border-color: var(--brass);
     box-shadow: 0 1px 4px rgba(38, 24, 18, 0.18);
   }
+
+  /* Current-project pill: dark walnut fill that stands apart from the
+     parchment pills — matches the Mobile Apps section's .is-wip pill. */
+  &.is-wip {
+    background: var(--walnut-deep);
+    color: var(--parchment-soft);
+    border-color: var(--walnut-deep);
+
+    &:hover, &:focus-visible {
+      background: var(--walnut);
+      border-color: var(--brass);
+    }
+
+    &.is-active {
+      background: var(--brass);
+      color: var(--walnut-deep);
+      border-color: var(--walnut-deep);
+      box-shadow: 0 1px 4px rgba(38, 24, 18, 0.28);
+    }
+  }
+}
+
+/* ---------- EPIC component sub-tabs (underline bar) ---------- */
+/* Distinct from the brass pills above: an underline-style tab strip that
+   reads as nested navigation INSIDE the EPIC Pipeline section. */
+
+.epic-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0 0 2rem;
+  border-bottom: 1px solid rgba(58, 42, 31, 0.22);
+}
+
+.epic-subtab {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    color var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    color: var(--walnut-deep);
+    border-bottom-color: var(--brass-soft);
+    outline: none;
+  }
+
+  &.is-active {
+    color: var(--walnut-deep);
+    border-bottom-color: var(--brass);
+  }
 }
 
 /* ---------- selected topic title + intro ---------- */

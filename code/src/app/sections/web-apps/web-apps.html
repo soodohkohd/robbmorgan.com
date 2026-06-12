@@ -18,10 +18,11 @@
         type="button"
         class="topic-tab"
         role="tab"
+        [class.is-wip]="topic.wip"
         [class.is-active]="selectedSlug() === topic.slug"
         [attr.aria-selected]="selectedSlug() === topic.slug"
         (click)="select(topic.slug)"
-      >{{ topic.label }}</button>
+      >{{ topic.wip ? 'Current Project: ' + topic.label : topic.label }}</button>
     }
   </div>
 
@@ -31,6 +32,24 @@
     @if (selectedTopic().intro) {
       <p class="topic-intro" [innerHTML]="selectedTopic().intro"></p>
     }
-    <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
+
+    @if (selectedSlug() === 'epic-pipeline') {
+      <!-- EPIC component sub-tabs (pipeline / web / api / modules) -->
+      <div class="epic-subtabs" role="tablist" aria-label="EPIC components">
+        @for (tab of epicTabs; track tab.slug) {
+          <button
+            type="button"
+            class="epic-subtab"
+            role="tab"
+            [class.is-active]="selectedEpicSlug() === tab.slug"
+            [attr.aria-selected]="selectedEpicSlug() === tab.slug"
+            (click)="selectEpic(tab.slug)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+      <div class="topic-body" [innerHTML]="selectedEpicTab().bodyHtml"></div>
+    } @else {
+      <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
+    }
   </article>
 </app-section-shell>
