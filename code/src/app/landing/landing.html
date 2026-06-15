@@ -50,6 +50,78 @@
       aria-hidden="true"
     />
 
+    <!-- Palm breeze: one copy of the scene per palm crown, each
+         clipped to its captured polygon (fronds only — trunks
+         excluded) and gently rocked by a CSS transform so the crowns
+         sway as if in a light breeze. The transform animates on the
+         GPU compositor (not the SVG-filter main-thread path), so the
+         motion stays smooth and consistent even while the monitor
+         typewriter ticks. Each palm pivots at its own trunk base and
+         runs its own duration + phase, so they desync naturally.
+         palm3 is split by the window seal into 3a/3b — they share one
+         absolute pivot and identical timing so they rock as a single
+         crown across the mullion. background-image tracks the current
+         time-of-day scene. Hidden under prefers-reduced-motion. -->
+    <!-- Feathered masks for the three big palms. Each draws the
+         captured crown polygon (objectBoundingBox 0-1 units, so it
+         scales to the layer's box at any viewport size) filled white,
+         then blurs it so the alpha falls off to transparent at the
+         edges — replacing clip-path's hard 1px cutoff. The swaying
+         copy blends into the static scene beneath instead of ending
+         on a visible seam. stdDeviation is split per-axis so the
+         feather is an even ~3px even on the tall/narrow palm3
+         fragments (primitiveUnits = objectBoundingBox ⇒ each value is
+         a fraction of that side of the box). -->
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute;">
+      <defs>
+        <filter id="palm1-feather" primitiveUnits="objectBoundingBox"
+                x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur stdDeviation="0.018 0.018" />
+        </filter>
+        <filter id="palm2-feather" primitiveUnits="objectBoundingBox"
+                x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur stdDeviation="0.020 0.018" />
+        </filter>
+        <filter id="palm3a-feather" primitiveUnits="objectBoundingBox"
+                x="-35%" y="-25%" width="170%" height="150%">
+          <feGaussianBlur stdDeviation="0.053 0.021" />
+        </filter>
+        <filter id="palm3b-feather" primitiveUnits="objectBoundingBox"
+                x="-45%" y="-25%" width="190%" height="150%">
+          <feGaussianBlur stdDeviation="0.079 0.024" />
+        </filter>
+
+        <mask id="palm1-mask" maskContentUnits="objectBoundingBox">
+          <polygon filter="url(#palm1-feather)" fill="#fff"
+            points="0.23,0 0.79,0.006 0.93,0.101 0.97,0.223 1,0.413 0.98,0.542 0.95,0.642 0.9,0.777 0.77,0.888 0.65,0.955 0.53,1 0.43,0.994 0.34,0.933 0.26,0.788 0.21,0.709 0.09,0.698 0,0.62 0.02,0.425 0.09,0.179" />
+        </mask>
+        <mask id="palm2-mask" maskContentUnits="objectBoundingBox">
+          <polygon filter="url(#palm2-feather)" fill="#fff"
+            points="0.522,0 0.722,0.044 0.867,0.122 0.967,0.254 1,0.414 0.978,0.525 0.933,0.624 0.867,0.768 0.744,0.873 0.622,0.972 0.522,1 0.389,0.989 0.278,0.923 0.156,0.845 0.056,0.713 0.022,0.552 0,0.414 0.067,0.254 0.244,0.061" />
+        </mask>
+        <mask id="palm3a-mask" maskContentUnits="objectBoundingBox">
+          <polygon filter="url(#palm3a-feather)" fill="#fff"
+            points="1,0 0.971,1 0.676,0.948 0.382,0.851 0.176,0.721 0.029,0.578 0.235,0.396 0,0.351 0.324,0.286 0.265,0.182 0.618,0.11" />
+        </mask>
+        <mask id="palm3b-mask" maskContentUnits="objectBoundingBox">
+          <polygon filter="url(#palm3b-feather)" fill="#fff"
+            points="0.043,0 0.478,0.075 0.826,0.231 0.957,0.403 1,0.657 0.652,0.851 0.304,0.978 0,1" />
+        </mask>
+      </defs>
+    </svg>
+    <div class="palm-breeze-layer palm-breeze-1"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+    <div class="palm-breeze-layer palm-breeze-2"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+    <div class="palm-breeze-layer palm-breeze-3a"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+    <div class="palm-breeze-layer palm-breeze-3b"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+    <div class="palm-breeze-layer palm-breeze-4"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+    <div class="palm-breeze-layer palm-breeze-5"
+         [style.background-image]="'url(' + sceneSrc() + ')'" aria-hidden="true"></div>
+
 
 <!-- Monitor "VS Code + Claude Code session" overlay. The whole
          block is blurred so specific text isn't readable but the
@@ -415,7 +487,7 @@
           <polygon
             [attr.points]="capturePointsForSvg()"
             fill="rgba(242, 201, 76, 0.18)"
-            stroke="#f2c94c"
+            stroke="#ff2d2d"
             stroke-width="2"
             vector-effect="non-scaling-stroke"
           />

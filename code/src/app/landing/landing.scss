@@ -78,6 +78,158 @@
   opacity: 1;
 }
 
+/* ---------- Palm breeze ----------
+   One copy of the scene image per palm crown, each confined to that
+   palm's captured bbox and clipped to its polygon (fronds only —
+   trunks excluded), then gently rocked by a CSS transform so the
+   fronds sway in a light breeze. The transform animates on the GPU
+   compositor, so it stays smooth and consistent even while the main
+   thread is busy (the monitor typewriter tick) — unlike an animated
+   SVG filter, which re-rasterizes on the main thread and stutters.
+
+   Alignment: the background is the full scene sized to the scene's
+   own width — .scene is `container-type: inline-size`, so 100cqw ==
+   scene width and `auto` height preserves the locked 1670:941 aspect
+   ratio. Each layer is then shifted by its bbox offset so the palms
+   sit pixel-aligned over the static scene beneath. The X offset is
+   the bbox left directly (1cqw == 1% of width); the Y offset is the
+   bbox top scaled by 941/1670 == 0.56347 (so it, too, is expressed
+   in cqw and needs no block-axis container).
+
+   clip-path transforms with the element, so each clipped crown rocks
+   as a unit and never reaches the window frame, mullion, or monitor.
+   --sway sets the per-palm lean amplitude. */
+.palm-breeze-layer {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100cqw auto;
+  pointer-events: none;
+  transform-origin: 50% 100%; /* trunk base — frond tips travel most */
+  animation: palm-sway 7s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Slow rock between a slight left and slight right lean. ease-in-out
+   + alternate decelerates at each end, the way a frond settles before
+   the breeze pushes it back — reads as a continuous, gentle sway. */
+@keyframes palm-sway {
+  from { transform: rotate(calc(var(--sway, 0.8deg) * -1)); }
+  to   { transform: rotate(var(--sway, 0.8deg)); }
+}
+
+/* palm1 — leftmost crown. */
+.palm-breeze-1 {
+  left: 62.5%;
+  top: 0.1%;
+  width: 10.0%;
+  height: 17.9%;
+  background-position: -62.5cqw -0.06cqw;
+  --sway: 2.4deg;
+  animation-duration: 6s;
+  -webkit-mask: url(#palm1-mask);
+  mask: url(#palm1-mask);
+}
+
+/* palm2 — middle crown. Slower + offset phase so it desyncs from p1. */
+.palm-breeze-2 {
+  left: 72.3%;
+  top: 1.4%;
+  width: 9.0%;
+  height: 18.1%;
+  background-position: -72.3cqw -0.79cqw;
+  --sway: 2.0deg;
+  animation-duration: 7.2s;
+  animation-delay: -2.6s;
+  -webkit-mask: url(#palm2-mask);
+  mask: url(#palm2-mask);
+}
+
+/* palm3 — rightmost crown, split by the window seal into 3a (left of
+   the mullion) and 3b (right of it). Both share the SAME absolute
+   pivot (the palm3 trunk base, scene ~84%/25%) and the SAME timing,
+   so the two fragments rock as one rigid crown across the seal.
+   transform-origin is expressed in each fragment's own box units to
+   resolve to that one shared scene point. */
+.palm-breeze-3a,
+.palm-breeze-3b {
+  --sway: 1.7deg;
+  animation-duration: 5.6s;
+  animation-delay: -4.1s;
+}
+.palm-breeze-3a {
+  left: 79.2%;
+  top: 10.4%;
+  width: 3.4%;
+  height: 15.4%;
+  background-position: -79.2cqw -5.86cqw;
+  transform-origin: 141.2% 94.8%; /* shared palm3 pivot ~84%/25% */
+  -webkit-mask: url(#palm3a-mask);
+  mask: url(#palm3a-mask);
+}
+.palm-breeze-3b {
+  left: 85.5%;
+  top: 9.5%;
+  width: 2.3%;
+  height: 13.4%;
+  background-position: -85.5cqw -5.35cqw;
+  transform-origin: -65.2% 115.7%;
+  -webkit-mask: url(#palm3b-mask);
+  mask: url(#palm3b-mask);
+}
+
+/* palm4 — small distant crown lower-right. */
+.palm-breeze-4 {
+  left: 69.3%;
+  top: 32.2%;
+  width: 4.6%;
+  height: 7.9%;
+  background-position: -69.3cqw -18.14cqw;
+  --sway: 1.8deg;
+  animation-duration: 6.6s;
+  animation-delay: -1.3s;
+  clip-path: polygon(
+    56.5% 0.0%, 82.6% 7.6%, 100.0% 31.6%, 100.0% 57.0%, 95.7% 81.0%,
+    73.9% 100.0%, 54.3% 98.7%, 34.8% 96.2%, 10.9% 81.0%, 0.0% 53.2%,
+    4.3% 24.1%, 28.3% 1.3%
+  );
+}
+
+/* palm5 — smallest distant crown, just below + right of palm4. */
+.palm-breeze-5 {
+  left: 75.4%;
+  top: 38.0%;
+  width: 3.0%;
+  height: 6.1%;
+  background-position: -75.4cqw -21.41cqw;
+  --sway: 1.6deg;
+  animation-duration: 5.9s;
+  animation-delay: -3.4s;
+  clip-path: polygon(
+    50.0% 0.0%, 80.0% 9.8%, 96.7% 31.1%, 100.0% 63.9%, 80.0% 78.7%,
+    56.7% 100.0%, 26.7% 98.4%, 3.3% 80.3%, 0.0% 54.1%, 6.7% 16.4%
+  );
+}
+
+/* Respect reduced-motion: drop the moving copies entirely so the palms
+   are fully static (identical to the bare scene image). */
+@media (prefers-reduced-motion: reduce) {
+  .palm-breeze-layer {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Debug mode (?debug=1, dev only): freeze ALL scene animation so the
+   background is fully static for tracing new hotspots. The palm copies
+   rest at their identity transform (aligned over the scene, so
+   invisible); birds, steam, etc. park at their first keyframe. */
+.scene.debug *,
+.scene.debug *::before,
+.scene.debug *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 /* ---------- HOTSPOTS ---------- */
 .hotspot {
   position: absolute;
