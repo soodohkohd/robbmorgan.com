@@ -79,6 +79,10 @@ export class Landing {
    *  if open; otherwise falls back to local time. */
   activeTime = computed<TimeOfDay>(() => this.pickerSelection() ?? this.timeOfDay());
   sceneSrc = computed(() => `/desk-scene-${this.activeTime()}.webp`);
+  /** Pre-rendered looping wave animation (surf warped up the beach), one
+   *  per time-of-day so it matches the active scene. See landing.html
+   *  .beach-wave + artifacts/make-beach-wave.py. */
+  waveSrc = computed(() => `/beach-wave-${this.activeTime()}.webp`);
 
   /* ---------- Crossfade scene swap ----------
      Two stacked <img> elements. When sceneSrc() changes, the new

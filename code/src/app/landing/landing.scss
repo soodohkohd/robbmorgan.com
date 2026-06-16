@@ -210,13 +210,41 @@
   );
 }
 
-/* Respect reduced-motion: drop the moving copies entirely so the palms
-   are fully static (identical to the bare scene image). */
+/* ---------- Beach surf ----------
+   A pre-rendered looping warp baked to an animated WebP (one per
+   time-of-day), positioned over its source region of the scene. The
+   inverse-distance-weighted (Shepard) warp that drags the surf up the
+   sand is a per-pixel mesh deform — impossible to run live in CSS — so it
+   is baked offline by artifacts/make-beach-wave.py. The trees are punched
+   out of the WebP's alpha, so the wave passes BEHIND them with no z-index
+   trick. left/top/width/height MUST match the generator's printed bbox
+   (BL/BT/BW/BH) so the WebP overlays its source region exactly. */
+.beach-wave {
+  position: absolute;
+  left: 21.8%;
+  top: 24.5%;
+  width: 9.8%;
+  height: 10.8%;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* Respect reduced-motion: hide the moving wave so the scene is static. */
 @media (prefers-reduced-motion: reduce) {
-  .palm-breeze-layer {
+  .palm-breeze-layer,
+  .beach-wave {
     animation: none;
     display: none;
   }
+}
+
+/* Debug mode (?debug=1): hide the wave so the ORIGINAL background is
+   visible for tracing polygons. The animated WebP plays itself, so the
+   `.scene.debug * { animation: none }` freeze below can't stop it — it
+   has to be removed from the layout entirely. */
+.scene.debug .beach-wave {
+  display: none;
 }
 
 /* Debug mode (?debug=1, dev only): freeze ALL scene animation so the
