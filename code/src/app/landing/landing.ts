@@ -87,6 +87,23 @@ export class Landing {
   waveSrc = computed(() =>
     `https://robbmorganmedia.blob.core.windows.net/media/beach-wave-${this.activeTime()}.webp`);
 
+  /** False from the instant a time-of-day swap is requested until the new
+   *  scene's crossfade has fully COMPLETED. The palm-breeze + wave layers
+   *  are copies of the scene; if shown mid-crossfade they sit over a desk
+   *  that's still a blend of old+new and show a seam. So we hide them the
+   *  moment a swap starts (instantly, before the transition) and reveal
+   *  them only once the new scene stands alone. */
+  sceneSettled = signal(true);
+  private settleTimer?: number;
+  /** Scene-image crossfade duration (must track .scene-image's transition
+   *  in landing.scss) plus a small buffer, used to time the reveal. */
+  private readonly crossfadeMs = 720;
+
+  /** The wave WebP loads from blob storage independently of the desk PNG,
+   *  so gate it on its own load too — otherwise a swap can reveal the
+   *  previous time-of-day's surf for a beat before the new one arrives. */
+  waveReady = signal(false);
+
   /* ---------- Crossfade scene swap ----------
      Two stacked <img> elements. When sceneSrc() changes, the new
      src is loaded into the INACTIVE slot. On load, the slot is
@@ -119,12 +136,19 @@ export class Landing {
         const activeSrc = active === 'a' ? this.slotASrc() : this.slotBSrc();
         if (newSrc === activeSrc) return;
 
+        // A real swap is starting. Hide the scene-copy layers (palms, wave)
+        // NOW — before the crossfade — so they never sit over a half-blended
+        // desk and show a seam. scheduleSettle() reveals them after it ends.
+        this.sceneSettled.set(false);
+        if (this.settleTimer) clearTimeout(this.settleTimer);
+
         const inactive: 'a' | 'b' = active === 'a' ? 'b' : 'a';
         const inactiveSrc = inactive === 'a' ? this.slotASrc() : this.slotBSrc();
 
         if (inactiveSrc === newSrc) {
           // Inactive slot already shows the target — just swap.
           this.activeSlot.set(inactive);
+          this.scheduleSettle();
         } else if (inactive === 'a') {
           this.slotASrc.set(newSrc);
         } else {
@@ -132,6 +156,22 @@ export class Landing {
         }
       });
     });
+
+    // Preload the time-of-day wave WebP and gate its visibility on the
+    // load, so a scene swap never flashes the previous time's surf (the
+    // WebP comes from blob storage and lags the desk PNG). waveReady drops
+    // to false the moment the src changes and flips true when it's decoded.
+    if (typeof Image !== 'undefined') {
+      effect(() => {
+        const src = this.waveSrc();
+        this.waveReady.set(false);
+        const img = new Image();
+        img.onload = () => {
+          if (this.waveSrc() === src) this.waveReady.set(true);
+        };
+        img.src = src;
+      });
+    }
 
     if (typeof window !== 'undefined') {
       // Monitor: resume the typewriter from where it left off last
@@ -424,7 +464,19 @@ export class Landing {
     this.sceneReady.set(true);
     if (slot !== this.activeSlot()) {
       this.activeSlot.set(slot);
+      // New scene just became active — the crossfade is now running. Reveal
+      // the scene-copy layers only after it finishes (see scheduleSettle).
+      this.scheduleSettle();
     }
+  }
+
+  /** Reveal the palm-breeze + wave layers once the scene-image crossfade
+   *  has fully completed, so they never paint over a half-blended desk. */
+  private scheduleSettle(): void {
+    if (typeof window === 'undefined') return;
+    if (this.settleTimer) clearTimeout(this.settleTimer);
+    this.settleTimer = window.setTimeout(
+      () => this.sceneSettled.set(true), this.crossfadeMs);
   }
 
   private tickTypewriter(): void {

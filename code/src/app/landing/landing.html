@@ -26,6 +26,8 @@
     [class.ready]="sceneReady()"
     [class.debug]="debug()"
     [class.capturing]="captureState() === 'capturing'"
+    [class.scene-swapping]="!sceneSettled()"
+    [class.wave-loading]="!waveReady()"
     (mousemove)="onSceneMouseMove($event)"
     (click)="onSceneClick($event)"
   >

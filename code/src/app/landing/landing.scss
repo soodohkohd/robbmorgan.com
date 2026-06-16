@@ -107,6 +107,9 @@
   transform-origin: 50% 100%; /* trunk base — frond tips travel most */
   animation: palm-sway 7s ease-in-out infinite alternate;
   will-change: transform;
+  /* Fade out during a scene swap (see .scene.scene-swapping below) so the
+     swaying copy never shows a seam against the crossfading desk. */
+  transition: opacity 350ms var(--ease-soft);
 }
 
 /* Slow rock between a slight left and slight right lean. ease-in-out
@@ -228,6 +231,21 @@
   pointer-events: none;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  /* Fade out during a swap / while the WebP loads (see below). */
+  transition: opacity 350ms var(--ease-soft);
+}
+
+/* Hide the scene-copy layers during a time-of-day swap so they don't show
+   a seam against the crossfading desk. The hide is INSTANT (transition:
+   none) so they vanish before the crossfade starts; the reveal uses the
+   layers' own opacity transition (above) so they fade back in once the new
+   scene has settled. The wave additionally waits for its own WebP to load
+   (it streams from blob and lags the desk PNG). */
+.scene.scene-swapping .palm-breeze-layer,
+.scene.scene-swapping .beach-wave,
+.scene.wave-loading .beach-wave {
+  opacity: 0;
+  transition: none;
 }
 
 /* Respect reduced-motion: hide the moving wave so the scene is static. */
