@@ -85,7 +85,10 @@ export class Landing {
    *  Regenerate + re-upload via artifacts/make-beach-wave.py. See also
    *  landing.html .beach-wave. */
   waveSrc = computed(() =>
-    `https://robbmorganmedia.blob.core.windows.net/media/beach-wave-${this.activeTime()}.webp`);
+    // TEMP LOCAL TEST: serving staged copies from code/public/ (originals in
+    // artifacts/waves/). Revert to the blob URL below before deploying.
+    `/beach-wave-${this.activeTime()}.webp`);
+    // `https://robbmorganmedia.blob.core.windows.net/media/beach-wave-${this.activeTime()}.webp`);
 
   /** False from the instant a time-of-day swap is requested until the new
    *  scene's crossfade has fully COMPLETED. The palm-breeze + wave layers

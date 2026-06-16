@@ -149,81 +149,72 @@ export class TheDesk implements AfterViewInit {
       `,
     },
     {
-      slug: 'waves',
-      label: 'Waves',
-      title: 'The Rolling Waves',
+      slug: 'steam',
+      label: 'Steam',
+      title: 'Coffee Steam',
       bodyHtml: `
-        <p>This is the one that nearly broke me. It took an entire session of back-and-forth — false starts, a couple of genuinely frustrated messages from me, and a detour through a previous session's memory — before it finally clicked. It might be my favorite thing on the whole desk.</p>
-        <p>The brief was simple to say and brutal to build: the beach in the window should have <em>rolling waves</em>. Surf that washes up the sand, crashes, recedes, and dissolves — continuously, the way real surf never stops.</p>
-
-        <h3>Everything CSS could do, and why none of it worked</h3>
-        <p>I started where any web developer would: CSS. I had a polygon for the wave (captured in debug mode, naturally) and a polygon for the beach. Surely I could animate one into the other.</p>
-        <p>I tried morphing a <code>clip-path</code> from the resting wave to a washed-up wave. I tried <code>scaleX</code> from the shoreline edge. I tried sampling the scene a little seaward so the wave region showed the painted foam. I tried a feathered SVG mask for the foam edge, then a <code>filter: blur()</code> when that looked wrong. Each one I pushed to the dev server, looked at, and rejected. "It looks like you're moving the whole image." "That's the wrong approach." "You're feathering too early." At one point, in frustration, I told it plainly it wasn't getting this.</p>
-        <p>The thing neither of us wanted to admit for an hour: <strong>the effect is physically a per-pixel mesh warp</strong> — the surf texture being dragged up the sand and stretched — and CSS cannot do that. <code>clip-path</code>, <code>transform</code>, and masks can translate, scale, rotate, and reveal. They cannot warp an image like taffy. Every CSS attempt was a different way of approximating something that has no CSS primitive.</p>
-
-        <h3>The session that had already solved it</h3>
-        <p>Then I remembered something. Days earlier, in a previous session, we'd gotten <em>close</em> to a wave before abandoning it. That session had been compacted — its details summarized and the raw history mostly gone — but the summary survived. We went back and read it.</p>
-        <p>There it was: the approach that had worked before getting reverted. Not CSS at all. <strong>Bake the warp into an animated WebP, offline, with Python.</strong></p>
-
-        <h3>The warp</h3>
-        <p>The generator (<code>artifacts/make-beach-wave.py</code>) is a few dozen lines of NumPy and PIL. It loads the desk scene, crops the beach region, and for each frame computes a displacement field: control points on the wave's leading edge move from their resting positions toward the shore, and every pixel is sampled from a source location pulled along by those points, weighted by distance. It's an inverse-distance (Shepard) warp — the surf physically drags up the sand.</p>
-        <p>Three things made it read as real water:</p>
-        <ul>
-          <li><strong>The warp is localized.</strong> The first version used a long-tailed weighting that dragged the entire bay — the ocean, the coastline, everything smeared. I switched to a gaussian falloff with a zero-displacement baseline so only the surf band deforms and the deep water stays still.</li>
-          <li><strong>The trees are punched out.</strong> A vegetation mask (green-ish or dark pixels) is subtracted from the wave's transparency, so the palms along the shoreline show through and the surf passes <em>behind</em> them — no z-index trick, it's baked into the alpha.</li>
-          <li><strong>The foam is a feather, not a color.</strong> An early version drew a white foam edge; it looked fine at midday and wrong at night, where white doesn't belong. The fix was to feather the leading edge to <em>transparency</em> instead — revealing the scene beneath, so it blends in every time-of-day variant automatically.</li>
-        </ul>
-
-        <h3>The negotiation</h3>
-        <p>Then came the part that always comes: describing, in words, the difference between almost-right and right.</p>
-        <blockquote>
-          <p>Robb: "2-6 left and slightly up. 7-10 left. 11-14 left and slightly down. 15-17 down."</p>
-          <p><em>The leading edge fans out perpendicular to the curved shore — captured as direction groups, point by point.</em></p>
-          <p>Robb: "it's choppy on the fade in/out."</p>
-          <p><em>Choppiness is frame rate, not frame count. Spread the fade across the whole motion with smoothstep curves.</em></p>
-          <p>Robb: "the speed needs to be cut in half."</p>
-          <p><em>Double the frame count, not the per-frame duration — otherwise you just get a slower slideshow.</em></p>
-          <p>Robb: "the end is way too deformed. is this bad warping?"</p>
-          <p><em>Yes. Localize the warp.</em></p>
-        </blockquote>
-
-        <h3>Rolling, not washing</h3>
-        <p>A single wave washing in and out is a loop with a dead beat — the moment it's fully receded, before the next one starts. Real surf never has that gap. The final move was to composite <em>two</em> wave instances, half a cycle apart: as one recedes and dissolves, the other forms and advances, the two crossing at the midway point — the outgoing one fully gone, the incoming one fully formed and drawn on top. Because the instances are identical and offset by exactly half a period, the whole thing repeats every half-cycle, which let me bake half as many frames for the same motion.</p>
-        <p>Two final touches: the incoming wave starts <em>moving</em> the instant it begins fading in (linear motion, not eased — easing made it linger), and the cross-fade uses smoothstep so it never stutters.</p>
-        <p>When it finally rolled — two waves chasing each other up the sand, behind the palms, foam dissolving into the beach, in the right light for the time of day — I sat back and just watched it loop. It got it. Some things are worth the fight.</p>
-        <p>The four baked loops (one per time of day) are about a megabyte each, so they're served from Azure Blob storage rather than bundled into the site — the same place the video files live.</p>
+        <p>The coffee mug sits on the right side of the desk, near the stacked books. The mug image already had a faint suggestion of warmth, but I wanted visible steam rising from it.</p>
+        <p>Eight <code>&lt;span class="puff"&gt;</code> elements, absolutely positioned above the mug. Each one has the same animation — a <code>puff-rise</code> keyframe that translates upward, scales horizontally outward (the "billow"), and fades to zero opacity. Each <code>&lt;span&gt;</code> has a different negative <code>animation-delay</code> so they're spread across one full animation cycle. The result is a continuous column of steam: at any moment, a puff is forming, several are rising at various heights, and one is fading out at the top.</p>
+        <p>The first version's puffs went straight up like a thin chimney. I asked: <em>can it look billowier?</em> The answer was to increase the <code>scale-X</code> growth in the keyframe and add a small horizontal drift to each puff. The column now genuinely billows outward as it rises — each puff bulges sideways before fading. Much more like real steam.</p>
+        <p><code>pointer-events: none</code> on the steam container is critical. Without it, the steam would block clicks on the underlying mug hotspot.</p>
       `,
     },
     {
-      slug: 'palms',
-      label: 'Palms',
-      title: 'The Palm Breeze',
+      slug: 'monitor',
+      label: 'Monitor',
+      title: 'The Monitor',
       bodyHtml: `
-        <p>The palm trees in the window needed to move. Not much — just the suggestion of a breeze through the fronds. A completely static scene reads as a photograph; the smallest, slowest motion is what makes it read as a <em>place</em>.</p>
+        <p>The monitor on the desk needed to feel alive. A static image would have been fine, but a static image is <em>visibly</em> static, and that breaks the trick.</p>
+        <p>I wanted it to look like a real coding session was happening — VS Code-style, with a file tree on the left, a chat pane on the right, the orange-bordered Claude Code input box at the bottom, code streaming in via a typewriter effect.</p>
 
-        <h3>The wrong tool first</h3>
-        <p>The obvious approach for rustling fronds is an SVG turbulence filter — <code>feTurbulence</code> and <code>feDisplacementMap</code>, animated. I tried it. It looked plausible in isolation and stuttered badly in practice.</p>
-        <p>The reason is the single most useful thing I learned in this whole project: <strong>animated SVG filters re-rasterize on the main thread.</strong> Every frame, the browser recomputes the filter on the CPU. And the main thread is already busy — the monitor's fake typewriter ticks out a character every 65 milliseconds. The two fought each other, and the fronds jittered.</p>
+        <h3>The VS Code Lookalike</h3>
+        <p>The monitor overlay is a <code>&lt;div class="monitor-code"&gt;</code> clipped to the exact polygon of the monitor screen. Inside it: a sidebar with a fake file tree, a tabbed main pane with a chat area, and the input box. Everything is styled to evoke VS Code — the activity bar gray, the sidebar slightly darker than the main pane, the orange border on the input box that Claude Code uses to call out the prompt area.</p>
+        <p>The whole thing is blurred by 1.6 pixels via CSS <code>filter: blur()</code>. You can read the <em>structure</em> — these are file rows, this is a chat session, this is an input box — but you can't read the specific text. The blur sells the realism: a real monitor at that resolution wouldn't be pin-sharp.</p>
 
-        <h3>The compositor approach</h3>
-        <p>The fix was to get the animation off the main thread and onto the GPU compositor, where <code>transform</code> animations run. So each palm crown became a copy of the scene image, clipped to that crown's silhouette, gently <em>rotated</em> back and forth:</p>
-        <ul>
-          <li>One <code>&lt;div&gt;</code> per crown, its background the full scene image sized to the scene width (<code>background-size: 100cqw</code>), then shifted by the crown's bounding-box offset so the palm sits pixel-aligned over the static scene beneath it.</li>
-          <li>A <code>palm-sway</code> keyframe that rocks the layer between a slight left lean and a slight right lean — <code>rotate(-sway)</code> to <code>rotate(+sway)</code>, <code>ease-in-out</code>, <code>alternate</code> — so it decelerates at each end the way a frond settles before the breeze pushes it back.</li>
-          <li><code>transform-origin</code> at the trunk base, so the crown pivots where it's actually anchored and the frond tips travel the most.</li>
-        </ul>
-        <p>Because <code>clip-path</code> and <code>transform</code> both run on the compositor, the crowns stay perfectly smooth even while the typewriter is hammering the main thread. That was the whole point.</p>
+        <h3>The Typewriter</h3>
+        <p>A <code>&lt;pre&gt;</code> element inside the chat area receives one character per 65 milliseconds. The character source is a hardcoded string — a fake Claude Code session showing me asking for a steam animation, getting it built, deploying, asking for it to be "billowier," and so on. The loop point at the end of the string is engineered so that when the cursor wraps to position 0, the seam reads as a fresh user prompt.</p>
+        <p>The buffer is trimmed to the last 3000 characters so the <code>&lt;pre&gt;</code> doesn't grow without bound. A bottom-anchored flex layout in the chat pane auto-scrolls older content off the top — newest line is always visible at the bottom.</p>
+        <p>A small CSS blink animation provides the cursor at the end.</p>
 
-        <h3>Five crowns, all slightly different</h3>
-        <p>There are five palm layers. Each gets its own sway amplitude (between 1.6 and 2.4 degrees), its own duration (5.6 to 7.2 seconds), and its own negative animation-delay, so no two palms rock in sync. A formation of identical, synchronized palms would feel as wrong as synchronized birds — the eye catches the repetition even when it can't name it.</p>
+        <h3>State Persistence Again</h3>
+        <p>When you navigate away and come back, the typewriter doesn't restart from the beginning. The same service that handles the birds also records <code>codeBuffer</code> (the current rendered string) and <code>codeCursor</code> (the next character to type). On remount, the component reads these values and resumes mid-stream.</p>
+        <p>This is the kind of detail that nobody will notice consciously. But if you navigated to Resume, came back, and the typewriter was empty again? You'd feel that it had reset. You wouldn't know <em>why</em> it felt fake, but you'd feel it.</p>
 
-        <h3>The feathered edge</h3>
-        <p>The first version clipped each crown with a hard <code>clip-path</code>, and the moving copy ended on a visible one-pixel seam against the static scene. The fix was to swap the hard clip for a <em>feathered mask</em>: the crown polygon, filled white and blurred, so the layer's alpha falls off softly at the edges and the swaying copy blends into the scene instead of cutting against it. The blur is split per-axis so the feather stays an even few pixels even on the tall, narrow palms.</p>
+        <h3>The Security Pass</h3>
+        <p>The monitor text references file paths from this repo (<code>landing.html</code>, <code>styles.scss</code>, the deploy script). None of that is sensitive — those filenames are public, the deployment process is documented in the project's own CLAUDE.md, and nothing in the text is a credential or secret.</p>
+        <p>But you could drag-select from outside the monitor through it and copy the text via keyboard. I didn't love that. So <code>.monitor-code</code> got <code>user-select: none</code> (plus the <code>-webkit-</code> prefix). The text is now decorative-only: you can see it, you can't select it, you can't copy it, you can't right-click it.</p>
+      `,
+    },
+    {
+      slug: 'phone',
+      label: 'Phone',
+      title: 'The Phone',
+      bodyHtml: `
+        <p>This is the second-longest story in the project, and it's mostly an image-processing one.</p>
+        <p>The desk has an iPhone on it. The phone has a screen. Periodically, a notification fades in across the top of the screen — a fake "New Message" banner. The challenge was making that banner look like it was <em>on</em> the phone, not floating above it.</p>
+        <p>The phone in the desk render is slightly tilted. The screen is a parallelogram, not a rectangle. A flat rectangular notification image placed on top of it would look like a sticker.</p>
 
-        <h3>The palm split by the window</h3>
-        <p>One palm is bisected by the window's center mullion. Clipped as a single shape, half of it would sit on the wrong side of the frame divider. So it's split into two fragments — left of the mullion and right of it — that share one <em>absolute</em> pivot point (the real trunk base) and identical timing, so the two halves rock as one rigid crown across the seam. Getting the shared pivot expressed correctly in each fragment's own coordinate box took a few tries.</p>
+        <h3>Pass 1: Perspective Warp</h3>
+        <p>I authored a notification image at 520×130 pixels — a flat banner with the iOS green-bubble look. Then a Python script using PIL's perspective transform mapped the four corners of that flat image onto the four corners of the screen's parallelogram. The result was a properly foreshortened banner that looked like it was <em>on</em> the screen surface.</p>
+        <p>The first try had black corners where the warp pulled the image away from the canvas edges. The black corners screamed "fake." Filling them with a cream color from the banner background fixed that.</p>
 
-        <p>Under <code>prefers-reduced-motion</code>, every moving copy is dropped entirely and the palms are simply the static scene. The motion is a grace note, not a requirement.</p>
+        <h3>Pass 2: The Dark-Pixel Disaster</h3>
+        <p>Then I tried to make the corner-fill transparent instead of cream so the screen would show through. That seemed like a more elegant solution.</p>
+        <p>It was a disaster. The bicubic resampling at the boundary between "cream-colored banner" and "fully transparent" averaged the two, which meant the banner's interior near the edges picked up the transparency as a gradient. The colors looked washed-out and ghostly. Worse: when I tried to flood-fill out the dark border pixels, my flood-fill caught <em>all</em> dark pixels — including the text and icon inside the banner. The text turned cream-colored on a cream background. The notification was illegible.</p>
+
+        <h3>Pass 3: Edge-Only Flood-Fill</h3>
+        <p>The fix was a BFS flood-fill that <em>only</em> starts from the canvas edges. Pixels reachable from an edge (the unwanted dark border) get replaced with cream. Pixels surrounded by cream (the interior text and icon) are unreachable from any edge and survive untouched. This is the same technique I used for the bird-background removal. It worked here too.</p>
+
+        <h3>Pass 4: Rounded Corners</h3>
+        <p>The first warped version had hard corners that didn't match the phone's screen radius. I added a 14-pixel corner radius via an alpha mask applied at the very end of the pipeline — after the warp, after the flood-fill, after the color normalization. Rounded source corners, rounded by way of a mask, transparent outside.</p>
+
+        <h3>Pass 5: Softening</h3>
+        <p>The notification colors were <em>too</em> vivid against the phone screen — the banner felt like it was bleeding through. I dropped brightness to 0.86, contrast to 0.82, and saturation to 0.70 using PIL's <code>ImageEnhance</code> (RGB only, alpha channel preserved). The banner now sits on the screen like a real notification, slightly muted but clearly legible.</p>
+        <p>The whole notification pipeline is one Python script I keep at <code>/tmp/warp_notification.py</code>. I tweaked it half a dozen times. Each tweak meant re-running the script, copying the output into <code>code/public/</code>, bumping a cache-buster query string in the HTML, and checking on the page. The cache-buster query string is now at <code>?v=16</code>. That number is, roughly, the number of times we got it wrong before getting it right.</p>
+
+        <h3>The Notification Timer</h3>
+        <p>The fake notification fades in at random intervals — first one 15-30 seconds after page load, then every 120-360 seconds thereafter. A quiet message-arrival buzz plays when it appears (autoplay-blocked on the very first fire if the user hasn't interacted with the page yet, which is fine).</p>
+        <p>The timer's wall-clock target is persisted in the same DeskStateService that handles birds and the typewriter. If you click into a content page mid-countdown and come back, the notification timer doesn't restart from the 15-30 second "first" delay — it picks up where it left off.</p>
       `,
     },
     {
@@ -281,72 +272,120 @@ export class TheDesk implements AfterViewInit {
       `,
     },
     {
-      slug: 'monitor',
-      label: 'Monitor',
-      title: 'The Monitor',
+      slug: 'palms',
+      label: 'Palms',
+      title: 'The Palm Breeze',
       bodyHtml: `
-        <p>The monitor on the desk needed to feel alive. A static image would have been fine, but a static image is <em>visibly</em> static, and that breaks the trick.</p>
-        <p>I wanted it to look like a real coding session was happening — VS Code-style, with a file tree on the left, a chat pane on the right, the orange-bordered Claude Code input box at the bottom, code streaming in via a typewriter effect.</p>
+        <p>The palm trees in the window needed to move. Not much — just the suggestion of a breeze through the fronds. A completely static scene reads as a photograph; the smallest, slowest motion is what makes it read as a <em>place</em>.</p>
 
-        <h3>The VS Code Lookalike</h3>
-        <p>The monitor overlay is a <code>&lt;div class="monitor-code"&gt;</code> clipped to the exact polygon of the monitor screen. Inside it: a sidebar with a fake file tree, a tabbed main pane with a chat area, and the input box. Everything is styled to evoke VS Code — the activity bar gray, the sidebar slightly darker than the main pane, the orange border on the input box that Claude Code uses to call out the prompt area.</p>
-        <p>The whole thing is blurred by 1.6 pixels via CSS <code>filter: blur()</code>. You can read the <em>structure</em> — these are file rows, this is a chat session, this is an input box — but you can't read the specific text. The blur sells the realism: a real monitor at that resolution wouldn't be pin-sharp.</p>
+        <h3>The wrong tool first</h3>
+        <p>The obvious approach for rustling fronds is an SVG turbulence filter — <code>feTurbulence</code> and <code>feDisplacementMap</code>, animated. I tried it. It looked plausible in isolation and stuttered badly in practice.</p>
+        <p>The reason is the single most useful thing I learned in this whole project: <strong>animated SVG filters re-rasterize on the main thread.</strong> Every frame, the browser recomputes the filter on the CPU. And the main thread is already busy — the monitor's fake typewriter ticks out a character every 65 milliseconds. The two fought each other, and the fronds jittered.</p>
 
-        <h3>The Typewriter</h3>
-        <p>A <code>&lt;pre&gt;</code> element inside the chat area receives one character per 65 milliseconds. The character source is a hardcoded string — a fake Claude Code session showing me asking for a steam animation, getting it built, deploying, asking for it to be "billowier," and so on. The loop point at the end of the string is engineered so that when the cursor wraps to position 0, the seam reads as a fresh user prompt.</p>
-        <p>The buffer is trimmed to the last 3000 characters so the <code>&lt;pre&gt;</code> doesn't grow without bound. A bottom-anchored flex layout in the chat pane auto-scrolls older content off the top — newest line is always visible at the bottom.</p>
-        <p>A small CSS blink animation provides the cursor at the end.</p>
+        <h3>The compositor approach</h3>
+        <p>The fix was to get the animation off the main thread and onto the GPU compositor, where <code>transform</code> animations run. So each palm crown became a copy of the scene image, clipped to that crown's silhouette, gently <em>rotated</em> back and forth:</p>
+        <ul>
+          <li>One <code>&lt;div&gt;</code> per crown, its background the full scene image sized to the scene width (<code>background-size: 100cqw</code>), then shifted by the crown's bounding-box offset so the palm sits pixel-aligned over the static scene beneath it.</li>
+          <li>A <code>palm-sway</code> keyframe that rocks the layer between a slight left lean and a slight right lean — <code>rotate(-sway)</code> to <code>rotate(+sway)</code>, <code>ease-in-out</code>, <code>alternate</code> — so it decelerates at each end the way a frond settles before the breeze pushes it back.</li>
+          <li><code>transform-origin</code> at the trunk base, so the crown pivots where it's actually anchored and the frond tips travel the most.</li>
+        </ul>
+        <p>Because <code>clip-path</code> and <code>transform</code> both run on the compositor, the crowns stay perfectly smooth even while the typewriter is hammering the main thread. That was the whole point.</p>
 
-        <h3>State Persistence Again</h3>
-        <p>When you navigate away and come back, the typewriter doesn't restart from the beginning. The same service that handles the birds also records <code>codeBuffer</code> (the current rendered string) and <code>codeCursor</code> (the next character to type). On remount, the component reads these values and resumes mid-stream.</p>
-        <p>This is the kind of detail that nobody will notice consciously. But if you navigated to Resume, came back, and the typewriter was empty again? You'd feel that it had reset. You wouldn't know <em>why</em> it felt fake, but you'd feel it.</p>
+        <h3>Five crowns, all slightly different</h3>
+        <p>There are five palm layers. Each gets its own sway amplitude (between 1.6 and 2.4 degrees), its own duration (5.6 to 7.2 seconds), and its own negative animation-delay, so no two palms rock in sync. A formation of identical, synchronized palms would feel as wrong as synchronized birds — the eye catches the repetition even when it can't name it.</p>
 
-        <h3>The Security Pass</h3>
-        <p>The monitor text references file paths from this repo (<code>landing.html</code>, <code>styles.scss</code>, the deploy script). None of that is sensitive — those filenames are public, the deployment process is documented in the project's own CLAUDE.md, and nothing in the text is a credential or secret.</p>
-        <p>But you could drag-select from outside the monitor through it and copy the text via keyboard. I didn't love that. So <code>.monitor-code</code> got <code>user-select: none</code> (plus the <code>-webkit-</code> prefix). The text is now decorative-only: you can see it, you can't select it, you can't copy it, you can't right-click it.</p>
+        <h3>The feathered edge</h3>
+        <p>The first version clipped each crown with a hard <code>clip-path</code>, and the moving copy ended on a visible one-pixel seam against the static scene. The fix was to swap the hard clip for a <em>feathered mask</em>: the crown polygon, filled white and blurred, so the layer's alpha falls off softly at the edges and the swaying copy blends into the scene instead of cutting against it. The blur is split per-axis so the feather stays an even few pixels even on the tall, narrow palms.</p>
+
+        <h3>The palm split by the window</h3>
+        <p>One palm is bisected by the window's center mullion. Clipped as a single shape, half of it would sit on the wrong side of the frame divider. So it's split into two fragments — left of the mullion and right of it — that share one <em>absolute</em> pivot point (the real trunk base) and identical timing, so the two halves rock as one rigid crown across the seam. Getting the shared pivot expressed correctly in each fragment's own coordinate box took a few tries.</p>
+
+        <p>Under <code>prefers-reduced-motion</code>, every moving copy is dropped entirely and the palms are simply the static scene. The motion is a grace note, not a requirement.</p>
       `,
     },
     {
-      slug: 'steam',
-      label: 'Steam',
-      title: 'Coffee Steam',
+      slug: 'waves',
+      label: 'Waves',
+      title: 'The Rolling Waves',
       bodyHtml: `
-        <p>The coffee mug sits on the right side of the desk, near the stacked books. The mug image already had a faint suggestion of warmth, but I wanted visible steam rising from it.</p>
-        <p>Eight <code>&lt;span class="puff"&gt;</code> elements, absolutely positioned above the mug. Each one has the same animation — a <code>puff-rise</code> keyframe that translates upward, scales horizontally outward (the "billow"), and fades to zero opacity. Each <code>&lt;span&gt;</code> has a different negative <code>animation-delay</code> so they're spread across one full animation cycle. The result is a continuous column of steam: at any moment, a puff is forming, several are rising at various heights, and one is fading out at the top.</p>
-        <p>The first version's puffs went straight up like a thin chimney. I asked: <em>can it look billowier?</em> The answer was to increase the <code>scale-X</code> growth in the keyframe and add a small horizontal drift to each puff. The column now genuinely billows outward as it rises — each puff bulges sideways before fading. Much more like real steam.</p>
-        <p><code>pointer-events: none</code> on the steam container is critical. Without it, the steam would block clicks on the underlying mug hotspot.</p>
+        <p>This is the one that nearly broke me. It took an entire session of back-and-forth — false starts, a couple of genuinely frustrated messages from me, and a detour through a previous session's memory — before it finally clicked. It might be my favorite thing on the whole desk.</p>
+        <p>The brief was simple to say and brutal to build: the beach in the window should have <em>rolling waves</em>. Surf that washes up the sand, crashes, recedes, and dissolves — continuously, the way real surf never stops.</p>
+
+        <h3>Everything CSS could do, and why none of it worked</h3>
+        <p>I started where any web developer would: CSS. I had a polygon for the wave (captured in debug mode, naturally) and a polygon for the beach. Surely I could animate one into the other.</p>
+        <p>I tried morphing a <code>clip-path</code> from the resting wave to a washed-up wave. I tried <code>scaleX</code> from the shoreline edge. I tried sampling the scene a little seaward so the wave region showed the painted foam. I tried a feathered SVG mask for the foam edge, then a <code>filter: blur()</code> when that looked wrong. Each one I pushed to the dev server, looked at, and rejected. "It looks like you're moving the whole image." "That's the wrong approach." "You're feathering too early." At one point, in frustration, I told it plainly it wasn't getting this.</p>
+        <p>The thing neither of us wanted to admit for an hour: <strong>the effect is physically a per-pixel mesh warp</strong> — the surf texture being dragged up the sand and stretched — and CSS cannot do that. <code>clip-path</code>, <code>transform</code>, and masks can translate, scale, rotate, and reveal. They cannot warp an image like taffy. Every CSS attempt was a different way of approximating something that has no CSS primitive.</p>
+
+        <h3>The session that had already solved it</h3>
+        <p>Then I remembered something. Days earlier, in a previous session, we'd gotten <em>close</em> to a wave before abandoning it. That session had been compacted — its details summarized and the raw history mostly gone — but the summary survived. We went back and read it.</p>
+        <p>There it was: the approach that had worked before getting reverted. Not CSS at all. <strong>Bake the warp into an animated WebP, offline, with Python.</strong></p>
+
+        <h3>The warp</h3>
+        <p>The generator (<code>artifacts/make-beach-wave.py</code>) is a few dozen lines of NumPy and PIL. It loads the desk scene, crops the beach region, and for each frame computes a displacement field: control points on the wave's leading edge move from their resting positions toward the shore, and every pixel is sampled from a source location pulled along by those points, weighted by distance. It's an inverse-distance (Shepard) warp — the surf physically drags up the sand.</p>
+        <p>Three things made it read as real water:</p>
+        <ul>
+          <li><strong>The warp is localized.</strong> The first version used a long-tailed weighting that dragged the entire bay — the ocean, the coastline, everything smeared. I switched to a gaussian falloff with a zero-displacement baseline so only the surf band deforms and the deep water stays still.</li>
+          <li><strong>The trees are punched out.</strong> A vegetation mask (green-ish or dark pixels) is subtracted from the wave's transparency, so the palms along the shoreline show through and the surf passes <em>behind</em> them — no z-index trick, it's baked into the alpha.</li>
+          <li><strong>The foam is a feather, not a color.</strong> An early version drew a white foam edge; it looked fine at midday and wrong at night, where white doesn't belong. The fix was to feather the leading edge to <em>transparency</em> instead — revealing the scene beneath, so it blends in every time-of-day variant automatically.</li>
+        </ul>
+
+        <h3>The negotiation</h3>
+        <p>Then came the part that always comes: describing, in words, the difference between almost-right and right.</p>
+        <blockquote>
+          <p>Robb: "2-6 left and slightly up. 7-10 left. 11-14 left and slightly down. 15-17 down."</p>
+          <p><em>The leading edge fans out perpendicular to the curved shore — captured as direction groups, point by point.</em></p>
+          <p>Robb: "it's choppy on the fade in/out."</p>
+          <p><em>Choppiness is frame rate, not frame count. Spread the fade across the whole motion with smoothstep curves.</em></p>
+          <p>Robb: "the speed needs to be cut in half."</p>
+          <p><em>Double the frame count, not the per-frame duration — otherwise you just get a slower slideshow.</em></p>
+          <p>Robb: "the end is way too deformed. is this bad warping?"</p>
+          <p><em>Yes. Localize the warp.</em></p>
+        </blockquote>
+
+        <h3>Rolling, not washing</h3>
+        <p>A single wave washing in and out is a loop with a dead beat — the moment it's fully receded, before the next one starts. Real surf never has that gap. The final move was to composite <em>two</em> wave instances, half a cycle apart: as one recedes and dissolves, the other forms and advances, the two crossing at the midway point — the outgoing one fully gone, the incoming one fully formed and drawn on top. Because the instances are identical and offset by exactly half a period, the whole thing repeats every half-cycle, which let me bake half as many frames for the same motion.</p>
+        <p>Two final touches: the incoming wave starts <em>moving</em> the instant it begins fading in (linear motion, not eased — easing made it linger), and the cross-fade uses smoothstep so it never stutters.</p>
+        <p>When it finally rolled — two waves chasing each other up the sand, behind the palms, foam dissolving into the beach, in the right light for the time of day — I sat back and just watched it loop. It got it. Some things are worth the fight.</p>
+        <p>The four baked loops (one per time of day) are about a megabyte each, so they're served from Azure Blob storage rather than bundled into the site — the same place the video files live.</p>
       `,
     },
     {
-      slug: 'phone',
-      label: 'Phone',
-      title: 'The Phone',
+      slug: 'photos',
+      label: 'Photos',
+      title: 'The Photo Gallery',
       bodyHtml: `
-        <p>This is the second-longest story in the project, and it's mostly an image-processing one.</p>
-        <p>The desk has an iPhone on it. The phone has a screen. Periodically, a notification fades in across the top of the screen — a fake "New Message" banner. The challenge was making that banner look like it was <em>on</em> the phone, not floating above it.</p>
-        <p>The phone in the desk render is slightly tilted. The screen is a parallelogram, not a rectangle. A flat rectangular notification image placed on top of it would look like a sticker.</p>
+        <p>The "Take a Break" coffee mug on the desk routes to a photo gallery — Southern California coastline. The original gallery had a mix of photos from various locations that didn't all fit the visual brief.</p>
+        <p>I asked for 25 photos of the SoCal coast, all in 3:2 landscape format matching the viewer dimensions. Some of the existing photos (numbers 2, 4, 8, 11-15, 19) already fit; we kept those nine and replaced the rest.</p>
+        <p>The new set was sourced from Unsplash — Laguna Beach, Malibu, the cliffs in between. Each photo carries the photographer's name and their Unsplash username for credit, with the gallery rendering links to their profiles.</p>
+        <p>Curating the new sixteen photos took several rounds. The first sub-agent dispatch I made for this came back with a 529 Overloaded error from Anthropic's API. I dispatched it again. Same error. So I just did it directly — parallel <code>WebFetch</code> calls to search Unsplash for landscape coast photos, parallel <code>curl</code> downloads, manually checking each for the right aspect ratio and visual fit. Sometimes the tools fail and you do the work the slow way.</p>
+      `,
+    },
+    {
+      slug: 'rocket',
+      label: 'The Game',
+      title: 'The Rocket Game',
+      bodyHtml: `
+        <p>There's a tiny spot on the desk surface — easy to miss, labeled <strong>GAME</strong> — and it's the one hotspot that doesn't take you to a <em>page</em>. Click it and the whole site gets out of the way: a playable arcade game fills the frame. Steer a rocket along the bottom, blast greyscale asteroids falling from the top, catch ammo capsules before they drop past you, chase a high score. There's an X in the corner to come back to the desk when you're done.</p>
+        <p>And it has a history.</p>
 
-        <h3>Pass 1: Perspective Warp</h3>
-        <p>I authored a notification image at 520×130 pixels — a flat banner with the iOS green-bubble look. Then a Python script using PIL's perspective transform mapped the four corners of that flat image onto the four corners of the screen's parallelogram. The result was a properly foreshortened banner that looked like it was <em>on</em> the screen surface.</p>
-        <p>The first try had black corners where the warp pulled the image away from the canvas edges. The black corners screamed "fake." Filling them with a cream color from the banner background fixed that.</p>
+        <h3>Three lives of one game</h3>
+        <p>This game started years ago as a NativeScript/Angular mobile app. Later I rewrote it from scratch in Flutter — the canonical version, the one that runs on my phone, living in its own repository with its own game loop, its own asteroid physics, its own ammo rules. What you're playing here is the <em>third</em> incarnation: a faithful web port of that Flutter game, rebuilt in TypeScript to run in the browser.</p>
+        <p>"Faithful" is the operative word. I didn't reimagine the game for the web — I ported the Dart game controller almost line-for-line. Same tunables, same fall speeds, same fragmentation math, same per-life ammo-capsule cascade. Large asteroids are worth 10 points and shatter into two mediums and a small; mediums are worth 50 and split into two smalls; smalls are worth 100 and the hardest to hit. Two lives to start, plus one every 10,000 points. Run out of ammo and you lose a life and refill to 25. All of it carried straight across from the Flutter source — the only thing I deliberately changed was bumping the asteroid speeds up 25% so the web version plays a touch hotter.</p>
 
-        <h3>Pass 2: The Dark-Pixel Disaster</h3>
-        <p>Then I tried to make the corner-fill transparent instead of cream so the screen would show through. That seemed like a more elegant solution.</p>
-        <p>It was a disaster. The bicubic resampling at the boundary between "cream-colored banner" and "fully transparent" averaged the two, which meant the banner's interior near the edges picked up the transparency as a gradient. The colors looked washed-out and ghostly. Worse: when I tried to flood-fill out the dark border pixels, my flood-fill caught <em>all</em> dark pixels — including the text and icon inside the banner. The text turned cream-colored on a cream background. The notification was illegible.</p>
+        <h3>Canvas, not DOM</h3>
+        <p>The rest of this site is DOM and CSS — clip-paths, transitions, keyframes. The game is the one place that approach would fall apart. Dozens of asteroids, lasers, explosion particles, and a hundred-plus parallax stars, all moving every frame? You don't animate that with CSS. You draw it.</p>
+        <p>So the play area is a single HTML5 <code>&lt;canvas&gt;</code> driven by a <code>requestAnimationFrame</code> loop. Every frame: advance the asteroids, move the lasers, run the collision checks, age the explosions, spawn replacements, then repaint the whole scene from scratch. The rocket and the asteroids are drawn as <em>vector shapes</em> — there are no sprite images. The rocket is a handful of canvas paths in the same teal accent the rest of the site uses; each asteroid is a twelve-vertex polygon perturbed from a circle so every rock gets its own irregular silhouette.</p>
+        <p>The HUD (lives and score), the ammo bar, and the on-screen control pad stay as DOM — they're text and buttons, and they should be crisp and tappable. So the screen is a hybrid: imperative canvas for the fast-moving game world, declarative DOM for the chrome around it.</p>
 
-        <h3>Pass 3: Edge-Only Flood-Fill</h3>
-        <p>The fix was a BFS flood-fill that <em>only</em> starts from the canvas edges. Pixels reachable from an edge (the unwanted dark border) get replaced with cream. Pixels surrounded by cream (the interior text and icon) are unreachable from any edge and survive untouched. This is the same technique I used for the bird-background removal. It worked here too.</p>
+        <h3>The details that make a canvas game feel right</h3>
+        <ul>
+          <li><strong>It renders at device-pixel resolution.</strong> The canvas backing store is scaled by <code>devicePixelRatio</code>, so the vector rocket and asteroids stay sharp on a Retina display instead of going soft and blocky.</li>
+          <li><strong>It survives a backgrounded tab.</strong> <code>requestAnimationFrame</code> stops firing while a tab is hidden; when you return, the first frame's time-delta is the entire gap. Left alone, that one frame would fast-forward every asteroid clean off the screen. So the loop skips a single delta after the tab becomes visible again, and caps any one frame at 100 milliseconds. The Flutter version had the identical problem with its <code>Ticker</code> — and the identical fix.</li>
+          <li><strong>Two control schemes.</strong> On desktop you steer with the arrow keys and fire with the space bar. On touch, the on-screen pad mirrors the Flutter game's gestures exactly: tap a button to fire, hold it past a threshold to steer, double-tap to fire on the press. Keyboard and pad both feed the same movement flags the game loop reads.</li>
+          <li><strong>High scores persist in <code>localStorage</code>.</strong> The Flutter app used the device's shared-preferences store; the web port uses the browser's — top ten, sorted, surviving across visits.</li>
+        </ul>
 
-        <h3>Pass 4: Rounded Corners</h3>
-        <p>The first warped version had hard corners that didn't match the phone's screen radius. I added a 14-pixel corner radius via an alpha mask applied at the very end of the pipeline — after the warp, after the flood-fill, after the color normalization. Rounded source corners, rounded by way of a mask, transparent outside.</p>
-
-        <h3>Pass 5: Softening</h3>
-        <p>The notification colors were <em>too</em> vivid against the phone screen — the banner felt like it was bleeding through. I dropped brightness to 0.86, contrast to 0.82, and saturation to 0.70 using PIL's <code>ImageEnhance</code> (RGB only, alpha channel preserved). The banner now sits on the screen like a real notification, slightly muted but clearly legible.</p>
-        <p>The whole notification pipeline is one Python script I keep at <code>/tmp/warp_notification.py</code>. I tweaked it half a dozen times. Each tweak meant re-running the script, copying the output into <code>code/public/</code>, bumping a cache-buster query string in the HTML, and checking on the page. The cache-buster query string is now at <code>?v=16</code>. That number is, roughly, the number of times we got it wrong before getting it right.</p>
-
-        <h3>The Notification Timer</h3>
-        <p>The fake notification fades in at random intervals — first one 15-30 seconds after page load, then every 120-360 seconds thereafter. A quiet message-arrival buzz plays when it appears (autoplay-blocked on the very first fire if the user hasn't interacted with the page yet, which is fine).</p>
-        <p>The timer's wall-clock target is persisted in the same DeskStateService that handles birds and the typewriter. If you click into a content page mid-countdown and come back, the notification timer doesn't restart from the 15-30 second "first" delay — it picks up where it left off.</p>
+        <p>Nobody needs an arcade game on a portfolio site. That's exactly why it's there. It's the same game I've now built three times across three platforms — because some things are worth keeping alive wherever you happen to land.</p>
       `,
     },
     {
@@ -407,17 +446,6 @@ export class TheDesk implements AfterViewInit {
       `,
     },
     {
-      slug: 'photos',
-      label: 'Photos',
-      title: 'The Photo Gallery',
-      bodyHtml: `
-        <p>The "Take a Break" coffee mug on the desk routes to a photo gallery — Southern California coastline. The original gallery had a mix of photos from various locations that didn't all fit the visual brief.</p>
-        <p>I asked for 25 photos of the SoCal coast, all in 3:2 landscape format matching the viewer dimensions. Some of the existing photos (numbers 2, 4, 8, 11-15, 19) already fit; we kept those nine and replaced the rest.</p>
-        <p>The new set was sourced from Unsplash — Laguna Beach, Malibu, the cliffs in between. Each photo carries the photographer's name and their Unsplash username for credit, with the gallery rendering links to their profiles.</p>
-        <p>Curating the new sixteen photos took several rounds. The first sub-agent dispatch I made for this came back with a 529 Overloaded error from Anthropic's API. I dispatched it again. Same error. So I just did it directly — parallel <code>WebFetch</code> calls to search Unsplash for landscape coast photos, parallel <code>curl</code> downloads, manually checking each for the right aspect ratio and visual fit. Sometimes the tools fail and you do the work the slow way.</p>
-      `,
-    },
-    {
       slug: 'details',
       label: 'Details',
       title: 'The Things You Don\'t See',
@@ -432,34 +460,6 @@ export class TheDesk implements AfterViewInit {
           <li><strong>The mobile fallback</strong> swaps the whole desk scene for a tap-to-cycle scene strip and a vertical link list. The cinematic version doesn't work below 760px — the polygons depend on the wide aspect ratio.</li>
           <li><strong>The scene fade behavior</strong> is asymmetric: there is no fade-IN when you arrive at the desk view. The scene shows hard. The fade-OUT happens only when you click an object to navigate away. The <code>.opening</code> class is added just before <code>router.navigateByUrl()</code> fires, and a CSS rule transitions the scene's opacity to 0 over the duration of the route change. Fade-in on every arrival would add latency without adding meaning; fade-out on departure punctuates the transition.</li>
         </ul>
-      `,
-    },
-    {
-      slug: 'rocket',
-      label: 'The Game',
-      title: 'The Rocket Game',
-      bodyHtml: `
-        <p>There's a tiny spot on the desk surface — easy to miss, labeled <strong>GAME</strong> — and it's the one hotspot that doesn't take you to a <em>page</em>. Click it and the whole site gets out of the way: a playable arcade game fills the frame. Steer a rocket along the bottom, blast greyscale asteroids falling from the top, catch ammo capsules before they drop past you, chase a high score. There's an X in the corner to come back to the desk when you're done.</p>
-        <p>And it has a history.</p>
-
-        <h3>Three lives of one game</h3>
-        <p>This game started years ago as a NativeScript/Angular mobile app. Later I rewrote it from scratch in Flutter — the canonical version, the one that runs on my phone, living in its own repository with its own game loop, its own asteroid physics, its own ammo rules. What you're playing here is the <em>third</em> incarnation: a faithful web port of that Flutter game, rebuilt in TypeScript to run in the browser.</p>
-        <p>"Faithful" is the operative word. I didn't reimagine the game for the web — I ported the Dart game controller almost line-for-line. Same tunables, same fall speeds, same fragmentation math, same per-life ammo-capsule cascade. Large asteroids are worth 10 points and shatter into two mediums and a small; mediums are worth 50 and split into two smalls; smalls are worth 100 and the hardest to hit. Two lives to start, plus one every 10,000 points. Run out of ammo and you lose a life and refill to 25. All of it carried straight across from the Flutter source — the only thing I deliberately changed was bumping the asteroid speeds up 25% so the web version plays a touch hotter.</p>
-
-        <h3>Canvas, not DOM</h3>
-        <p>The rest of this site is DOM and CSS — clip-paths, transitions, keyframes. The game is the one place that approach would fall apart. Dozens of asteroids, lasers, explosion particles, and a hundred-plus parallax stars, all moving every frame? You don't animate that with CSS. You draw it.</p>
-        <p>So the play area is a single HTML5 <code>&lt;canvas&gt;</code> driven by a <code>requestAnimationFrame</code> loop. Every frame: advance the asteroids, move the lasers, run the collision checks, age the explosions, spawn replacements, then repaint the whole scene from scratch. The rocket and the asteroids are drawn as <em>vector shapes</em> — there are no sprite images. The rocket is a handful of canvas paths in the same teal accent the rest of the site uses; each asteroid is a twelve-vertex polygon perturbed from a circle so every rock gets its own irregular silhouette.</p>
-        <p>The HUD (lives and score), the ammo bar, and the on-screen control pad stay as DOM — they're text and buttons, and they should be crisp and tappable. So the screen is a hybrid: imperative canvas for the fast-moving game world, declarative DOM for the chrome around it.</p>
-
-        <h3>The details that make a canvas game feel right</h3>
-        <ul>
-          <li><strong>It renders at device-pixel resolution.</strong> The canvas backing store is scaled by <code>devicePixelRatio</code>, so the vector rocket and asteroids stay sharp on a Retina display instead of going soft and blocky.</li>
-          <li><strong>It survives a backgrounded tab.</strong> <code>requestAnimationFrame</code> stops firing while a tab is hidden; when you return, the first frame's time-delta is the entire gap. Left alone, that one frame would fast-forward every asteroid clean off the screen. So the loop skips a single delta after the tab becomes visible again, and caps any one frame at 100 milliseconds. The Flutter version had the identical problem with its <code>Ticker</code> — and the identical fix.</li>
-          <li><strong>Two control schemes.</strong> On desktop you steer with the arrow keys and fire with the space bar. On touch, the on-screen pad mirrors the Flutter game's gestures exactly: tap a button to fire, hold it past a threshold to steer, double-tap to fire on the press. Keyboard and pad both feed the same movement flags the game loop reads.</li>
-          <li><strong>High scores persist in <code>localStorage</code>.</strong> The Flutter app used the device's shared-preferences store; the web port uses the browser's — top ten, sorted, surviving across visits.</li>
-        </ul>
-
-        <p>Nobody needs an arcade game on a portfolio site. That's exactly why it's there. It's the same game I've now built three times across three platforms — because some things are worth keeping alive wherever you happen to land.</p>
       `,
     },
     {

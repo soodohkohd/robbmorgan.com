@@ -9,44 +9,60 @@ CSS, so it is baked here to an animated WebP and dropped into the landing
 component as a positioned <div> background (see .beach-wave / waveSrc).
 
 ROLLING WAVES: each frame composites TWO wave instances half a period
-apart. One advances up the sand while forming (fading in); the other
-recedes while dissolving (fading out). They cross at the midway point with
-the receding wave fully gone and the advancing wave fully visible, so the
-surf rolls continuously. Because the two instances are identical and offset
-by half a period, the composite repeats every HALF instance period — so the
-baked loop (N frames) is one half period yet shows a full per-wave cycle.
-The incoming (advancing) wave is composited ON TOP of the outgoing one.
+apart. One advances up the sand while forming (fading in); the other eases
+back slightly (PULLBACK) at the washed-up end as it DISSOLVES (fading out) —
+it does not fully recede. As the new wave washes up, the previous one
+dissolves at the top, so
+the surf rolls continuously. Because the two instances are identical and
+offset by half a period, the composite repeats every HALF instance period —
+so the baked loop (N frames) shows a full per-wave cycle. The incoming
+(advancing) wave is composited ON TOP of the dissolving one.
 
 Per instance:
   - Control points morph from `start` (resting wave) to `end` (washed-up
-    wave) by a LINEAR (triangle) t, so position goes start->end->start and
-    the wave starts moving immediately as it fades in. Anchors are identical
+    wave) by a LINEAR t over the first half, then ease back PULLBACK of the
+    way over the second half as it dissolves. The remaining reset to `start`
+    happens at the loop wrap, while fully transparent. Anchors are identical
     in both, so they don't move.
   - Each output pixel samples the source at I + (start - I) weighted by a
     LOCALIZED gaussian falloff (+ a zero baseline) so only the surf band is
     dragged and the far water/coastline stay undeformed.
   - Masked to the current polygon, soft front edge (foam), translucent, with
     the palm trees punched out of the alpha so the wave passes BEHIND them.
-  - Opacity (smoothstep) fades in over the first half of the advance and out
-    over the first half of the recede (see FADE), so by the midway crossover
-    the advancing wave is fully visible and the receding one fully gone.
+  - Opacity fades in (smoothstep) early in the advance, holds full to the
+    beach, then fades LINEARLY to 0 as the wave pulls back (see FADE_IN /
+    DISSOLVE_SPAN), fully gone before the loop wrap so the next wave overlaps.
 
 Control points are in % of the full scene image (captured via ?debug=1).
 Anchors (do NOT move): index 0 (pt 1) and 17/18/19 (pts 18/19/20).
 
 Run from the repo root:  python3 artifacts/make-beach-wave.py
-This writes the WebPs to code/public/, but they are SERVED FROM AZURE BLOB
-(each is ~1 MB, too heavy for the deploy zip — see waveSrc in landing.ts).
-After regenerating, re-upload and clear the local copies:
+This writes the WebPs to artifacts/waves/ as local working copies you can open
+and inspect. Production SERVES them FROM AZURE BLOB (each is ~1 MB, too heavy
+for the deploy zip — see waveSrc in landing.ts). When a regen looks right,
+upload from artifacts/waves/ (the local copies stay put for next time):
   for t in morning afternoon evening night; do \
     az storage blob upload --account-name robbmorganmedia --container-name media \
-      --name beach-wave-$t.webp --file code/public/beach-wave-$t.webp \
+      --name beach-wave-$t.webp --file artifacts/waves/beach-wave-$t.webp \
       --content-type image/webp --auth-mode key --overwrite; done
-  rm -f code/public/beach-wave-*.webp
+
+To LOCAL-TEST in the browser before uploading, copy the staged WebPs into the
+dev-served public dir and temporarily point waveSrc at them (the dev server
+only serves code/public/, not artifacts/ — and needs a restart to see new
+files, per the "Dev server quirk" note in CLAUDE.md):
+  cp artifacts/waves/beach-wave-*.webp code/public/
+then in landing.ts set waveSrc to `/beach-wave-${this.activeTime()}.webp`.
+Revert both before committing (the blob URL is the production source).
 """
 from PIL import Image, ImageDraw, ImageFilter
 import numpy as np
 import os
+
+# Local staging dir for the baked WebPs. These are the working copies you can
+# open/inspect and point the dev server at for local tests. Production serves
+# them from Azure Blob (see waveSrc in landing.ts) — upload from here when a
+# regen looks right (see the az command in this module's docstring).
+OUT_DIR = 'artifacts/waves'
 
 # Resting wave (start) and washed-up wave (end), % of the scene image.
 # Anchors (do NOT move): index 0 (pt 1) and 17/18/19 (pts 18/19/20).
@@ -81,10 +97,46 @@ N = 144         # frames in the loop. ROLLING WAVES: two instances offset by
                 # period, so 144 frames here = a ~24.5s per-wave cycle at ~12fps
                 # (same per-wave speed as a 288-frame single wave) at ~half the
                 # file size. N * FRAME_MS = the composite loop length.
-FRAME_MS = 85
-FADE = 0.25     # phase span of the fade in / fade out. 0.25 = the first half
-                # of the advance / recede, so the fade completes exactly at the
-                # midway point: incoming wave 100% visible, outgoing 100% gone.
+FRAME_MS = 85       # per-frame duration. NIGHT plays slower (calmer sea, and a
+NIGHT_FRAME_MS = 110  # slower, more gradual dissolve) — see frame_ms in gen.
+# Per-wave timeline in instance-phase units (phi in [0,1) = one per-wave cycle).
+# advance: t 0->1 over [0, ADV_END]; then NO pause — pull back + dissolve over
+# the next DISSOLVE_SPAN, reaching fully transparent exactly when the wave has
+# eased PULLBACK of the way back (so a 0.25 pull-back is fully gone at 25% back);
+# then the wave is gone until the loop wrap. The two instances are half a cycle
+# apart, so the NEXT wave is already advancing while this one pulls back.
+FADE_IN = 0.25    # incoming (new) wave is fully visible by 50% of the way up from
+                  # its start — a gentle build (fast-in looked abrupt).
+ADV_END = 0.5     # phi at which the advance ends (wave reaches the beach).
+DISSOLVE_SPAN = 0.35  # phi span of the (visible) pull-back + dissolve. Bigger =
+                  # slower / more visible retreat. Must be < (1 - ADV_END) so the
+                  # wave is fully gone before the wrap and the next wave overlaps.
+PULLBACK = 0.25   # fraction of the way back the wave eases as it dissolves; the
+                  # dissolve completes exactly at this point (0.25 = gone at 25%
+                  # back toward the start). All scenes.
+# Foam-gate the leading wash so the FOAM is the true leading edge with bare sand
+# in front of it, instead of a tongue of blue water washing up onto the beach
+# (very noticeable on bright morning/afternoon sand). In the forward zone, dim
+# water is cut and bright foam is kept; the foam/water split is a per-frame
+# RELATIVE brightness threshold (percentiles of the wave's own pixels) so it
+# adapts across times of day. The sea-side wave body is left fully intact.
+FRONT_DEPTH = 7   # source px sea-ward of the front that the foam-gate covers
+FRONT_CUT = 1.0   # strength of the forward water cut (0 = off, 1 = full)
+FOAM_LO_PCT = 55  # brightness percentile at/below which a forward pixel reads as
+FOAM_HI_PCT = 88  # water (cut); at/above FOAM_HI_PCT it reads as foam (kept)
+# Synthetic white foam crest, NIGHT ONLY. The night base water is dark and the
+# swell retouch left little natural foam, so the wave reads flat. This paints a
+# soft light-white band along the moving leading edge, tied to the wave's
+# opacity (o) so it forms as the wave washes up and vanishes as the wave pulls
+# back and dissolves. Daytime scenes get their foam from the source image, so
+# NIGHT_FOAM only applies to night.
+NIGHT_FOAM = 0.7      # white-blend strength at the crest (0 = none, 1 = pure white)
+FOAM_EDGE_W = 3.5     # foam band gaussian width (source px) — bigger = thicker foam
+FOAM_EDGE_OFF = 2.5   # foam crest offset sea-side of the front (source px)
+FOAM_SCATTER = 0.7    # how much a blobby noise texture breaks up the foam (0 =
+                      # solid line, 1 = fully scattered) so it reads as foam, not
+                      # a bold clean line. Only the advancing wave gets foam; the
+                      # dissolving wave leaves none (no line at the washed-up edge).
 FEATHER = 9     # leading-edge feather width (source px) — bigger = softer front
 FEATHER_START = 0.8  # wash progress (0..1) at which the front feather begins
                      # (stays foamy/defined until here, then feathers out on the crash)
@@ -92,6 +144,14 @@ SIGMA_FRAC = 0.13   # warp locality (fraction of crop width) — smaller = more
                     # localized drag, less global deformation
 W0 = 0.06           # zero-displacement baseline weight — pulls the far field
                     # back to no-warp so only the surf band deforms
+WAVE_ALPHA = 1.0    # peak opacity of the warped surf. Must be ~1.0 so the
+                    # moving wave fully COVERS the static surf baked into the
+                    # source desk-scene image. At <1 the static surf bleeds
+                    # through — invisible by day, but at night the original's
+                    # bright static foam reads clearly over the dark water and
+                    # looks like the (unmoving) original is always showing.
+                    # The far/sea side warps ~0 so the overlay matches the
+                    # source there: full opacity creates no seam.
 
 
 def gen(t_name):
@@ -107,11 +167,15 @@ def gen(t_name):
     R = np.array([[(x - BL) / BW * cw, (y - BT) / BH * ch] for x, y in start])
     E = np.array([[(x - BL) / BW * cw, (y - BT) / BH * ch] for x, y in end])
 
-    # Tree mask: detect vegetation (green-ish or dark) so the palms along
-    # the shoreline punch through the wave's alpha (wave goes behind them).
+    # Tree mask: detect vegetation so the palms along the shoreline punch
+    # through the wave's alpha (wave goes behind them). Green-ish foliage, OR
+    # very dark NON-BLUE pixels (palm silhouettes). The non-blue guard is
+    # essential at NIGHT: the dark sea is dark-but-BLUISH (B noticeably > R),
+    # so without it the dark clause mistakes the whole night ocean for foliage
+    # and punches the wave + foam out across most of the surf.
     Rc, Gc, Bc = crop[:, :, 0], crop[:, :, 1], crop[:, :, 2]
     bright = (Rc + Gc + Bc) / 3
-    veg = ((Gc > Bc) & (Gc > Rc * 0.85) & (bright < 150)) | (bright < 70)
+    veg = ((Gc > Bc) & (Gc > Rc * 0.85) & (bright < 150)) | ((bright < 70) & (Bc < Rc + 8))
     treem = np.asarray(
         Image.fromarray((veg * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(sc * 0.6))
     ).astype(np.float32) / 255
@@ -120,15 +184,48 @@ def gen(t_name):
     gx = xs.astype(np.float32)
     gy = ys.astype(np.float32)
     sigma = cw * SIGMA_FRAC
+    foam_white = NIGHT_FOAM if t_name == 'night' else 0.0  # night-only foam crest
+    frame_ms = NIGHT_FRAME_MS if t_name == 'night' else FRAME_MS  # night runs slower
+
+    # Per-control-point warp scale (1 = full warp). NIGHT: damp the TOP end of
+    # the leading edge — pts 2 & 3 (the upper wave near the headland) were
+    # washing in too far — tapering back to full so there's no kink.
+    warp_scale = np.ones(len(start), np.float32)
+    if t_name == 'night':
+        warp_scale[1] = 0.40   # pt 2 (top)
+        warp_scale[2] = 0.60   # pt 3
+        warp_scale[3] = 0.85   # pt 4 (taper back to full)
+
+    # Night foam scatter texture: blobby noise in crop space so the foam reads
+    # as scattered foam instead of a clean bold line. Fixed seed -> the bake is
+    # deterministic (no Math.random-style nondeterminism between runs).
+    if foam_white > 0:
+        rng = np.random.default_rng(1234)
+        nz = rng.random((ch, cw)).astype(np.float32)
+        nz = np.asarray(Image.fromarray((nz * 255).astype('uint8'))
+                        .filter(ImageFilter.GaussianBlur(sc * 0.9))).astype(np.float32) / 255
+        nz = (nz - nz.min()) / (nz.max() - nz.min() + 1e-6)
+        foam_tex = (1 - FOAM_SCATTER) + FOAM_SCATTER * np.clip((nz - 0.30) / 0.5, 0, 1)
+    else:
+        foam_tex = None
 
     def inst(phi):
         """One wave instance at phase phi in [0,1): advances start->end while
-        forming, recedes end->start while dissolving. Returns (rgb, alpha, o)."""
-        # Linear (triangle) position so the wave starts MOVING immediately as
-        # it fades in — no slow ease-in lingering at the start. Still crosses
-        # the midway point (t=0.5) at phi=0.25, where the cross-fade is keyed.
-        t = 2.0 * phi if phi < 0.5 else 2.0 * (1.0 - phi)
-        I = R + (E - R) * t                       # intermediate control points
+        forming, then (no pause) eases back PULLBACK of the way while it
+        dissolves. Returns (rgb, alpha, o)."""
+        # Position: advance start->end linearly over [0, ADV_END] (the wave
+        # starts MOVING immediately as it fades in), then with NO pause recede
+        # PULLBACK of the way back over the next DISSOLVE_SPAN while it dissolves.
+        # It is fully transparent (and held just shy of the start) once that
+        # completes, so the remaining snap back to the start at the loop wrap is
+        # invisible and the next cycle begins cleanly from the start.
+        if phi < ADV_END:
+            t = phi / ADV_END                                       # advance 0 -> 1
+        elif phi < ADV_END + DISSOLVE_SPAN:
+            t = 1.0 - PULLBACK * (phi - ADV_END) / DISSOLVE_SPAN     # pull back 1 -> 1-PULLBACK
+        else:
+            t = 1.0 - PULLBACK                                       # gone (invisible) until wrap
+        I = R + (E - R) * t * warp_scale[:, None]  # intermediate control points
         disp = R - I                              # output -> source displacement
         # Localized warp: gaussian-falloff weights + a zero-displacement
         # baseline (W0), so the drag is confined to the surf band near the
@@ -175,47 +272,79 @@ def gen(t_name):
         tf = np.clip((t - FEATHER_START) / (1 - FEATHER_START), 0, 1)
         ledge = 1 - tf * (1 - ledge)
 
-        # Opacity (smoothstep, so the fade is smooth — no hard corners):
-        #   advance: fade in 0->1 over [0, FADE], then hold full to the shore
-        #            -> 100% visible by the midway point (phi = 0.25).
-        #   recede:  fade out 1->0 over [0.5, 0.5+FADE], then stay gone
-        #            -> 100% transparent by the midway point (phi = 0.75).
-        if phi < FADE:
-            u = phi / FADE
+        # Opacity:
+        #   advance:  smooth fade-in 0->1 over [0, FADE_IN], then hold full to the
+        #             beach (no settle).
+        #   dissolve: LINEAR fade 1->0 over [ADV_END, ADV_END+DISSOLVE_SPAN] — a
+        #             steady, gradual fade so the pull-back is visible the whole
+        #             way — then gone until the loop wrap.
+        if phi < FADE_IN:
+            u = phi / FADE_IN
             o = u * u * (3.0 - 2.0 * u)
-        elif phi < 0.5:
+        elif phi < ADV_END:
             o = 1.0
-        elif phi < 0.5 + FADE:
-            u = 1.0 - (phi - 0.5) / FADE
-            o = u * u * (3.0 - 2.0 * u)
+        elif phi < ADV_END + DISSOLVE_SPAN:
+            o = 1.0 - (phi - ADV_END) / DISSOLVE_SPAN
         else:
             o = 0.0
 
-        a = mm * 0.8 * (1 - treem) * ledge * o
+        # Foam-gate the forward wash (see FRONT_* tunables): keep bright foam at
+        # the leading edge, cut the dim blue water that would otherwise sit on
+        # the sand in front of it. Per-frame relative brightness so it adapts to
+        # the time of day; only the forward zone (small edist) is affected.
+        b = wp.mean(axis=2)
+        sel = mm > 0.3
+        if sel.any():
+            lo = np.percentile(b[sel], FOAM_LO_PCT)
+            hi = np.percentile(b[sel], FOAM_HI_PCT)
+            foam = np.clip((b - lo) / max(hi - lo, 1.0), 0, 1)
+        else:
+            foam = np.ones_like(b)
+        fwd = np.clip(1 - edist / (sc * FRONT_DEPTH), 0, 1)
+        front_keep = 1 - fwd * FRONT_CUT * (1 - foam)
+
+        a = mm * WAVE_ALPHA * (1 - treem) * ledge * o * front_keep
+
+        # Night-only white foam crest along the moving leading edge: a soft
+        # bright band centered just inside the front. Tied to o, so it forms as
+        # the wave washes up and fades out as it pulls back and dissolves. It
+        # overrides the feathered front (that is the point — a defined foam lip).
+        if foam_white > 0:
+            # Foam envelope: full through the advance, then fade WITH the linear
+            # dissolve while the edge recedes — so the foam carries up the beach
+            # and is visibly there as the wave pulls back, then gone.
+            if phi < ADV_END:
+                foam_env = min(1.0, o * 1.6)            # full through the advance
+            else:
+                foam_env = o                            # fade with the dissolve / recede
+            band = np.exp(-((edist - sc * FOAM_EDGE_OFF) / (sc * FOAM_EDGE_W)) ** 2)
+            band = band * foam_tex                      # scatter into foamy clumps
+            fa = band * mm * (1 - treem) * foam_env * foam_white
+            wp = wp * (1 - fa[..., None]) + 255.0 * fa[..., None]
+            a = a + fa * (1 - a)
         return wp, a, o
 
     # ROLLING WAVES: two instances half a period apart. Over the loop, one
-    # advances+forms while the other recedes+dissolves; they cross at the
-    # midway point (the receding one fully gone, the advancing one fully
-    # visible). The incoming (advancing) wave is drawn ON TOP the moment it
-    # starts, with the outgoing (receding) wave behind it.
+    # advances+forms while the other pulls back + dissolves. The incoming
+    # (advancing) wave is drawn ON TOP, with the outgoing (receding) one behind.
     fr = []
     for i in range(N):
         ph = (i / N) * 0.5            # instance A: 0 -> 0.5 (advancing, incoming)
         adv = inst(ph)
-        rec = inst(ph + 0.5)          # instance B: 0.5 -> 1 (receding, outgoing)
+        rec = inst(ph + 0.5)          # instance B: 0.5 -> 1 (pulling back + dissolving)
         acc_rgb = np.zeros((ch, cw, 3), np.float32)
         acc_a = np.zeros((ch, cw), np.float32)
-        for wp, a, _o in (rec, adv):  # back-to-front: receding behind, advancing on top
+        for wp, a, _o in (rec, adv):  # back-to-front: dissolving behind, advancing on top
             out_a = a + acc_a * (1.0 - a)
             guard = np.where(out_a > 1e-6, out_a, 1.0)[..., None]
             acc_rgb = (wp * a[..., None] + acc_rgb * (acc_a * (1.0 - a))[..., None]) / guard
             acc_a = out_a
         fr.append(Image.fromarray(np.dstack([acc_rgb, acc_a * 255]).astype('uint8')))
 
-    out = f'code/public/beach-wave-{t_name}.webp'
+    os.makedirs(OUT_DIR, exist_ok=True)
+    out = f'{OUT_DIR}/beach-wave-{t_name}.webp'
     fr[0].save(out, 'webp', save_all=True, append_images=fr[1:],
-               duration=FRAME_MS, loop=0, quality=80, method=4)
+               duration=frame_ms, loop=0, quality=80, method=4)
     return round(os.path.getsize(out) / 1024)
 
 

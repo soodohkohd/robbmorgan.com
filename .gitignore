@@ -40,3 +40,5 @@ yarn-error.log*
 CLAUDE.md
 
 /opportunities
+# Local wave test copies (staged in artifacts/waves/, served from Azure Blob in prod)
+code/public/beach-wave-*.webp
