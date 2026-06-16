@@ -80,9 +80,12 @@ export class Landing {
   activeTime = computed<TimeOfDay>(() => this.pickerSelection() ?? this.timeOfDay());
   sceneSrc = computed(() => `/desk-scene-${this.activeTime()}.webp`);
   /** Pre-rendered looping wave animation (surf warped up the beach), one
-   *  per time-of-day so it matches the active scene. See landing.html
-   *  .beach-wave + artifacts/make-beach-wave.py. */
-  waveSrc = computed(() => `/beach-wave-${this.activeTime()}.webp`);
+   *  per time-of-day so it matches the active scene. Served from Azure Blob
+   *  (like the videos) — each WebP is ~1 MB, too heavy for the deploy zip.
+   *  Regenerate + re-upload via artifacts/make-beach-wave.py. See also
+   *  landing.html .beach-wave. */
+  waveSrc = computed(() =>
+    `https://robbmorganmedia.blob.core.windows.net/media/beach-wave-${this.activeTime()}.webp`);
 
   /* ---------- Crossfade scene swap ----------
      Two stacked <img> elements. When sceneSrc() changes, the new

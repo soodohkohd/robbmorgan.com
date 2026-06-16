@@ -149,6 +149,84 @@ export class TheDesk implements AfterViewInit {
       `,
     },
     {
+      slug: 'waves',
+      label: 'Waves',
+      title: 'The Rolling Waves',
+      bodyHtml: `
+        <p>This is the one that nearly broke me. It took an entire session of back-and-forth — false starts, a couple of genuinely frustrated messages from me, and a detour through a previous session's memory — before it finally clicked. It might be my favorite thing on the whole desk.</p>
+        <p>The brief was simple to say and brutal to build: the beach in the window should have <em>rolling waves</em>. Surf that washes up the sand, crashes, recedes, and dissolves — continuously, the way real surf never stops.</p>
+
+        <h3>Everything CSS could do, and why none of it worked</h3>
+        <p>I started where any web developer would: CSS. I had a polygon for the wave (captured in debug mode, naturally) and a polygon for the beach. Surely I could animate one into the other.</p>
+        <p>I tried morphing a <code>clip-path</code> from the resting wave to a washed-up wave. I tried <code>scaleX</code> from the shoreline edge. I tried sampling the scene a little seaward so the wave region showed the painted foam. I tried a feathered SVG mask for the foam edge, then a <code>filter: blur()</code> when that looked wrong. Each one I pushed to the dev server, looked at, and rejected. "It looks like you're moving the whole image." "That's the wrong approach." "You're feathering too early." At one point, in frustration, I told it plainly it wasn't getting this.</p>
+        <p>The thing neither of us wanted to admit for an hour: <strong>the effect is physically a per-pixel mesh warp</strong> — the surf texture being dragged up the sand and stretched — and CSS cannot do that. <code>clip-path</code>, <code>transform</code>, and masks can translate, scale, rotate, and reveal. They cannot warp an image like taffy. Every CSS attempt was a different way of approximating something that has no CSS primitive.</p>
+
+        <h3>The session that had already solved it</h3>
+        <p>Then I remembered something. Days earlier, in a previous session, we'd gotten <em>close</em> to a wave before abandoning it. That session had been compacted — its details summarized and the raw history mostly gone — but the summary survived. We went back and read it.</p>
+        <p>There it was: the approach that had worked before getting reverted. Not CSS at all. <strong>Bake the warp into an animated WebP, offline, with Python.</strong></p>
+
+        <h3>The warp</h3>
+        <p>The generator (<code>artifacts/make-beach-wave.py</code>) is a few dozen lines of NumPy and PIL. It loads the desk scene, crops the beach region, and for each frame computes a displacement field: control points on the wave's leading edge move from their resting positions toward the shore, and every pixel is sampled from a source location pulled along by those points, weighted by distance. It's an inverse-distance (Shepard) warp — the surf physically drags up the sand.</p>
+        <p>Three things made it read as real water:</p>
+        <ul>
+          <li><strong>The warp is localized.</strong> The first version used a long-tailed weighting that dragged the entire bay — the ocean, the coastline, everything smeared. I switched to a gaussian falloff with a zero-displacement baseline so only the surf band deforms and the deep water stays still.</li>
+          <li><strong>The trees are punched out.</strong> A vegetation mask (green-ish or dark pixels) is subtracted from the wave's transparency, so the palms along the shoreline show through and the surf passes <em>behind</em> them — no z-index trick, it's baked into the alpha.</li>
+          <li><strong>The foam is a feather, not a color.</strong> An early version drew a white foam edge; it looked fine at midday and wrong at night, where white doesn't belong. The fix was to feather the leading edge to <em>transparency</em> instead — revealing the scene beneath, so it blends in every time-of-day variant automatically.</li>
+        </ul>
+
+        <h3>The negotiation</h3>
+        <p>Then came the part that always comes: describing, in words, the difference between almost-right and right.</p>
+        <blockquote>
+          <p>Robb: "2-6 left and slightly up. 7-10 left. 11-14 left and slightly down. 15-17 down."</p>
+          <p><em>The leading edge fans out perpendicular to the curved shore — captured as direction groups, point by point.</em></p>
+          <p>Robb: "it's choppy on the fade in/out."</p>
+          <p><em>Choppiness is frame rate, not frame count. Spread the fade across the whole motion with smoothstep curves.</em></p>
+          <p>Robb: "the speed needs to be cut in half."</p>
+          <p><em>Double the frame count, not the per-frame duration — otherwise you just get a slower slideshow.</em></p>
+          <p>Robb: "the end is way too deformed. is this bad warping?"</p>
+          <p><em>Yes. Localize the warp.</em></p>
+        </blockquote>
+
+        <h3>Rolling, not washing</h3>
+        <p>A single wave washing in and out is a loop with a dead beat — the moment it's fully receded, before the next one starts. Real surf never has that gap. The final move was to composite <em>two</em> wave instances, half a cycle apart: as one recedes and dissolves, the other forms and advances, the two crossing at the midway point — the outgoing one fully gone, the incoming one fully formed and drawn on top. Because the instances are identical and offset by exactly half a period, the whole thing repeats every half-cycle, which let me bake half as many frames for the same motion.</p>
+        <p>Two final touches: the incoming wave starts <em>moving</em> the instant it begins fading in (linear motion, not eased — easing made it linger), and the cross-fade uses smoothstep so it never stutters.</p>
+        <p>When it finally rolled — two waves chasing each other up the sand, behind the palms, foam dissolving into the beach, in the right light for the time of day — I sat back and just watched it loop. It got it. Some things are worth the fight.</p>
+        <p>The four baked loops (one per time of day) are about a megabyte each, so they're served from Azure Blob storage rather than bundled into the site — the same place the video files live.</p>
+      `,
+    },
+    {
+      slug: 'palms',
+      label: 'Palms',
+      title: 'The Palm Breeze',
+      bodyHtml: `
+        <p>The palm trees in the window needed to move. Not much — just the suggestion of a breeze through the fronds. A completely static scene reads as a photograph; the smallest, slowest motion is what makes it read as a <em>place</em>.</p>
+
+        <h3>The wrong tool first</h3>
+        <p>The obvious approach for rustling fronds is an SVG turbulence filter — <code>feTurbulence</code> and <code>feDisplacementMap</code>, animated. I tried it. It looked plausible in isolation and stuttered badly in practice.</p>
+        <p>The reason is the single most useful thing I learned in this whole project: <strong>animated SVG filters re-rasterize on the main thread.</strong> Every frame, the browser recomputes the filter on the CPU. And the main thread is already busy — the monitor's fake typewriter ticks out a character every 65 milliseconds. The two fought each other, and the fronds jittered.</p>
+
+        <h3>The compositor approach</h3>
+        <p>The fix was to get the animation off the main thread and onto the GPU compositor, where <code>transform</code> animations run. So each palm crown became a copy of the scene image, clipped to that crown's silhouette, gently <em>rotated</em> back and forth:</p>
+        <ul>
+          <li>One <code>&lt;div&gt;</code> per crown, its background the full scene image sized to the scene width (<code>background-size: 100cqw</code>), then shifted by the crown's bounding-box offset so the palm sits pixel-aligned over the static scene beneath it.</li>
+          <li>A <code>palm-sway</code> keyframe that rocks the layer between a slight left lean and a slight right lean — <code>rotate(-sway)</code> to <code>rotate(+sway)</code>, <code>ease-in-out</code>, <code>alternate</code> — so it decelerates at each end the way a frond settles before the breeze pushes it back.</li>
+          <li><code>transform-origin</code> at the trunk base, so the crown pivots where it's actually anchored and the frond tips travel the most.</li>
+        </ul>
+        <p>Because <code>clip-path</code> and <code>transform</code> both run on the compositor, the crowns stay perfectly smooth even while the typewriter is hammering the main thread. That was the whole point.</p>
+
+        <h3>Five crowns, all slightly different</h3>
+        <p>There are five palm layers. Each gets its own sway amplitude (between 1.6 and 2.4 degrees), its own duration (5.6 to 7.2 seconds), and its own negative animation-delay, so no two palms rock in sync. A formation of identical, synchronized palms would feel as wrong as synchronized birds — the eye catches the repetition even when it can't name it.</p>
+
+        <h3>The feathered edge</h3>
+        <p>The first version clipped each crown with a hard <code>clip-path</code>, and the moving copy ended on a visible one-pixel seam against the static scene. The fix was to swap the hard clip for a <em>feathered mask</em>: the crown polygon, filled white and blurred, so the layer's alpha falls off softly at the edges and the swaying copy blends into the scene instead of cutting against it. The blur is split per-axis so the feather stays an even few pixels even on the tall, narrow palms.</p>
+
+        <h3>The palm split by the window</h3>
+        <p>One palm is bisected by the window's center mullion. Clipped as a single shape, half of it would sit on the wrong side of the frame divider. So it's split into two fragments — left of the mullion and right of it — that share one <em>absolute</em> pivot point (the real trunk base) and identical timing, so the two halves rock as one rigid crown across the seam. Getting the shared pivot expressed correctly in each fragment's own coordinate box took a few tries.</p>
+
+        <p>Under <code>prefers-reduced-motion</code>, every moving copy is dropped entirely and the palms are simply the static scene. The motion is a grace note, not a requirement.</p>
+      `,
+    },
+    {
       slug: 'birds',
       label: 'Birds',
       title: 'The Birds',
