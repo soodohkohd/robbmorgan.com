@@ -17,7 +17,9 @@ import { Analytics } from './analytics.service';
 import { routes } from './app.routes';
 
 const SITE_ORIGIN = 'https://robbmorgan.com';
-const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/desk-scene-afternoon.webp`;
+// JPG (not WebP) so iMessage's LinkPresentation framework reliably renders
+// the texted-link preview card — see CLAUDE.md "SEO + social previews".
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/desk-scene-afternoon-og.jpg`;
 
 /**
  * Azure Application Insights — public client-side connection string. The
