@@ -13,9 +13,10 @@ interface Topic {
   wip?: boolean;
 }
 
-/** A sub-tab inside the EPIC Pipeline topic (the ADO pipeline, the web app,
- *  the API, and the module library each get their own tab). */
-interface EpicTab {
+/** A sub-tab inside a topic that's deep enough to split into its own
+ *  deep-dives. Used by EPIC Pipeline (pipeline / web / api / modules) and by
+ *  NINE (overview / model stack / custom models / agent loop / memory / runtime). */
+interface SubTab {
   slug: string;
   label: string;
   bodyHtml: string;
@@ -43,6 +44,13 @@ export class WebApps implements AfterViewInit {
       // bodyHtml omitted — this topic renders the EPIC sub-tabs instead.
     },
     {
+      slug: 'nine',
+      label: 'NINE',
+      intro:
+        'NINE (<strong>N</strong>eural <strong>I</strong>ntelligence <strong>N</strong>etwork <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, a custom-converted model, 54 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
+      // bodyHtml omitted — this topic renders the NINE sub-tabs instead.
+    },
+    {
       slug: 'angular-packages',
       label: 'Angular Packages',
       intro:
@@ -60,22 +68,37 @@ export class WebApps implements AfterViewInit {
   ];
 
   /** Sub-tabs shown only when the EPIC Pipeline topic is selected. */
-  readonly epicTabs: readonly EpicTab[] = [
+  readonly epicTabs: readonly SubTab[] = [
     { slug: 'ado-pipeline',  label: 'EPIC (ADO Pipeline)',   bodyHtml: this.adoPipelineHtml() },
     { slug: 'epic-web',      label: 'EPIC Web',              bodyHtml: this.epicWebHtml() },
     { slug: 'epic-api',      label: 'EPIC API',              bodyHtml: this.epicApiHtml() },
     { slug: 'epic-modules',  label: 'EPIC Pipeline Modules', bodyHtml: this.epicModulesHtml() },
   ];
 
+  /** Sub-tabs shown only when the NINE topic is selected. */
+  readonly nineTabs: readonly SubTab[] = [
+    { slug: 'nine-overview',  label: 'Overview',            bodyHtml: this.nineOverviewHtml() },
+    { slug: 'nine-models',    label: 'The Model Stack',     bodyHtml: this.nineModelsHtml() },
+    { slug: 'nine-ornith',    label: 'Custom Models',       bodyHtml: this.nineOrnithHtml() },
+    { slug: 'nine-agent',     label: 'Agent Loop & Tools',  bodyHtml: this.nineAgentHtml() },
+    { slug: 'nine-memory',    label: 'Memory & Autonomy',   bodyHtml: this.nineMemoryHtml() },
+    { slug: 'nine-runtime',   label: 'Architecture',        bodyHtml: this.nineRuntimeHtml() },
+  ];
+
   selectedSlug = signal<string>(this.topics[0].slug);
   selectedEpicSlug = signal<string>(this.epicTabs[0].slug);
+  selectedNineSlug = signal<string>(this.nineTabs[0].slug);
 
   selectedTopic = computed<Topic>(
     () => this.topics.find(t => t.slug === this.selectedSlug()) ?? this.topics[0],
   );
 
-  selectedEpicTab = computed<EpicTab>(
+  selectedEpicTab = computed<SubTab>(
     () => this.epicTabs.find(t => t.slug === this.selectedEpicSlug()) ?? this.epicTabs[0],
+  );
+
+  selectedNineTab = computed<SubTab>(
+    () => this.nineTabs.find(t => t.slug === this.selectedNineSlug()) ?? this.nineTabs[0],
   );
 
   ngAfterViewInit(): void {
@@ -104,6 +127,14 @@ export class WebApps implements AfterViewInit {
    *  title bar instead of stranding the reader mid-prose. */
   selectEpic(slug: string): void {
     this.selectedEpicSlug.set(slug);
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+  }
+
+  /** Sub-tab click inside the NINE topic. Same scroll-to-dock behavior as
+   *  the EPIC sub-tabs. */
+  selectNine(slug: string): void {
+    this.selectedNineSlug.set(slug);
     if (typeof window === 'undefined') return;
     window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
   }
@@ -738,6 +769,223 @@ public async Task Get_WithHealthyDb_Returns200()
 
       <h2>Platforms</h2>
       <p>iOS and Android from one Flutter codebase (portrait, black launch screen, app identity "Rocket: Asteroid Hunter"), plus the canvas web port on this site. It's a portfolio / hobby project — fully featured on every target, not yet store-distributed.</p>
+    `;
+  }
+
+  /* ---------- NINE — Overview ---------- */
+  private nineOverviewHtml(): string {
+    return `
+      <figure class="topic-figure topic-figure--center">
+        <img src="/nine.webp" alt="NINE — Neural Intelligence Network Engine logo" loading="lazy" width="320" height="320" />
+        <figcaption>NINE — a fully local, private AI that runs on a single Mac.</figcaption>
+      </figure>
+
+      <h2>The Idea</h2>
+      <p>NINE is a complete, self-contained AI assistant — the kind you'd reach for a cloud API to build — that runs <strong>entirely on one laptop</strong> with <em>nothing</em> leaving the machine. The model weights, the inference, the memory, the tools, the image and voice generation, even the web UI are all local. No OpenAI key, no Anthropic key, no telemetry. The motivation was simple: own the entire stack end-to-end, understand every layer of a modern agentic AI by building it from the model up, and have a private assistant whose conversations never touch someone else's servers.</p>
+      <p>The hardware is an Apple M4 Max with 128&nbsp;GB of unified memory, so the inference backend is <strong>MLX</strong> — Apple's array framework, tuned for M-series silicon — rather than Ollama or llama.cpp. The whole system is roughly <strong>11,000 lines of hand-written Python</strong> plus a single-file offline web app.</p>
+
+      <h2>What She Can Do</h2>
+      <p>NINE isn't a chat box. She runs a real tool-agent loop — generate, call a tool, observe the result, repeat — and can act in the world:</p>
+      <ul>
+        <li><strong>See</strong> — a vision model reads attached images, then the text model acts on what it saw.</li>
+        <li><strong>Code &amp; build</strong> — read / edit / grep files, run commands, scaffold and launch real projects in a sandboxed workspace.</li>
+        <li><strong>Draw</strong> — local FLUX text-to-image, plus deterministic code-laid-out SVG diagrams and exact-text image overlays.</li>
+        <li><strong>Speak</strong> — local text-to-speech that streams sentence-by-sentence while she's still writing.</li>
+        <li><strong>Remember</strong> — durable memory across every conversation, retrieved by meaning.</li>
+        <li><strong>Browse</strong> — web search / fetch / image search, all SSRF-guarded.</li>
+        <li><strong>Act on her own</strong> — register a watcher, end the turn, and start an autonomous turn when it fires.</li>
+        <li><strong>Delegate</strong> — fan focused subtasks out to fresh sub-agents, in parallel.</li>
+      </ul>
+
+      <h2>The Engineering, At a Glance</h2>
+      <p>The portfolio-relevant part isn't the feature list — it's how the AI plumbing is designed. A few highlights, each with its own tab:</p>
+      <table>
+        <thead><tr><th>Layer</th><th>What's interesting</th></tr></thead>
+        <tbody>
+          <tr><td>Model stack</td><td>A three-mode, all-Qwen "brain" with a vision model that sees but never drives, and manual, deterministic routing.</td></tr>
+          <tr><td>Custom models</td><td>A from-scratch checkpoint→MLX converter for a hybrid-attention MoE model the stock tooling can't handle.</td></tr>
+          <tr><td>Agent loop</td><td>A model-agnostic streaming parser driven by per-family format specs, plus a confabulation guard.</td></tr>
+          <tr><td>Memory</td><td>Two-scope semantic recall with locally-embedded, threshold-tuned retrieval — and cross-session recall.</td></tr>
+          <tr><td>Runtime</td><td>A single MLX worker thread feeding a FastAPI server that streams tokens, tool calls, and media to the browser.</td></tr>
+        </tbody>
+      </table>
+      <p>It's a personal / research project — a way to build a genuinely capable agent from the silicon up — not a product. Everything below is real, working code.</p>
+    `;
+  }
+
+  /* ---------- NINE — The Model Stack ---------- */
+  private nineModelsHtml(): string {
+    return `
+      <h2>A Three-Mode, All-Qwen Brain</h2>
+      <p>NINE's intelligence is a <em>set</em> of models, not one. A strong text model always <strong>drives</strong> (it's the one that reasons and calls tools); a separate vision model is the shared <strong>EYES</strong> and <em>never</em> drives — vision-language models are reliably weaker at agentic tool work, so they're scoped to what they're good at: looking. Which text model drives is chosen by <strong>mode</strong>, toggled per session.</p>
+      <table>
+        <thead><tr><th>Mode</th><th>Driver model</th><th>Why this one</th></tr></thead>
+        <tbody>
+          <tr><td>Uncensored <em>(default)</em></td><td>Josiefied-Qwen3-30B-A3B (4-bit, MoE)</td><td>An abliterated-and-&ldquo;healed&rdquo; model that won't refuse benign requests.</td></tr>
+          <tr><td>Censored</td><td>Qwen3-32B (4-bit, dense, aligned)</td><td>The stock aligned model when guardrails are wanted.</td></tr>
+          <tr><td>Coder</td><td>Ornith-1.0-35B (8-bit, MoE)</td><td>Strongest at agentic coding; 8-bit for stability on long sessions. (See <em>Custom Models</em>.)</td></tr>
+          <tr><td>Eyes <em>(all modes)</em></td><td>Qwen3-VL-32B (4-bit, VLM)</td><td>Sees &amp; describes images; hands off to the driver.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Deterministic Routing — No Fuzzy Auto-Router</h2>
+      <p>A common failure mode in multi-model systems is a learned router that picks the wrong brain unpredictably. NINE's routing is <strong>fully manual and deterministic</strong>: two per-session toggles (Uncensored, and Code which forces the Coder) pick the driver, and a <strong>driver badge</strong> on every turn shows exactly which model produced it. The runtime mode is the <em>session</em> — you always know who you're talking to.</p>
+
+      <h2>Two-Phase Image Turns</h2>
+      <p>When a turn includes an image, NINE runs it in two phases: the <strong>vision model sees and describes</strong> the image in service of the request, then the <strong>text driver acts</strong> on that description — editing files, running commands, or answering. This keeps the capable-but-non-agentic VLM out of the tool loop while still letting NINE &ldquo;see.&rdquo; If no vision model is downloaded, she falls back to a text turn and says so plainly.</p>
+
+      <h2>128&nbsp;GB Buys Resident Models</h2>
+      <p>Loading a 30B model takes real time, so model <em>switching</em> is usually the latency killer in a multi-model design. NINE leans on the unified memory budget: an LRU cache (<code>MAX_RESIDENT_MODELS</code>) keeps several models <strong>resident at once</strong>, so the vision↔driver handoff and chat-to-chat mode switches are near-instant after the first load. Each session can also remember its own model and lazily swap to it on send.</p>
+
+      <h2>Live Model Management</h2>
+      <p>Models are managed from the UI, not the code. You can see what's downloaded, pull more in the background, pre-pick each mode's default, or <strong>switch the live model with no restart</strong>. A live swap reloads only the LLM — <strong>memory, sessions, and personality are preserved</strong>. New model <em>families</em> are a data change, not engine surgery: a format spec plus a catalog entry (see <em>Agent Loop &amp; Tools</em> and <em>Custom Models</em>).</p>
+
+      <h2>Local Image, Voice &amp; Vision</h2>
+      <p>The generative side is local too. Text-to-image runs on <strong>FLUX</strong> via <code>mflux</code> in quality (photorealistic) and fast (distilled, few-step) tiers, lazy-loaded and kept resident once warm. For things diffusion is bad at, NINE doesn't ask the model to fake it: architecture diagrams are laid out <strong>deterministically in code</strong> as crisp SVG, exact lettering is composited with PIL, and data charts go through real matplotlib. Voice is local TTS (Kokoro via <code>mlx-audio</code>) on its own worker thread so speech doesn't block generation.</p>
+    `;
+  }
+
+  /* ---------- NINE — Custom Models (Ornith conversion) ---------- */
+  private nineOrnithHtml(): string {
+    return `
+      <h2>Building the Coder Model From a Raw Checkpoint</h2>
+      <p>NINE's Coder driver isn't pulled from a ready-made MLX repo — it's <strong>converted locally</strong> from a raw research checkpoint. The model is <strong>Ornith-1.0</strong> (DeepReinforce), a Qwen3.5-Next <strong>hybrid-attention MoE</strong> post-trained for agentic coding. &ldquo;Hybrid attention&rdquo; means it mixes a linear-attention variant (GatedDeltaNet) with full attention on every fourth layer — efficient over long context, which is exactly what a coding agent needs. Getting it running under MLX took a from-scratch conversion script, because the stock tooling can't ingest its weight layout.</p>
+
+      <h2>Why mlx-lm's Stock Converter Isn't Enough</h2>
+      <p>The Ornith checkpoint has two quirks that break <code>mlx-lm</code>'s default <code>sanitize</code> pass:</p>
+      <ol>
+        <li><strong>A vision-language-wrapped tree.</strong> The tensors are nested under a <code>language_model.</code> prefix and the checkpoint ships a vision tower NINE doesn't use. The converter re-prefixes the language weights into the layout MLX expects and drops the vision tensors entirely.</li>
+        <li><strong>An unfused per-expert MoE layout.</strong> MLX's <code>SwitchGLU</code> expects the fused <code>experts.gate_up_proj</code> form, but Ornith stores <em>each expert separately</em> as <code>…experts.{k}.{gate,up,down}_proj.weight</code>. The converter stacks the per-expert tensors back into the fused <code>switch_mlp</code> weights MLX wants.</li>
+      </ol>
+      <p>The script <strong>monkey-patches the correct model class's <code>.sanitize</code></strong> — MoE vs. dense, chosen by the checkpoint's <code>model_type</code> — then calls <code>mlx_lm.convert</code> to quantize, and finally runs a tiny generation as a smoke test that the weights actually load and produce tokens.</p>
+      <pre><code># One recipe, two quantizations — the exact command that built NINE's Coder weights
+python scripts/convert_ornith_to_mlx.py \\
+    deepreinforce-ai/Ornith-1.0-35B  Ornith-1.0-35B  8 4
+#   └ HF repo                         └ out basename  └ bits (8-bit + 4-bit)
+# → models/Ornith-1.0-35B-mlx-8bit/   (the stable Coder driver)
+# → models/Ornith-1.0-35B-mlx-4bit/   (a lighter fallback)</code></pre>
+      <p>Two tiers are produced: the <strong>35B MoE</strong> as the Coder driver (8-bit for stability on long coding sessions) and a <strong>9B dense</strong> edge tier, converted by the same script with that tier's repo and <code>model_type</code>. The converter is fully reproducible — if the weights are ever lost, the script <em>is</em> the recipe to rebuild them.</p>
+
+      <h2>The Engine Doesn't Know the Model Family</h2>
+      <p>A new model only matters if the engine can <em>read</em> what it emits. NINE's inference engine is <strong>model-agnostic</strong>: every family-specific behavior — how thinking is delimited, how a tool call is encoded, which stray markers to scrub — lives in a data-only <code>FormatSpec</code>, not in engine code. Adding a family is a <strong>spec plus a catalog entry</strong>, not a rewrite.</p>
+      <table>
+        <thead><tr><th>Trait</th><th>Varies in KIND, not just strings</th></tr></thead>
+        <tbody>
+          <tr><td>Thinking mode</td><td><code>channel</code> (Gemma's <code>&lt;|channel&gt;…</code>) vs. <code>tag</code> (Qwen's <code>&lt;think&gt;…&lt;/think&gt;</code>) vs. <code>none</code></td></tr>
+          <tr><td>Tool format</td><td>custom Gemma calls vs. JSON-in-tags vs. Qwen-Coder XML (<code>&lt;function=…&gt;&lt;parameter=…&gt;</code>) vs. <code>none</code></td></tr>
+          <tr><td>Turn / leak markers</td><td>per-family stop boundaries and stray tags to scrub from visible text</td></tr>
+        </tbody>
+      </table>
+      <p>Ornith is the payoff of that design. It's a <em>hybrid</em> of two families — Qwen-style <code>&lt;think&gt;</code> tag reasoning <strong>and</strong> Qwen-Coder's XML tool calls — and wiring it up was just a new <code>FormatSpec</code> that composes the two behaviors. Each spec was <strong>verified against the live model</strong> (Ornith emits a <code>&lt;tool_call&gt;</code> wrapper that NINE's other Qwen-Coder build doesn't, so the parser keys on the inner <code>&lt;function=&gt;</code> boundary and scrubs the wrapper). The streaming parser then handles markers that arrive split across token deltas by holding back a short tail until it can classify it safely.</p>
+    `;
+  }
+
+  /* ---------- NINE — Agent Loop & Tools ---------- */
+  private nineAgentHtml(): string {
+    return `
+      <h2>The Tool-Agent Loop</h2>
+      <p>Every NINE turn is an agent loop, not a single completion: <strong>generate → parse a tool call → execute it → feed the result back → repeat</strong>, until the model produces a final answer. The UI shows each call and its result inline as one clean action line with a live spinner, with any media rendered in place — the same chronological flow as a modern coding agent, where thinking, tool calls, and the answer interleave.</p>
+
+      <h2>Streaming Parse: Think / Tool / Answer</h2>
+      <p>The hard part is that all of this arrives as <em>one token stream</em>. A streaming parser splits that stream, live, into three kinds of content — hidden reasoning, tool calls, and the visible answer — driven by the active model's <code>FormatSpec</code> (so it's the same code for every family). Reasoning is shown in collapsible blocks; tool calls are extracted and dispatched the instant they complete; the answer streams to the browser token-by-token.</p>
+
+      <h2>54 Tools Across 14 Categories</h2>
+      <p>NINE's capability surface is a typed tool registry — parsed from messy model output, validated, dispatched, and returned as polished results:</p>
+      <table>
+        <thead><tr><th>Category</th><th>Representative tools</th></tr></thead>
+        <tbody>
+          <tr><td>Files &amp; Code</td><td><code>read_file</code>, <code>write_file</code>, <code>edit_file</code> (surgical replace), <code>grep</code>, <code>glob</code>, <code>list_dir</code></td></tr>
+          <tr><td>Documents</td><td>create / edit / append markdown &amp; <code>.docx</code>, edits in place, images embedded</td></tr>
+          <tr><td>Image &amp; Diagrams</td><td><code>generate_image</code>, <code>create_diagram</code> (code-laid-out SVG), <code>overlay_text</code></td></tr>
+          <tr><td>Video / GIF / Face</td><td><code>animate_image</code>, <code>make_gif</code>, <code>face_swap</code>, <code>edit_image</code></td></tr>
+          <tr><td>Voice</td><td><code>speak</code> — local TTS, streamed</td></tr>
+          <tr><td>Apps &amp; Shell</td><td><code>scaffold_app</code>, <code>run_app</code>, <code>run_command</code>, <code>start_process</code></td></tr>
+          <tr><td>Autonomy</td><td><code>notify_when</code> — message you after a turn ends</td></tr>
+          <tr><td>Memory &amp; Sessions</td><td><code>remember</code>, <code>recall</code>, <code>pin_memory</code>, <code>read_session</code></td></tr>
+          <tr><td>Internet</td><td><code>web_search</code>, <code>web_fetch</code>, <code>web_image_search</code> (SSRF-guarded)</td></tr>
+          <tr><td>Market &amp; Multi-Agent</td><td>live quotes + matplotlib charts; <code>delegate</code>, <code>delegate_parallel</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2>The Design Bar: Do the Hard Part in Code</h2>
+      <p>The standing principle behind every tool is that the <strong>30B local driver is the weakest link</strong>, so the tool must carry the load: do the hard, deterministic part in Python (not in the model), be robust to messy model inputs, and return polished output. The diagram tool is the canonical example — the model supplies only a logical graph (nodes, groups, edges); the code does professional layout, nested labeled containers, service-colored cards, and arrowed connectors. That's how NINE produces output well above what a 30B model could draw on its own.</p>
+
+      <h2>Cross-Turn Tool Memory</h2>
+      <p>Without help, only an assistant's <em>words</em> survive into the next turn — every fact a tool discovered (a path, a file's contents, a command's output) evaporates. NINE attaches a <strong>compact, capped record of what each turn's tools returned</strong> as reference context riding the <em>following</em> user turn (never as assistant prose, so the weak model can't mimic it back). The result is the cross-turn continuity you'd expect from a frontier agent — she remembers what her own tools just did.</p>
+
+      <h2>A Confabulation Guard</h2>
+      <p>Small local models will sometimes <em>claim</em> they did something — &ldquo;here's the image,&rdquo; with a fake markdown link — when no tool actually ran. A shared guard in the agent layer catches a media/image claim when <strong>no artifact was produced that turn</strong> (gated on whether media was actually generated, not just whether any tool ran), so a failed download can't fake success. It's kept precise: a legitimate vision description (&ldquo;the image shows…&rdquo;) is spared. Every confirmed behavior like this is pinned down by a regression script so fixes don't silently rot.</p>
+    `;
+  }
+
+  /* ---------- NINE — Memory & Autonomy ---------- */
+  private nineMemoryHtml(): string {
+    return `
+      <h2>Memory That Survives Every Conversation</h2>
+      <p>NINE remembers across chats, in two scopes, both captured automatically:</p>
+      <ul>
+        <li><strong>Personal / core</strong> — durable facts about the user and about NINE (identity, preferences, decisions), stored as JSONL.</li>
+        <li><strong>Per-session working memory</strong> — that chat's operational notes (file locations, task state), deleted with the session.</li>
+      </ul>
+      <p>Capture is proactive: NINE calls <code>remember</code> mid-conversation, and a quiet fact-extraction pass after each turn saves new durable facts — routing personal vs. project, and skipping near-duplicates. <strong>Pinned</strong> facts are loaded every turn; the rest are retrieved by meaning.</p>
+
+      <h2>Semantic Recall, Locally Embedded</h2>
+      <p>Retrieval is real vector search, run locally. A small embedding model (<code>bge-small-en-v1.5</code>, 384-dim, ~130&nbsp;MB) embeds memories and the current message, and cosine similarity decides what's relevant. The thresholds aren't guessed — they were <strong>measured</strong>:</p>
+      <table>
+        <thead><tr><th>Threshold</th><th>Value</th><th>How it was set</th></tr></thead>
+        <tbody>
+          <tr><td>Memory relevance</td><td>0.35</td><td>Cosine floor for a stored fact to count as relevant.</td></tr>
+          <tr><td>Cross-session recall</td><td>0.72</td><td>Tuned into the GAP between noise (~0.60–0.65 for same-<em>type</em> but unrelated turns) and genuine matches (~0.75+). Earlier values of 0.42 / 0.55 kept catching false positives.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Sessions Are Memory Too</h2>
+      <p>NINE automatically recalls relevant context from your <em>other</em> chats every turn — semantically, only when it's actually relevant — and surfaces a visible &ldquo;⟲ recalled from N sessions&rdquo; note so it's never a black box. The <code>read_session</code> tool lets her dig deeper into a specific past chat when she needs to. You never have to ask.</p>
+
+      <h2>Acting On Her Own</h2>
+      <p>A normal turn is request → response with no back-channel. NINE breaks that with <code>notify_when</code>: she registers a <strong>watcher</strong> (a process log matches, a server comes up, a build exits) and the turn <em>ends</em>. When the watcher fires, she starts an <strong>autonomous turn</strong> — the full tool agent, not just a notice — and streams the work to your browser live. She can fix the code, re-run the build, and set up new checks on her own.</p>
+      <p>Autonomy is fenced carefully. Web tools are <strong>disabled in autonomous turns</strong> to keep the &ldquo;lethal trifecta&rdquo; (private data + untrusted content + exfiltration) closed; chains are capped; and a single launch flag disables the whole capability.</p>
+
+      <h2>Multi-Agent Delegation</h2>
+      <p>For a big job, NINE hands focused subtasks to <strong>fresh sub-agents</strong> — their own tools, a clean context, bounded to one level of recursion. <code>delegate(task)</code> spins up one; <code>delegate_parallel(tasks)</code> fans out several at once. Both <strong>stream live</strong>, each sub-agent getting its own card in the UI. With one model on one GPU this is concurrent <em>progress</em> (round-robin, interleaved), not a throughput speedup — an honest framing of what a single-GPU machine can actually do.</p>
+    `;
+  }
+
+  /* ---------- NINE — Architecture ---------- */
+  private nineRuntimeHtml(): string {
+    return `
+      <h2>One Worker Thread, By Design</h2>
+      <p>MLX's GPU streams are <strong>thread-local</strong>, so <em>all</em> model work — loading and inference — runs on a single dedicated worker thread fed by a job queue. That one decision buys two things at once: it satisfies MLX's threading model, and it <strong>serializes the shared model for free</strong> — turns can't trample each other, queued prompts process in order with full context, and there's no lock-juggling around the GPU.</p>
+
+      <h2>Module Layout</h2>
+      <p>The codebase is organized by concern, with the model/agent core cleanly separated from the capabilities:</p>
+      <pre><code>src/nine/
+├── config.py        # model registry (catalog + categories), identity, env isolation
+├── engine.py        # per-model MLX/VLM backend + streaming channel parser
+├── formats.py       # FormatSpec per model family (parsing is data-driven)
+├── tools.py         # tool-call parser, ToolRegistry, built-in tools
+├── agent.py         # stream parser (think/tool/answer) + tool-agent loop + confab guard
+├── memory.py        # MemoryStore (JSONL) + Embedder (semantic) + memory tools
+├── sessions.py      # SessionStore + cross-session recall index
+├── orchestrator.py  # delegate / delegate_parallel sub-agents
+├── imaging.py  diagrams.py  video.py  audio.py  docs.py
+├── webtools.py  stocks.py  proctools.py  autonomy.py
+├── server.py        # FastAPI server (single MLX worker + ndjson/SSE streaming)
+└── web/index.html   # the offline single-page UI</code></pre>
+
+      <h2>Streaming to the Browser</h2>
+      <p>The server is FastAPI, streaming the turn to the UI over ndjson/SSE — tokens, reasoning blocks, tool-call lines, and inline media all arrive as the turn unfolds. The frontend is a <strong>self-contained single-page app: no CDN, fully offline, localhost-only</strong>, with collapsible reasoning, a chronological tool/answer flow, a sidebar of auto-named past sessions, and the ability to <strong>queue prompts while she works</strong> (they line up and process in order, serialized server-side).</p>
+
+      <h2>Sandbox &amp; Isolation</h2>
+      <p>The agent is given real shell and filesystem power, so it's fenced:</p>
+      <ul>
+        <li><strong>Workspace root</strong> — file and command tools are confined to a sandbox directory. Every path is resolved and rejected if it escapes (absolute paths outside, <code>../</code>, symlinks), so tools can't touch NINE's own source, data, or model weights.</li>
+        <li><strong>Hard off-switches</strong> — launch flags disable the shell tools entirely, multi-agent delegation, or semantic embeddings, each independently.</li>
+        <li><strong>Self-contained weights</strong> — importing the config pins the model cache <em>inside</em> the project, so weights never leak into <code>~/.cache</code> and the project stays portable.</li>
+      </ul>
+
+      <h2>Configuration Without Code</h2>
+      <p>NINE is tunable from a Settings panel, not by editing source. Live (no restart): reasoning and tool defaults, auto-memory, temperature, the system prompt and persona. Restart-required: model, port, workspace. Precedence is explicit and layered — <strong>code defaults &lt; <code>settings.json</code> &lt; CLI flags</strong> — so the most specific source always wins.</p>
     `;
   }
 

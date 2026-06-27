@@ -175,6 +175,33 @@
 
     p { margin: 0 0 0.8rem; }
 
+    /* Inline prose figure (e.g. the NINE logo on the Overview tab). */
+    figure.topic-figure {
+      margin: 0 0 1.6rem;
+
+      &.topic-figure--center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      img {
+        display: block;
+        max-width: min(320px, 70%);
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 6px 22px rgba(20, 12, 8, 0.32);
+      }
+
+      figcaption {
+        margin-top: 0.6rem;
+        font-size: 0.82rem;
+        font-style: italic;
+        color: var(--ink-soft);
+      }
+    }
+
     strong { font-weight: 700; color: var(--walnut-deep); }
     em     { font-style: italic; color: var(--walnut-deep); }
 

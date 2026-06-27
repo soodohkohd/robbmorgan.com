@@ -48,6 +48,21 @@
         }
       </div>
       <div class="topic-body" [innerHTML]="selectedEpicTab().bodyHtml"></div>
+    } @else if (selectedSlug() === 'nine') {
+      <!-- NINE sub-tabs (overview / models / custom models / agent / memory / runtime) -->
+      <div class="epic-subtabs" role="tablist" aria-label="NINE topics">
+        @for (tab of nineTabs; track tab.slug) {
+          <button
+            type="button"
+            class="epic-subtab"
+            role="tab"
+            [class.is-active]="selectedNineSlug() === tab.slug"
+            [attr.aria-selected]="selectedNineSlug() === tab.slug"
+            (click)="selectNine(tab.slug)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+      <div class="topic-body" [innerHTML]="selectedNineTab().bodyHtml"></div>
     } @else {
       <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
     }
