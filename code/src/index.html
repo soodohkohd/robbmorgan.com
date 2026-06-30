@@ -31,6 +31,39 @@
   <meta name="twitter:image" content="https://robbmorgan.com/desk-scene-afternoon-og.jpg">
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <!-- Static fallback for non-JS clients (LLM fetchers, curl, link
+         crawlers, older social scrapers). This is a SPA: the served HTML
+         is otherwise an empty <app-root>, so a client that doesn't run
+         JS sees no content or links. Angular replaces ALL of <app-root>'s
+         children on bootstrap, so a real browser never renders this — and
+         the inline visually-hidden styling keeps humans from glimpsing it
+         even in the brief moment before JS boots. Machines that read raw
+         HTML get the full description and every section link.
+         Descriptions mirror each route's data.description in
+         code/src/app/app.routes.ts — keep them in sync. -->
+    <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+      <h1>Robb Morgan</h1>
+      <p>Writer and builder. Principal Solutions Engineer and Architect with three
+         decades in technology. A cinematic walnut-desk portfolio — resume, novels,
+         code, mobile apps, music, photos, and field notes.</p>
+      <nav aria-label="Sections">
+        <ul>
+          <li><a href="https://robbmorgan.com/">Home</a> — A cinematic walnut-desk portfolio. Click around the desk to find Robb Morgan’s resume, novels, code, mobile apps, music, photos, and field notes.</li>
+          <li><a href="https://robbmorgan.com/resume">Resume</a> — Thirty years of technology leadership. Principal Solutions Engineer and Architect. Cross-industry consulting, enterprise pipelines, cloud, regulated environments, AI strategy.</li>
+          <li><a href="https://robbmorgan.com/novels">Novels</a> — Long-form fiction written between deploys.</li>
+          <li><a href="https://robbmorgan.com/web-apps">Code</a> — EPIC (Enterprise Pipeline for Infrastructure and Cloud) and other engineering work — platform tooling that turns shipping software into a habit, not an event.</li>
+          <li><a href="https://robbmorgan.com/mobile-apps">Mobile Apps</a> — Mobile apps including Rocket: Asteroid Hunter and other side-project games and utilities.</li>
+          <li><a href="https://robbmorgan.com/blog">Thoughts</a> — Field notes from three decades in technology: the IC ladder, AI-DLC, pipelines as products, consultants vs. in-house, hiring algorithms.</li>
+          <li><a href="https://robbmorgan.com/music">Music</a> — A small catalogue of original songs — lyrics paired with AI-generated vocals, produced with Suno.ai.</li>
+          <li><a href="https://robbmorgan.com/photos">Photos</a> — A coastline gallery: Southern California photos taken between drafts and deploys.</li>
+          <li><a href="https://robbmorgan.com/certs">Certifications</a> — Industry certifications and credentials held by Robb Morgan.</li>
+          <li><a href="https://robbmorgan.com/the-desk">The Desk</a> — Behind the scenes of robbmorgan.com: thirteen chapters on how the cinematic desk scene was built, from polygon hotspots to bird animations to AI-paired coding.</li>
+          <li><a href="https://robbmorgan.com/rocket">Rocket Game</a> — Rocket: Asteroid Hunter, the web version of Robb Morgan’s arcade space shooter. Steer the rocket, blast falling asteroids, catch ammo capsules, chase a high score.</li>
+          <li><a href="https://robbmorgan.com/contact">Contact</a> — Get in touch with Robb Morgan.</li>
+        </ul>
+      </nav>
+    </div>
+  </app-root>
 </body>
 </html>
