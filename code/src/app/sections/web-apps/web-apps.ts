@@ -47,7 +47,7 @@ export class WebApps implements AfterViewInit {
       slug: 'nine',
       label: 'NINE',
       intro:
-        'NINE (<strong>N</strong>eural <strong>I</strong>ntelligence <strong>N</strong>etwork <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, a custom-converted model, 54 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
+        'NINE (<strong>N</strong>ative <strong>I</strong>solated <strong>N</strong>eural <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, a custom-converted model, 54 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
       // bodyHtml omitted — this topic renders the NINE sub-tabs instead.
     },
     {
@@ -776,7 +776,7 @@ public async Task Get_WithHealthyDb_Returns200()
   private nineOverviewHtml(): string {
     return `
       <figure class="topic-figure topic-figure--center">
-        <img src="/nine.webp" alt="NINE — Neural Intelligence Network Engine logo" loading="lazy" width="320" height="320" />
+        <img src="/nine.webp" alt="NINE — Native Isolated Neural Engine logo" loading="lazy" width="320" height="320" />
         <figcaption>NINE — a fully local, private AI that runs on a single Mac.</figcaption>
       </figure>
 
