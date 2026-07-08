@@ -37,18 +37,18 @@ export class WebApps implements AfterViewInit {
 
   readonly topics: readonly Topic[] = [
     {
+      slug: 'nine',
+      label: 'NINE',
+      intro:
+        'NINE (<strong>N</strong>ative <strong>I</strong>solated <strong>N</strong>eural <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, custom-converted models, 60 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
+      // bodyHtml omitted — this topic renders the NINE sub-tabs instead.
+    },
+    {
       slug: 'epic-pipeline',
       label: 'EPIC Pipeline',
       intro:
         'EPIC (<strong>E</strong>nterprise <strong>P</strong>ipeline for <strong>I</strong>nfrastructure and <strong>C</strong>loud) is a full application-delivery platform I built — a CI/CD pipeline framework on Azure DevOps, a self-service web portal, a backend API, and a library of reusable infrastructure modules. The tabs below break down each piece.',
       // bodyHtml omitted — this topic renders the EPIC sub-tabs instead.
-    },
-    {
-      slug: 'nine',
-      label: 'NINE',
-      intro:
-        'NINE (<strong>N</strong>ative <strong>I</strong>solated <strong>N</strong>eural <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, a custom-converted model, 54 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
-      // bodyHtml omitted — this topic renders the NINE sub-tabs instead.
     },
     {
       slug: 'angular-packages',
@@ -782,14 +782,15 @@ public async Task Get_WithHealthyDb_Returns200()
 
       <h2>The Idea</h2>
       <p>NINE is a complete, self-contained AI assistant — the kind you'd reach for a cloud API to build — that runs <strong>entirely on one laptop</strong> with <em>nothing</em> leaving the machine. The model weights, the inference, the memory, the tools, the image and voice generation, even the web UI are all local. No OpenAI key, no Anthropic key, no telemetry. The motivation was simple: own the entire stack end-to-end, understand every layer of a modern agentic AI by building it from the model up, and have a private assistant whose conversations never touch someone else's servers.</p>
-      <p>The hardware is an Apple M4 Max with 128&nbsp;GB of unified memory, so the inference backend is <strong>MLX</strong> — Apple's array framework, tuned for M-series silicon — rather than Ollama or llama.cpp. The whole system is roughly <strong>11,000 lines of hand-written Python</strong> plus a single-file offline web app.</p>
+      <p>The hardware is an Apple M4 Max with 128&nbsp;GB of unified memory, so the inference backend is <strong>MLX</strong> — Apple's array framework, tuned for M-series silicon — rather than Ollama or llama.cpp. The whole system is roughly <strong>22,000 lines of hand-written Python</strong> across ~37 modules, plus a single-file (~6,000-line) offline web app.</p>
 
       <h2>What She Can Do</h2>
       <p>NINE isn't a chat box. She runs a real tool-agent loop — generate, call a tool, observe the result, repeat — and can act in the world:</p>
       <ul>
         <li><strong>See</strong> — a vision model reads attached images, then the text model acts on what it saw.</li>
         <li><strong>Code &amp; build</strong> — read / edit / grep files, run commands, scaffold and launch real projects in a sandboxed workspace.</li>
-        <li><strong>Draw</strong> — local FLUX text-to-image, plus deterministic code-laid-out SVG diagrams and exact-text image overlays.</li>
+        <li><strong>Draw</strong> — local FLUX text-to-image and instruction-based image editing, plus deterministic code-laid-out SVG diagrams and exact-text image overlays.</li>
+        <li><strong>Film</strong> — local text&rarr;video and image&rarr;video (with a generated audio track), assembled into multi-scene shorts and scored with local music.</li>
         <li><strong>Speak</strong> — local text-to-speech that streams sentence-by-sentence while she's still writing.</li>
         <li><strong>Remember</strong> — durable memory across every conversation, retrieved by meaning.</li>
         <li><strong>Browse</strong> — web search / fetch / image search, all SSRF-guarded.</li>
@@ -821,9 +822,9 @@ public async Task Get_WithHealthyDb_Returns200()
       <table>
         <thead><tr><th>Mode</th><th>Driver model</th><th>Why this one</th></tr></thead>
         <tbody>
-          <tr><td>Uncensored <em>(default)</em></td><td>Josiefied-Qwen3-30B-A3B (4-bit, MoE)</td><td>An abliterated-and-&ldquo;healed&rdquo; model that won't refuse benign requests.</td></tr>
+          <tr><td>Uncensored <em>(default)</em></td><td>Josiefied-Qwen3-30B-A3B (8-bit, MoE)</td><td>An abliterated-and-&ldquo;healed&rdquo; model that won't refuse benign requests. 8-bit for steadier tool calls; 6-bit / 4-bit are lighter alternates.</td></tr>
           <tr><td>Censored</td><td>Qwen3-32B (4-bit, dense, aligned)</td><td>The stock aligned model when guardrails are wanted.</td></tr>
-          <tr><td>Coder</td><td>Ornith-1.0-35B (8-bit, MoE)</td><td>Strongest at agentic coding; 8-bit for stability on long sessions. (See <em>Custom Models</em>.)</td></tr>
+          <tr><td>Coder</td><td>Ornith-1.0-35B (8-bit, MoE)</td><td>Strongest at agentic coding; 8-bit for stability on long sessions. A 9B dense edge tier is a lighter option. (See <em>Custom Models</em>.)</td></tr>
           <tr><td>Eyes <em>(all modes)</em></td><td>Qwen3-VL-32B (4-bit, VLM)</td><td>Sees &amp; describes images; hands off to the driver.</td></tr>
         </tbody>
       </table>
@@ -840,8 +841,8 @@ public async Task Get_WithHealthyDb_Returns200()
       <h2>Live Model Management</h2>
       <p>Models are managed from the UI, not the code. You can see what's downloaded, pull more in the background, pre-pick each mode's default, or <strong>switch the live model with no restart</strong>. A live swap reloads only the LLM — <strong>memory, sessions, and personality are preserved</strong>. New model <em>families</em> are a data change, not engine surgery: a format spec plus a catalog entry (see <em>Agent Loop &amp; Tools</em> and <em>Custom Models</em>).</p>
 
-      <h2>Local Image, Voice &amp; Vision</h2>
-      <p>The generative side is local too. Text-to-image runs on <strong>FLUX</strong> via <code>mflux</code> in quality (photorealistic) and fast (distilled, few-step) tiers, lazy-loaded and kept resident once warm. For things diffusion is bad at, NINE doesn't ask the model to fake it: architecture diagrams are laid out <strong>deterministically in code</strong> as crisp SVG, exact lettering is composited with PIL, and data charts go through real matplotlib. Voice is local TTS (Kokoro via <code>mlx-audio</code>) on its own worker thread so speech doesn't block generation.</p>
+      <h2>Local Image, Video, Voice &amp; Vision</h2>
+      <p>The generative side is local too. Text-to-image runs on <strong>FLUX</strong> via <code>mflux</code> in quality (photorealistic) and fast (distilled, few-step) tiers, lazy-loaded and kept resident once warm; a separate <strong>FLUX Kontext</strong> model does instruction-based image editing, and an <strong>InsightFace</strong> pipeline handles identity-preserving face swaps. <strong>Video</strong> is a local <strong>LTX</strong> model doing text&rarr;video and image&rarr;video <em>with a generated audio track</em>, and a storyboard pipeline stitches ten-second scenes into longer shorts — scored by a local <strong>MusicGen</strong> model over an ambient-sound layer. For things diffusion is bad at, NINE doesn't ask the model to fake it: architecture diagrams are laid out <strong>deterministically in code</strong> as crisp SVG, exact lettering is composited with PIL, and data charts go through real matplotlib. Voice is local TTS (Kokoro via <code>mlx-audio</code>) on its own worker thread so speech doesn't block generation.</p>
     `;
   }
 
@@ -889,7 +890,7 @@ python scripts/convert_ornith_to_mlx.py \\
       <h2>Streaming Parse: Think / Tool / Answer</h2>
       <p>The hard part is that all of this arrives as <em>one token stream</em>. A streaming parser splits that stream, live, into three kinds of content — hidden reasoning, tool calls, and the visible answer — driven by the active model's <code>FormatSpec</code> (so it's the same code for every family). Reasoning is shown in collapsible blocks; tool calls are extracted and dispatched the instant they complete; the answer streams to the browser token-by-token.</p>
 
-      <h2>54 Tools Across 14 Categories</h2>
+      <h2>60 Tools Across 15 Categories</h2>
       <p>NINE's capability surface is a typed tool registry — parsed from messy model output, validated, dispatched, and returned as polished results:</p>
       <table>
         <thead><tr><th>Category</th><th>Representative tools</th></tr></thead>
