@@ -30,6 +30,26 @@ export class Blog implements AfterViewInit {
   private headTop = 0;
   readonly posts: readonly Post[] = [
     {
+      slug: 'ai-experts-teaching-2024',
+      label: 'AI Experts',
+      title: 'AI Experts Are Teaching 2024 Skills.',
+      date: 'July 8, 2026',
+      image: '/posts/ai-experts-teaching-2024.webp',
+      imageAlt: 'A split-screen illustration: on the left, a flashy self-styled AI influencer at a ring light and webcam gesturing at slides plastered with "10 ChatGPT Hacks!" and "Master the Prompt!"; on the right, a quiet engineer at a warm walnut desk in dim focused lighting, a MacBook and secondary monitor showing local model weights, agentic tool loops, and terminal output',
+      bodyHtml: `
+        <p>Half the LinkedIn feed right now is somebody teaching you how to type into ChatGPT. "Master the perfect prompt." "10 tricks the AI experts use." "Save hours a week with these five ChatGPT hacks."</p>
+        <p>Let me say what nobody says out loud.</p>
+        <p>Typing into a chatbot is not expertise.</p>
+        <p>The people teaching those courses in 2026 are teaching 2024 skills. The chatbot era is already over. The frontier has moved on. And the people doing the real work are focused building the next thing.</p>
+        <p>The actual pioneers are somewhere else entirely.</p>
+        <p>They are running local models on their own hardware, not paying per-token to a cloud API. They are building agentic tool loops that generate, act, observe, and repeat. Not just writing better prompts. They are shipping multi-model architectures with semantic memory, tool use, and vision. Assistants that live on one machine and never phone home. They are baking privacy into the architecture instead of writing a data-handling policy for it.</p>
+        <p>None of that runs on a pay-to-play cloud solution. None of it needs an API key. And none of it is what the "AI expert" on your feed is selling.</p>
+        <p>Here is the real timeline. 2024 was the year we all learned to talk to a chatbot. 2025 was the year we learned it wasn't enough. 2026 is the year the frontier moved. 2027 will be the year private, local, agentic systems are the default posture in any organization that actually cares about its data.</p>
+        <p>If your AI story is still "I use ChatGPT well," you are three years behind and getting further.</p>
+        <p>The pioneers are building. Go find them. Better yet, join them.</p>
+      `,
+    },
+    {
       slug: 'mac-is-the-new-workhorse',
       label: 'Workhorse',
       title: 'Mac Is The New Workhorse.',
