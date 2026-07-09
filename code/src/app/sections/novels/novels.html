@@ -64,6 +64,22 @@
             <span class="novel-buy-arrow" aria-hidden="true">↗</span>
           </a>
         }
+
+        @if (selectedNovel().soundtrack; as soundtrack) {
+          <div class="novel-soundtrack">
+            <p class="novel-soundtrack-label">
+              <span class="novel-soundtrack-icon" aria-hidden="true">♪</span>
+              {{ soundtrack.title }}
+            </p>
+            <p class="novel-soundtrack-desc">{{ soundtrack.description }}</p>
+            <audio
+              controls
+              preload="none"
+              controlsList="nodownload"
+              [src]="soundtrack.src"
+            ></audio>
+          </div>
+        }
       </div>
     </li>
   </ul>

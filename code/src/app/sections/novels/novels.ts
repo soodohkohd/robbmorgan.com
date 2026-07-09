@@ -15,6 +15,16 @@ interface Novel {
   buyUrl?: string;
   /** Flagged as a work-in-progress, grouped under "Current Project". */
   inProgress?: boolean;
+  /** Original soundtrack for the novel. When set, an audio player is
+   *  rendered at the bottom of the entry. */
+  soundtrack?: {
+    /** mp3 in public/audio/. */
+    src: string;
+    /** Track label shown above the player. */
+    title: string;
+    /** A sentence or two describing the track, shown above the player. */
+    description: string;
+  };
 }
 
 @Component({
@@ -44,6 +54,12 @@ export class Novels implements AfterViewInit {
         '<em>Whispers of Time</em> is a story about regret, fatherhood, and the doors we spend our lives trying to walk through — only to discover the one that matters was behind us all along.',
       ],
       buyUrl: 'https://www.amazon.com/Whispers-Time-Robb-Morgan/dp/B0GW6FQ1HL/ref=sr_1_1?crid=26X61F790NJA5&dib=eyJ2IjoiMSJ9.z7s61D5MynafT9lehDCRCXOWF2JDGjAn_avX5JB0bmKVjoRAtM8_4jgkyeZf2uu4J1C_Zh4qf5BaEA5mgka0z72sZ3bXlRf-eO1BTblmtBFmFPk0VTPdV2nPqisj7bPsXc9Y_RX1OfhNltilu91x5qTtJxCjaKxBKepoFFJwZSSclZ5xxVD3nF7eFoVMrsoeozEKVEIhCNYSsqpOx481_mnExRqpx3TE2rAGgNM6hao.UMISa4-CJAV4Cyktl5-B4H5iocem5VfjPuXu0rhISjQ&dib_tag=se&keywords=robb+morgan&qid=1779041780&sprefix=robb+morgan%2Caps%2C193&sr=8-1',
+      soundtrack: {
+        src: '/audio/whispers-of-time.mp3',
+        title: 'Whispers of Time — Original Soundtrack',
+        description:
+          'An original song I wrote and produced to capture the heart of the novel — Raymond\'s regret, the pull of second chances, and the love for a child that outlasts every road not taken. Press play and give it a listen.',
+      },
     },
   ];
 
