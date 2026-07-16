@@ -13,84 +13,85 @@
     .footer { font-size: 11px; fill: #6a6a6a; }
   </style>
   <text x="40" y="28" class="title">Unique users by day — past 30 days</text>
-  <text x="40" y="44" class="subtitle">union(pageViews, customEvents) · dcount(user_Id) · App Insights "robbmorgan" · generated 2026-06-29</text>
+  <text x="40" y="44" class="subtitle">union(pageViews, customEvents) · dcount(user_Id) · App Insights "robbmorgan" · generated 2026-07-16</text>
   <line x1="60" y1="260" x2="700" y2="260" class="axis" />
   <line x1="60" y1="80" x2="60" y2="260" class="axis" />
   <text x="54" y="264.0" class="axis-label">0</text>
   <line x1="60" y1="224.0" x2="700" y2="224.0" class="gridline" />
-  <text x="54" y="228.0" class="axis-label">2</text>
-  <line x1="60" y1="170.0" x2="700" y2="170.0" class="gridline" />
-  <text x="54" y="174.0" class="axis-label">5</text>
-  <line x1="60" y1="134.0" x2="700" y2="134.0" class="gridline" />
-  <text x="54" y="138.0" class="axis-label">7</text>
+  <text x="54" y="228.0" class="axis-label">3</text>
+  <line x1="60" y1="176.0" x2="700" y2="176.0" class="gridline" />
+  <text x="54" y="180.0" class="axis-label">7</text>
+  <line x1="60" y1="128.0" x2="700" y2="128.0" class="gridline" />
+  <text x="54" y="132.0" class="axis-label">11</text>
   <line x1="60" y1="80.0" x2="700" y2="80.0" class="gridline" />
-  <text x="54" y="84.0" class="axis-label">10</text>
-  <rect x="62.0" y="134.0" width="17.3" height="126.0" class="bar" />
-  <text x="70.7" y="128.0" class="value-label-small">7</text>
-  <rect x="83.3" y="170.0" width="17.3" height="90.0" class="bar" />
-  <text x="92.0" y="164.0" class="value-label-small">5</text>
-  <text x="92.0" y="278" class="day-label">1</text>
-  <rect x="104.7" y="116.0" width="17.3" height="144.0" class="bar" />
-  <text x="113.3" y="110.0" class="value-label-small">8</text>
-  <rect x="126.0" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="134.7" y="182.0" class="value-label-small">4</text>
-  <rect x="147.3" y="116.0" width="17.3" height="144.0" class="bar" />
-  <text x="156.0" y="110.0" class="value-label-small">8</text>
-  <rect x="168.7" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="177.3" y="218.0" class="value-label-small">2</text>
-  <text x="177.3" y="278" class="day-label">5</text>
-  <rect x="190.0" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="198.7" y="218.0" class="value-label-small">2</text>
-  <rect x="211.3" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="220.0" y="218.0" class="value-label-small">2</text>
-  <rect x="232.7" y="152.0" width="17.3" height="108.0" class="bar" />
-  <text x="241.3" y="146.0" class="value-label-small">6</text>
-  <rect x="254.0" y="152.0" width="17.3" height="108.0" class="bar" />
-  <text x="262.7" y="146.0" class="value-label-small">6</text>
-  <rect x="275.3" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="284.0" y="182.0" class="value-label-small">4</text>
-  <text x="284.0" y="278" class="day-label">10</text>
-  <rect x="296.7" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="305.3" y="182.0" class="value-label-small">4</text>
-  <rect x="318.0" y="206.0" width="17.3" height="54.0" class="bar" />
-  <text x="326.7" y="200.0" class="value-label-small">3</text>
-  <rect x="339.3" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="348.0" y="218.0" class="value-label-small">2</text>
-  <rect x="360.7" y="170.0" width="17.3" height="90.0" class="bar" />
-  <text x="369.3" y="164.0" class="value-label-small">5</text>
-  <rect x="382.0" y="98.0" width="17.3" height="162.0" class="bar" />
-  <text x="390.7" y="92.0" class="value-label-small">9</text>
-  <text x="390.7" y="278" class="day-label">15</text>
-  <rect x="403.3" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="412.0" y="182.0" class="value-label-small">4</text>
-  <rect x="424.7" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="433.3" y="218.0" class="value-label-small">2</text>
-  <rect x="446.0" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="454.7" y="218.0" class="value-label-small">2</text>
-  <rect x="467.3" y="152.0" width="17.3" height="108.0" class="bar" />
-  <text x="476.0" y="146.0" class="value-label-small">6</text>
-  <rect x="488.7" y="242.0" width="17.3" height="18.0" class="bar" />
-  <text x="497.3" y="236.0" class="value-label-small">1</text>
-  <text x="497.3" y="278" class="day-label">20</text>
-  <rect x="510.0" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="518.7" y="182.0" class="value-label-small">4</text>
-  <rect x="531.3" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="540.0" y="218.0" class="value-label-small">2</text>
-  <rect x="552.7" y="134.0" width="17.3" height="126.0" class="bar" />
-  <text x="561.3" y="128.0" class="value-label-small">7</text>
-  <rect x="574.0" y="170.0" width="17.3" height="90.0" class="bar" />
-  <text x="582.7" y="164.0" class="value-label-small">5</text>
-  <rect x="595.3" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="604.0" y="182.0" class="value-label-small">4</text>
-  <text x="604.0" y="278" class="day-label">25</text>
-  <rect x="616.7" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="625.3" y="218.0" class="value-label-small">2</text>
-  <rect x="638.0" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="646.7" y="182.0" class="value-label-small">4</text>
-  <rect x="659.3" y="188.0" width="17.3" height="72.0" class="bar" />
-  <text x="668.0" y="182.0" class="value-label-small">4</text>
+  <text x="54" y="84.0" class="axis-label">15</text>
+  <rect x="62.0" y="236.0" width="17.3" height="24.0" class="bar" />
+  <text x="70.7" y="230.0" class="value-label-small">2</text>
+  <rect x="83.3" y="236.0" width="17.3" height="24.0" class="bar" />
+  <text x="92.0" y="230.0" class="value-label-small">2</text>
+  <rect x="104.7" y="188.0" width="17.3" height="72.0" class="bar" />
+  <text x="113.3" y="182.0" class="value-label-small">6</text>
+  <rect x="126.0" y="248.0" width="17.3" height="12.0" class="bar" />
+  <text x="134.7" y="242.0" class="value-label-small">1</text>
+  <text x="134.7" y="278" class="day-label">20</text>
+  <rect x="147.3" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="156.0" y="206.0" class="value-label-small">4</text>
+  <rect x="168.7" y="236.0" width="17.3" height="24.0" class="bar" />
+  <text x="177.3" y="230.0" class="value-label-small">2</text>
+  <rect x="190.0" y="176.0" width="17.3" height="84.0" class="bar" />
+  <text x="198.7" y="170.0" class="value-label-small">7</text>
+  <rect x="211.3" y="200.0" width="17.3" height="60.0" class="bar" />
+  <text x="220.0" y="194.0" class="value-label-small">5</text>
+  <rect x="232.7" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="241.3" y="206.0" class="value-label-small">4</text>
+  <text x="241.3" y="278" class="day-label">25</text>
+  <rect x="254.0" y="236.0" width="17.3" height="24.0" class="bar" />
+  <text x="262.7" y="230.0" class="value-label-small">2</text>
+  <rect x="275.3" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="284.0" y="206.0" class="value-label-small">4</text>
+  <rect x="296.7" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="305.3" y="206.0" class="value-label-small">4</text>
+  <rect x="318.0" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="326.7" y="206.0" class="value-label-small">4</text>
+  <rect x="339.3" y="248.0" width="17.3" height="12.0" class="bar" />
+  <text x="348.0" y="242.0" class="value-label-small">1</text>
+  <text x="348.0" y="278" class="day-label">30</text>
+  <rect x="360.7" y="200.0" width="17.3" height="60.0" class="bar" />
+  <text x="369.3" y="194.0" class="value-label-small">5</text>
+  <text x="369.3" y="278" class="day-label">1</text>
+  <rect x="382.0" y="248.0" width="17.3" height="12.0" class="bar" />
+  <text x="390.7" y="242.0" class="value-label-small">1</text>
+  <rect x="403.3" y="224.0" width="17.3" height="36.0" class="bar" />
+  <text x="412.0" y="218.0" class="value-label-small">3</text>
+  <rect x="424.7" y="200.0" width="17.3" height="60.0" class="bar" />
+  <text x="433.3" y="194.0" class="value-label-small">5</text>
+  <rect x="446.0" y="176.0" width="17.3" height="84.0" class="bar" />
+  <text x="454.7" y="170.0" class="value-label-small">7</text>
+  <text x="454.7" y="278" class="day-label">5</text>
+  <rect x="467.3" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="476.0" y="206.0" class="value-label-small">4</text>
+  <rect x="488.7" y="236.0" width="17.3" height="24.0" class="bar" />
+  <text x="497.3" y="230.0" class="value-label-small">2</text>
+  <rect x="510.0" y="176.0" width="17.3" height="84.0" class="bar" />
+  <text x="518.7" y="170.0" class="value-label-small">7</text>
+  <rect x="531.3" y="164.0" width="17.3" height="96.0" class="bar" />
+  <text x="540.0" y="158.0" class="value-label-small">8</text>
+  <rect x="552.7" y="92.0" width="17.3" height="168.0" class="bar" />
+  <text x="561.3" y="86.0" class="value-label-small">14</text>
+  <text x="561.3" y="278" class="day-label">10</text>
+  <rect x="574.0" y="176.0" width="17.3" height="84.0" class="bar" />
+  <text x="582.7" y="170.0" class="value-label-small">7</text>
+  <rect x="595.3" y="224.0" width="17.3" height="36.0" class="bar" />
+  <text x="604.0" y="218.0" class="value-label-small">3</text>
+  <rect x="616.7" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="625.3" y="206.0" class="value-label-small">4</text>
+  <rect x="638.0" y="224.0" width="17.3" height="36.0" class="bar" />
+  <text x="646.7" y="218.0" class="value-label-small">3</text>
+  <rect x="659.3" y="212.0" width="17.3" height="48.0" class="bar" />
+  <text x="668.0" y="206.0" class="value-label-small">4</text>
+  <text x="668.0" y="278" class="day-label">15</text>
   <rect x="680.7" y="224.0" width="17.3" height="36.0" class="bar" />
-  <text x="689.3" y="218.0" class="value-label-small">2</text>
-  <text x="689.3" y="278" class="day-label">29*</text>
+  <text x="689.3" y="218.0" class="value-label-small">3</text>
+  <text x="689.3" y="278" class="day-label">16*</text>
   <text x="40" y="304" class="footer">* current day (partial). Period total: 100 unique users (some span multiple days, so this is ≤ sum of bars).</text>
 </svg>
