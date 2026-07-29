@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 1616" width="920" height="1616" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 1640" width="920" height="1640" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif">
   <style>
     .title       { font-size: 17px; font-weight: 700; fill: #2a2a2a; }
     .subtitle    { font-size: 11px; fill: #6a6a6a; }
@@ -12,162 +12,165 @@
   </style>
 
   <text x="40" y="30" class="title">Engagement — past 30 days</text>
-  <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-07-16</text>
-  <text x="40" y="72" class="summary">135 hotspot clicks · 16 post opens · 29 music plays · 8 app views · 2 rocket plays · 1 easter eggs</text>
+  <text x="40" y="48" class="subtitle">App Insights "robbmorgan" custom events · generated 2026-07-29</text>
+  <text x="40" y="72" class="summary">98 hotspot clicks · 17 post opens · 19 music plays · 8 app views · 2 rocket plays</text>
 
-  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 135 events</tspan></text>
+  <text x="40" y="96" class="section-title">Hotspot clicks (which desk objects get explored) <tspan class="section-total">— 98 events</tspan></text>
   <text x="40" y="120" class="bar-label">Sound toggle</text>
   <rect x="260" y="108" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="120" class="bar-value">39</text>
-  <text x="40" y="144" class="bar-label">Scenes</text>
-  <rect x="260" y="132" width="342.1" height="16" rx="2" class="bar"/>
-  <text x="610.1" y="144" class="bar-value">23</text>
-  <text x="40" y="168" class="bar-label">Thoughts</text>
-  <rect x="260" y="156" width="237.9" height="16" rx="2" class="bar"/>
-  <text x="505.9" y="168" class="bar-value">16</text>
+  <text x="848.0" y="120" class="bar-value">34</text>
+  <text x="40" y="144" class="bar-label">Thoughts</text>
+  <rect x="260" y="132" width="272.9" height="16" rx="2" class="bar"/>
+  <text x="540.9" y="144" class="bar-value">16</text>
+  <text x="40" y="168" class="bar-label">Scenes</text>
+  <rect x="260" y="156" width="170.6" height="16" rx="2" class="bar"/>
+  <text x="438.6" y="168" class="bar-value">10</text>
   <text x="40" y="192" class="bar-label">Music</text>
-  <rect x="260" y="180" width="178.5" height="16" rx="2" class="bar"/>
-  <text x="446.5" y="192" class="bar-value">12</text>
-  <text x="40" y="216" class="bar-label">Code</text>
-  <rect x="260" y="204" width="148.7" height="16" rx="2" class="bar"/>
-  <text x="416.7" y="216" class="bar-value">10</text>
-  <text x="40" y="240" class="bar-label">Novels</text>
-  <rect x="260" y="228" width="119.0" height="16" rx="2" class="bar"/>
-  <text x="387.0" y="240" class="bar-value">8</text>
-  <text x="40" y="264" class="bar-label">Contact</text>
-  <rect x="260" y="252" width="104.1" height="16" rx="2" class="bar"/>
-  <text x="372.1" y="264" class="bar-value">7</text>
-  <text x="40" y="288" class="bar-label">Resume</text>
-  <rect x="260" y="276" width="89.2" height="16" rx="2" class="bar"/>
-  <text x="357.2" y="288" class="bar-value">6</text>
-  <text x="40" y="312" class="bar-label">The Desk</text>
-  <rect x="260" y="300" width="59.5" height="16" rx="2" class="bar"/>
-  <text x="327.5" y="312" class="bar-value">4</text>
-  <text x="40" y="336" class="bar-label">Mobile Apps</text>
-  <rect x="260" y="324" width="59.5" height="16" rx="2" class="bar"/>
-  <text x="327.5" y="336" class="bar-value">4</text>
-  <text x="40" y="360" class="bar-label">NOT ME!</text>
-  <rect x="260" y="348" width="44.6" height="16" rx="2" class="bar"/>
-  <text x="312.6" y="360" class="bar-value">3</text>
-  <text x="40" y="384" class="bar-label">Certs</text>
-  <rect x="260" y="372" width="29.7" height="16" rx="2" class="bar"/>
-  <text x="297.7" y="384" class="bar-value">2</text>
-  <text x="40" y="408" class="bar-label">Rocket game</text>
-  <rect x="260" y="396" width="14.9" height="16" rx="2" class="bar"/>
-  <text x="282.9" y="408" class="bar-value">1</text>
-  <text x="40" y="448" class="section-title">Thoughts posts (which essays get opened) <tspan class="section-total">— 16 events</tspan></text>
-  <text x="40" y="472" class="bar-label">ai-experts-teaching-2024</text>
-  <rect x="260" y="460" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="472" class="bar-value">2</text>
-  <text x="40" y="496" class="bar-label">they-heard-you</text>
+  <rect x="260" y="180" width="136.5" height="16" rx="2" class="bar"/>
+  <text x="404.5" y="192" class="bar-value">8</text>
+  <text x="40" y="216" class="bar-label">Novels</text>
+  <rect x="260" y="204" width="102.4" height="16" rx="2" class="bar"/>
+  <text x="370.4" y="216" class="bar-value">6</text>
+  <text x="40" y="240" class="bar-label">Resume</text>
+  <rect x="260" y="228" width="85.3" height="16" rx="2" class="bar"/>
+  <text x="353.3" y="240" class="bar-value">5</text>
+  <text x="40" y="264" class="bar-label">Code</text>
+  <rect x="260" y="252" width="85.3" height="16" rx="2" class="bar"/>
+  <text x="353.3" y="264" class="bar-value">5</text>
+  <text x="40" y="288" class="bar-label">NOT ME!</text>
+  <rect x="260" y="276" width="68.2" height="16" rx="2" class="bar"/>
+  <text x="336.2" y="288" class="bar-value">4</text>
+  <text x="40" y="312" class="bar-label">Mobile Apps</text>
+  <rect x="260" y="300" width="51.2" height="16" rx="2" class="bar"/>
+  <text x="319.2" y="312" class="bar-value">3</text>
+  <text x="40" y="336" class="bar-label">Certs</text>
+  <rect x="260" y="324" width="34.1" height="16" rx="2" class="bar"/>
+  <text x="302.1" y="336" class="bar-value">2</text>
+  <text x="40" y="360" class="bar-label">The Desk</text>
+  <rect x="260" y="348" width="34.1" height="16" rx="2" class="bar"/>
+  <text x="302.1" y="360" class="bar-value">2</text>
+  <text x="40" y="384" class="bar-label">Rocket game</text>
+  <rect x="260" y="372" width="17.1" height="16" rx="2" class="bar"/>
+  <text x="285.1" y="384" class="bar-value">1</text>
+  <text x="40" y="408" class="bar-label">Take a Break</text>
+  <rect x="260" y="396" width="17.1" height="16" rx="2" class="bar"/>
+  <text x="285.1" y="408" class="bar-value">1</text>
+  <text x="40" y="432" class="bar-label">Contact</text>
+  <rect x="260" y="420" width="17.1" height="16" rx="2" class="bar"/>
+  <text x="285.1" y="432" class="bar-value">1</text>
+  <text x="40" y="472" class="section-title">Thoughts posts (which essays get opened) <tspan class="section-total">— 17 events</tspan></text>
+  <text x="40" y="496" class="bar-label">return-to-office</text>
   <rect x="260" y="484" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="496" class="bar-value">2</text>
-  <text x="40" y="520" class="bar-label">mac-is-the-new-workhorse</text>
+  <text x="40" y="520" class="bar-label">ai-experts-teaching-2024</text>
   <rect x="260" y="508" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="520" class="bar-value">2</text>
-  <text x="40" y="544" class="bar-label">return-to-office</text>
-  <rect x="260" y="532" width="290.0" height="16" rx="2" class="bar"/>
-  <text x="558.0" y="544" class="bar-value">1</text>
-  <text x="40" y="568" class="bar-label">ai-everything</text>
-  <rect x="260" y="556" width="290.0" height="16" rx="2" class="bar"/>
-  <text x="558.0" y="568" class="bar-value">1</text>
-  <text x="40" y="592" class="bar-label">em-dash</text>
+  <text x="40" y="544" class="bar-label">they-heard-you</text>
+  <rect x="260" y="532" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="544" class="bar-value">2</text>
+  <text x="40" y="568" class="bar-label">mac-is-the-new-workhorse</text>
+  <rect x="260" y="556" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="568" class="bar-value">2</text>
+  <text x="40" y="592" class="bar-label">ai-everything</text>
   <rect x="260" y="580" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="592" class="bar-value">1</text>
-  <text x="40" y="616" class="bar-label">performance-review</text>
+  <text x="40" y="616" class="bar-label">em-dash</text>
   <rect x="260" y="604" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="616" class="bar-value">1</text>
-  <text x="40" y="640" class="bar-label">ic-track</text>
+  <text x="40" y="640" class="bar-label">performance-review</text>
   <rect x="260" y="628" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="640" class="bar-value">1</text>
-  <text x="40" y="664" class="bar-label">ai-dlc</text>
+  <text x="40" y="664" class="bar-label">ic-track</text>
   <rect x="260" y="652" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="664" class="bar-value">1</text>
-  <text x="40" y="688" class="bar-label">your-resume</text>
+  <text x="40" y="688" class="bar-label">ai-dlc</text>
   <rect x="260" y="676" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="688" class="bar-value">1</text>
-  <text x="40" y="712" class="bar-label">pipeline-as-a-product</text>
+  <text x="40" y="712" class="bar-label">your-resume</text>
   <rect x="260" y="700" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="712" class="bar-value">1</text>
-  <text x="40" y="736" class="bar-label">in-house-talent-vs-consultants</text>
+  <text x="40" y="736" class="bar-label">pipeline-as-a-product</text>
   <rect x="260" y="724" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="736" class="bar-value">1</text>
-  <text x="40" y="760" class="bar-label">build-vs-buy</text>
+  <text x="40" y="760" class="bar-label">in-house-talent-vs-consultants</text>
   <rect x="260" y="748" width="290.0" height="16" rx="2" class="bar"/>
   <text x="558.0" y="760" class="bar-value">1</text>
-  <text x="40" y="800" class="section-title">Mobile apps (which apps get viewed) <tspan class="section-total">— 8 events</tspan></text>
-  <text x="40" y="824" class="bar-label">talc</text>
-  <rect x="260" y="812" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="824" class="bar-value">4</text>
-  <text x="40" y="848" class="bar-label">rocket</text>
+  <text x="40" y="784" class="bar-label">build-vs-buy</text>
+  <rect x="260" y="772" width="290.0" height="16" rx="2" class="bar"/>
+  <text x="558.0" y="784" class="bar-value">1</text>
+  <text x="40" y="824" class="section-title">Mobile apps (which apps get viewed) <tspan class="section-total">— 8 events</tspan></text>
+  <text x="40" y="848" class="bar-label">talc</text>
   <rect x="260" y="836" width="580.0" height="16" rx="2" class="bar"/>
   <text x="848.0" y="848" class="bar-value">4</text>
-  <text x="40" y="888" class="section-title">Music plays (audio) <tspan class="section-total">— 29 events</tspan></text>
-  <text x="40" y="912" class="bar-label">SoCal Livin'</text>
-  <rect x="260" y="900" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="912" class="bar-value">12</text>
-  <text x="40" y="936" class="bar-label">Codin' in Cali</text>
-  <rect x="260" y="924" width="290.0" height="16" rx="2" class="bar"/>
-  <text x="558.0" y="936" class="bar-value">6</text>
-  <text x="40" y="960" class="bar-label">Just Like Me</text>
-  <rect x="260" y="948" width="145.0" height="16" rx="2" class="bar"/>
-  <text x="413.0" y="960" class="bar-value">3</text>
+  <text x="40" y="872" class="bar-label">rocket</text>
+  <rect x="260" y="860" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="872" class="bar-value">4</text>
+  <text x="40" y="912" class="section-title">Music plays (audio) <tspan class="section-total">— 19 events</tspan></text>
+  <text x="40" y="936" class="bar-label">SoCal Livin'</text>
+  <rect x="260" y="924" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="936" class="bar-value">8</text>
+  <text x="40" y="960" class="bar-label">Codin' in Cali</text>
+  <rect x="260" y="948" width="217.5" height="16" rx="2" class="bar"/>
+  <text x="485.5" y="960" class="bar-value">3</text>
   <text x="40" y="984" class="bar-label">Whispers of Time</text>
-  <rect x="260" y="972" width="96.7" height="16" rx="2" class="bar"/>
-  <text x="364.7" y="984" class="bar-value">2</text>
-  <text x="40" y="1008" class="bar-label">Come Back Home</text>
-  <rect x="260" y="996" width="96.7" height="16" rx="2" class="bar"/>
-  <text x="364.7" y="1008" class="bar-value">2</text>
-  <text x="40" y="1032" class="bar-label">Long Way Home</text>
-  <rect x="260" y="1020" width="48.3" height="16" rx="2" class="bar"/>
-  <text x="316.3" y="1032" class="bar-value">1</text>
+  <rect x="260" y="972" width="145.0" height="16" rx="2" class="bar"/>
+  <text x="413.0" y="984" class="bar-value">2</text>
+  <text x="40" y="1008" class="bar-label">Long Way Home</text>
+  <rect x="260" y="996" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1008" class="bar-value">1</text>
+  <text x="40" y="1032" class="bar-label">Just Like Me</text>
+  <rect x="260" y="1020" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1032" class="bar-value">1</text>
   <text x="40" y="1056" class="bar-label">Sunshine Song</text>
-  <rect x="260" y="1044" width="48.3" height="16" rx="2" class="bar"/>
-  <text x="316.3" y="1056" class="bar-value">1</text>
+  <rect x="260" y="1044" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1056" class="bar-value">1</text>
   <text x="40" y="1080" class="bar-label">Sweetest Love</text>
-  <rect x="260" y="1068" width="48.3" height="16" rx="2" class="bar"/>
-  <text x="316.3" y="1080" class="bar-value">1</text>
-  <text x="40" y="1104" class="bar-label">Floating</text>
-  <rect x="260" y="1092" width="48.3" height="16" rx="2" class="bar"/>
-  <text x="316.3" y="1104" class="bar-value">1</text>
-  <text x="40" y="1144" class="section-title">Time-of-day picker usage <tspan class="section-total">— 34 events</tspan></text>
-  <text x="40" y="1168" class="bar-label">evening (picker)</text>
-  <rect x="260" y="1156" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="1168" class="bar-value">8</text>
-  <text x="40" y="1192" class="bar-label">night (picker)</text>
-  <rect x="260" y="1180" width="362.5" height="16" rx="2" class="bar"/>
-  <text x="630.5" y="1192" class="bar-value">5</text>
-  <text x="40" y="1216" class="bar-label">morning (picker)</text>
-  <rect x="260" y="1204" width="362.5" height="16" rx="2" class="bar"/>
-  <text x="630.5" y="1216" class="bar-value">5</text>
+  <rect x="260" y="1068" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1080" class="bar-value">1</text>
+  <text x="40" y="1104" class="bar-label">Come Back Home</text>
+  <rect x="260" y="1092" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1104" class="bar-value">1</text>
+  <text x="40" y="1128" class="bar-label">Floating</text>
+  <rect x="260" y="1116" width="72.5" height="16" rx="2" class="bar"/>
+  <text x="340.5" y="1128" class="bar-value">1</text>
+  <text x="40" y="1168" class="section-title">Time-of-day picker usage <tspan class="section-total">— 20 events</tspan></text>
+  <text x="40" y="1192" class="bar-label">evening (picker)</text>
+  <rect x="260" y="1180" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="1192" class="bar-value">5</text>
+  <text x="40" y="1216" class="bar-label">night (picker)</text>
+  <rect x="260" y="1204" width="348.0" height="16" rx="2" class="bar"/>
+  <text x="616.0" y="1216" class="bar-value">3</text>
   <text x="40" y="1240" class="bar-label">morning (mobile_cycle)</text>
-  <rect x="260" y="1228" width="290.0" height="16" rx="2" class="bar"/>
-  <text x="558.0" y="1240" class="bar-value">4</text>
-  <text x="40" y="1264" class="bar-label">afternoon (mobile_cycle)</text>
-  <rect x="260" y="1252" width="217.5" height="16" rx="2" class="bar"/>
-  <text x="485.5" y="1264" class="bar-value">3</text>
-  <text x="40" y="1288" class="bar-label">evening (mobile_cycle)</text>
-  <rect x="260" y="1276" width="217.5" height="16" rx="2" class="bar"/>
-  <text x="485.5" y="1288" class="bar-value">3</text>
-  <text x="40" y="1312" class="bar-label">night (mobile_cycle)</text>
-  <rect x="260" y="1300" width="217.5" height="16" rx="2" class="bar"/>
-  <text x="485.5" y="1312" class="bar-value">3</text>
-  <text x="40" y="1336" class="bar-label">afternoon (picker)</text>
-  <rect x="260" y="1324" width="217.5" height="16" rx="2" class="bar"/>
-  <text x="485.5" y="1336" class="bar-value">3</text>
-  <text x="40" y="1376" class="section-title">Ambient sound toggle <tspan class="section-total">— 39 events</tspan></text>
-  <text x="40" y="1400" class="bar-label">sound off</text>
-  <rect x="260" y="1388" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="1400" class="bar-value">39</text>
-  <text x="40" y="1440" class="section-title">Easter egg — Just Like Me video reveal <tspan class="section-total">— 1 event</tspan></text>
-  <text x="40" y="1464" class="bar-label">Just Like Me</text>
-  <rect x="260" y="1452" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="1464" class="bar-value">1</text>
-  <text x="40" y="1504" class="section-title">Rocket game (launches vs. finishes) <tspan class="section-total">— 2 events</tspan></text>
-  <text x="40" y="1528" class="bar-label">Games launched</text>
-  <rect x="260" y="1516" width="580.0" height="16" rx="2" class="bar"/>
-  <text x="848.0" y="1528" class="bar-value">2</text>
-  <text x="40" y="1552" class="bar-label">Games finished (game over)</text>
-  <rect x="260" y="1540" width="0.0" height="16" rx="2" class="bar"/>
-  <text x="268.0" y="1552" class="bar-value">0</text>
+  <rect x="260" y="1228" width="348.0" height="16" rx="2" class="bar"/>
+  <text x="616.0" y="1240" class="bar-value">3</text>
+  <text x="40" y="1264" class="bar-label">afternoon (picker)</text>
+  <rect x="260" y="1252" width="232.0" height="16" rx="2" class="bar"/>
+  <text x="500.0" y="1264" class="bar-value">2</text>
+  <text x="40" y="1288" class="bar-label">afternoon (mobile_cycle)</text>
+  <rect x="260" y="1276" width="232.0" height="16" rx="2" class="bar"/>
+  <text x="500.0" y="1288" class="bar-value">2</text>
+  <text x="40" y="1312" class="bar-label">evening (mobile_cycle)</text>
+  <rect x="260" y="1300" width="232.0" height="16" rx="2" class="bar"/>
+  <text x="500.0" y="1312" class="bar-value">2</text>
+  <text x="40" y="1336" class="bar-label">night (mobile_cycle)</text>
+  <rect x="260" y="1324" width="232.0" height="16" rx="2" class="bar"/>
+  <text x="500.0" y="1336" class="bar-value">2</text>
+  <text x="40" y="1360" class="bar-label">morning (picker)</text>
+  <rect x="260" y="1348" width="116.0" height="16" rx="2" class="bar"/>
+  <text x="384.0" y="1360" class="bar-value">1</text>
+  <text x="40" y="1400" class="section-title">Ambient sound toggle <tspan class="section-total">— 34 events</tspan></text>
+  <text x="40" y="1424" class="bar-label">sound off</text>
+  <rect x="260" y="1412" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="1424" class="bar-value">34</text>
+  <text x="40" y="1464" class="section-title">Easter egg — Just Like Me video reveal <tspan class="section-total">— 0 events</tspan></text>
+  <text x="40" y="1488" class="bar-label">(no reveals yet)</text>
+  <rect x="260" y="1476" width="0.0" height="16" rx="2" class="bar"/>
+  <text x="268.0" y="1488" class="bar-value">0</text>
+  <text x="40" y="1528" class="section-title">Rocket game (launches vs. finishes) <tspan class="section-total">— 2 events</tspan></text>
+  <text x="40" y="1552" class="bar-label">Games launched</text>
+  <rect x="260" y="1540" width="580.0" height="16" rx="2" class="bar"/>
+  <text x="848.0" y="1552" class="bar-value">2</text>
+  <text x="40" y="1576" class="bar-label">Games finished (game over)</text>
+  <rect x="260" y="1564" width="0.0" height="16" rx="2" class="bar"/>
+  <text x="268.0" y="1576" class="bar-value">0</text>
 </svg>
