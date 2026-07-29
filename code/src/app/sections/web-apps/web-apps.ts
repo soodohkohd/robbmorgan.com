@@ -40,14 +40,14 @@ export class WebApps implements AfterViewInit {
       slug: 'nine',
       label: 'NINE',
       intro:
-        'NINE (<strong>N</strong>ative <strong>I</strong>solated <strong>N</strong>eural <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, speaks, draws, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, custom-converted models, 60 tools, a semantic memory, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
+        'NINE (<strong>N</strong>ative <strong>I</strong>solated <strong>N</strong>eural <strong>E</strong>ngine) is a fully local, private AI that runs entirely on one machine — a MacBook Pro (M4 Max, 128&nbsp;GB). No cloud inference, no API calls for the model. She sees, hears, speaks, draws, films, codes, browses, remembers across conversations, and can act on her own after a turn ends. The whole system is hand-built Python: the MLX model runtime, custom-converted models, 62 tools, a semantic memory, an up-front grounding layer, multi-agent delegation, and an offline web UI. The tabs below break down the AI/LLM engineering behind it.',
       // bodyHtml omitted — this topic renders the NINE sub-tabs instead.
     },
     {
       slug: 'epic-pipeline',
       label: 'EPIC Pipeline',
       intro:
-        'EPIC (<strong>E</strong>nterprise <strong>P</strong>ipeline for <strong>I</strong>nfrastructure and <strong>C</strong>loud) is a full application-delivery platform I built — a CI/CD pipeline framework on Azure DevOps, a self-service web portal, a backend API, and a library of reusable infrastructure modules. The tabs below break down each piece.',
+        'EPIC (<strong>E</strong>nterprise <strong>P</strong>ipeline for <strong>I</strong>nfrastructure and <strong>C</strong>loud) is a full application-delivery platform I built — a CI/CD pipeline framework on Azure DevOps, a self-service web portal, a backend API, a library of reusable infrastructure modules, and a policy-as-code compliance gate. The tabs below break down each piece.',
       // bodyHtml omitted — this topic renders the EPIC sub-tabs instead.
     },
     {
@@ -73,6 +73,7 @@ export class WebApps implements AfterViewInit {
     { slug: 'epic-web',      label: 'EPIC Web',              bodyHtml: this.epicWebHtml() },
     { slug: 'epic-api',      label: 'EPIC API',              bodyHtml: this.epicApiHtml() },
     { slug: 'epic-modules',  label: 'EPIC Pipeline Modules', bodyHtml: this.epicModulesHtml() },
+    { slug: 'epic-compliance', label: 'EPIC Compliance',    bodyHtml: this.epicComplianceHtml() },
   ];
 
   /** Sub-tabs shown only when the NINE topic is selected. */
@@ -143,7 +144,7 @@ export class WebApps implements AfterViewInit {
   private adoPipelineHtml(): string {
     return `
       <h2>Overview</h2>
-      <p>EPIC is an enterprise-grade Azure DevOps pipeline framework for building, testing, scanning, and deploying applications — and optionally provisioning the infrastructure they run on. It is designed to be orchestrated by an upstream engine or internal developer platform and executed consistently across projects using a standardized pipeline contract. Applications declare their intent in a single config file; EPIC handles execution. One framework deploys Angular, React, .NET, Java, Python, PHP, static HTML, AMI factories, and SAP BTP infrastructure to AWS or Azure.</p>
+      <p>EPIC is an enterprise-grade Azure DevOps pipeline framework for building, testing, scanning, and deploying applications — and optionally provisioning the infrastructure they run on. It is designed to be orchestrated by an upstream engine or internal developer platform and executed consistently across projects using a standardized pipeline contract. Applications declare their intent in a single config file; EPIC handles execution. One framework deploys Angular, React, .NET, Java, Python, Go, PHP, static HTML, AMI factories, and SAP CAP / BTP workloads to AWS, Azure, or Cloud Foundry.</p>
 
       <h2>Architecture</h2>
       <p>EPIC follows a two-tier orchestration model:</p>
@@ -159,12 +160,13 @@ export class WebApps implements AfterViewInit {
         <li>The orchestrator validates parameters and reads the <code>app</code> section of <code>.pipeline/epic.json</code> from the application repository.</li>
         <li>The orchestrator invokes the EPIC Engine pipeline via the Azure DevOps REST API.</li>
         <li>Application source is downloaded from GitHub.</li>
+        <li>The source is reviewed against the organization's compliance controls — a gate that blocks everything downstream on failure (see <em>EPIC Compliance</em>).</li>
         <li>Build is executed based on project type.</li>
         <li>Unit tests are executed.</li>
         <li>Security and quality scans are performed.</li>
-        <li>Infrastructure is provisioned if a <code>/.infra</code> folder is present (Terraform).</li>
+        <li>Infrastructure is provisioned via Terraform when a <code>terraformAction</code> is requested.</li>
         <li>An optional approval gate runs before deployment.</li>
-        <li>The application is deployed to the target environment (AWS or Azure).</li>
+        <li>The application is deployed to the target environment (AWS, Azure, or SAP).</li>
         <li>Integration tests are run against the deployed app (optional).</li>
       </ol>
       <p>Stages that need cloud / deployment configuration (infra, deploy, AMI build) read the <code>cloud</code> section of <code>epic.json</code> directly from the downloaded source at runtime.</p>
@@ -173,9 +175,9 @@ export class WebApps implements AfterViewInit {
       <ul>
         <li><strong>Modular</strong> — every stage is a composable template.</li>
         <li><strong>Declarative</strong> — applications define intent; EPIC determines execution.</li>
-        <li><strong>Cloud-aware</strong> — supports AWS, Azure, and SAP BTP from the same pipeline.</li>
+        <li><strong>Cloud-aware</strong> — supports AWS, Azure, and SAP from the same pipeline.</li>
         <li><strong>Engine-driven</strong> — designed for programmatic orchestration, not manual runs.</li>
-        <li><strong>Secure by default</strong> — scanning and testing are first-class citizens, gated before deploy.</li>
+        <li><strong>Secure by default</strong> — compliance review, scanning, and testing are first-class citizens, gated before deploy.</li>
         <li><strong>Infrastructure-aware</strong> — can provision and manage cloud resources directly.</li>
         <li><strong>Artifact-driven</strong> — stages stay loosely coupled via named pipeline artifacts.</li>
       </ul>
@@ -191,23 +193,37 @@ export class WebApps implements AfterViewInit {
       <h2>Stage Execution Order and Gating</h2>
       <p>Stages execute in dependency order. Conditional stages are skipped entirely when their corresponding parameter is omitted — no dummy runs.</p>
       <pre><code>Download
-├── Build             (if build=true)
-├── BuildTest         (if buildTestTool is set)
-├── Scan              (if scanTool is set; depends on Build, BuildTest)
-├── DeployInfra       (if /.infra present; depends on Build, BuildTest, Scan)
-├── Approval          (if requireApproval; manual gate)
-└── Deploy            (depends on prior enabled stages)
-    └── IntegrationTest  (if integrationTestTool is set; depends on Deploy)</code></pre>
+└── Review            (if review=true; compliance gate — blocks everything downstream)
+    ├── Build             (if build=true)
+    ├── BuildTest         (if buildTestTool is set)
+    ├── Scan              (if scanTool is set; depends on Build, BuildTest)
+    ├── DeployInfra       (if terraformAction != none; depends on Build, BuildTest, Scan)
+    ├── Approval          (if requireApproval; manual gate)
+    └── Deploy            (depends on prior enabled stages)
+        └── IntegrationTest  (if integrationTestTool is set; depends on Deploy)</code></pre>
+      <p>The <strong>Review</strong> stage runs immediately after Download and before Build. Build, BuildTest, Scan, and DeployInfra all depend on it, so a failing compliance gate stops the run before a single artifact is produced.</p>
+
+      <h2>Agent Pools</h2>
+      <table>
+        <thead><tr><th>Pool</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td><code>ubuntu-latest</code></td><td>Default for all non-.NET languages and basic deployments</td></tr>
+          <tr><td><code>windows-latest</code></td><td>.NET Framework builds without SonarQube</td></tr>
+          <tr><td><code>EPIC - Self-hosted</code></td><td>.NET builds with SonarQube, Wiz scans, and the compliance gate (pre-installed CLIs + cloud credentials)</td></tr>
+        </tbody>
+      </table>
 
       <h2>Pipeline Artifacts</h2>
       <p>Artifacts keep stages independent — each downloads what it needs and publishes what the next stage consumes.</p>
       <table>
         <thead><tr><th>Artifact</th><th>Published By</th><th>Consumed By</th></tr></thead>
         <tbody>
-          <tr><td><code>epic-app</code></td><td>Download</td><td>Build, Test, Scan, Infra, Deploy</td></tr>
+          <tr><td><code>epic-app</code></td><td>Download</td><td>Review, Build, Test, Scan, Infra, Deploy</td></tr>
+          <tr><td><code>epic-compliance-<wbr>review</code></td><td>Review</td><td>— (SARIF + JSON + Markdown report, surfaced by the API / portal)</td></tr>
           <tr><td><code>epic-build</code></td><td>Build</td><td>Scan, Deploy</td></tr>
           <tr><td><code>epic-build-tests</code></td><td>BuildTest</td><td>Scan</td></tr>
           <tr><td><code>epic-scan</code></td><td>Scan (.NET)</td><td>—</td></tr>
+          <tr><td><code>epic-wiz-scan</code></td><td>Scan (Wiz)</td><td>—</td></tr>
           <tr><td><code>terraform-outputs</code></td><td>DeployInfra</td><td>Deploy, IntegrationTest</td></tr>
           <tr><td><code>epic-integration-tests</code></td><td>IntegrationTest</td><td>—</td></tr>
         </tbody>
@@ -220,9 +236,11 @@ export class WebApps implements AfterViewInit {
         <tbody>
           <tr><td><code>angular</code></td><td>npm</td><td><code>dist/</code> → <code>.build/</code></td></tr>
           <tr><td><code>react</code></td><td>npm (CRA / Vite / Next static)</td><td><code>build/</code> | <code>dist/</code> | <code>out/</code> → <code>.build/</code></td></tr>
+          <tr><td><code>cap</code></td><td><code>cds build</code> + <code>mbt build</code></td><td>SAP MTA archive → <code>.build/archive.mtar</code></td></tr>
           <tr><td><code>html</code></td><td>(copy)</td><td><code>.build/</code></td></tr>
           <tr><td><code>dotnet</code></td><td>dotnet CLI</td><td>Self-contained executable or NuGet package</td></tr>
           <tr><td><code>dotnet_<wbr>framework</code></td><td>MSBuild</td><td><code>.build/</code></td></tr>
+          <tr><td><code>go</code></td><td><code>go build</code></td><td>Static linux/amd64 binary (CGO disabled) → <code>.build/</code></td></tr>
           <tr><td><code>java</code></td><td>Maven or Gradle</td><td>JAR → <code>.build/</code></td></tr>
           <tr><td><code>php</code></td><td>Composer</td><td><code>.build/</code></td></tr>
           <tr><td><code>python</code></td><td>pip / setuptools</td><td>Syntax check, wheel, egg, or sdist</td></tr>
@@ -231,14 +249,15 @@ export class WebApps implements AfterViewInit {
       </table>
 
       <h3>Runtime Version Defaults</h3>
-      <p>If <code>runtimeVersion</code> is not specified, the EPIC Engine uses these defaults:</p>
+      <p>If <code>runtimeVersion</code> is not specified, the EPIC Engine uses these defaults. The engine resolves the effective version as <code>coalesce(runtimeVersion, defaultRuntimeVersion)</code> and passes it down to the build, test, and scan templates as a parameter — compile-time engine variables aren't in scope inside included templates.</p>
       <table>
         <thead><tr><th>appType</th><th>Default</th></tr></thead>
         <tbody>
-          <tr><td><code>angular</code>, <code>react</code>, <code>html</code></td><td>Node.js 18</td></tr>
+          <tr><td><code>angular</code>, <code>react</code>, <code>html</code>, <code>cap</code></td><td>Node.js 20</td></tr>
           <tr><td><code>dotnet</code>, <code>dotnet_framework</code></td><td>.NET SDK 9.x</td></tr>
           <tr><td><code>python</code></td><td>3.11</td></tr>
           <tr><td><code>java</code></td><td>17</td></tr>
+          <tr><td><code>go</code></td><td>1.23</td></tr>
           <tr><td><code>php</code></td><td>8.3</td></tr>
         </tbody>
       </table>
@@ -249,11 +268,13 @@ export class WebApps implements AfterViewInit {
         <thead><tr><th>Framework</th><th>Language</th><th>Report Format</th></tr></thead>
         <tbody>
           <tr><td><code>jest</code></td><td>JavaScript / TypeScript</td><td>JUnit XML + LCOV coverage</td></tr>
+          <tr><td><code>karma</code></td><td>Angular (headless Chrome)</td><td>LCOV coverage</td></tr>
           <tr><td><code>vitest</code></td><td>JavaScript / TypeScript</td><td>LCOV coverage</td></tr>
           <tr><td><code>junit</code></td><td>Java</td><td>JUnit XML + JaCoCo coverage</td></tr>
           <tr><td><code>phpunit</code></td><td>PHP</td><td>JUnit XML + Clover coverage</td></tr>
           <tr><td><code>pytest</code></td><td>Python</td><td>JUnit XML + coverage XML</td></tr>
           <tr><td><code>xunit</code></td><td>.NET</td><td>xUnit XML + OpenCover</td></tr>
+          <tr><td><code>gotestsum</code></td><td>Go</td><td>JUnit XML + Go coverage profile</td></tr>
           <tr><td><code>playwright</code></td><td>Any (integration / E2E)</td><td>JUnit XML + HTML report + traces</td></tr>
         </tbody>
       </table>
@@ -261,10 +282,10 @@ export class WebApps implements AfterViewInit {
 
       <h2>Scan Stage</h2>
       <p>Security and quality scan dispatcher. Scanner selection is data-driven; quality gates are enforced when configured. The stage consumes both build artifacts and test reports for full coverage analysis. .NET projects use a pre-/post-build instrumented mode; other languages run a direct CLI analysis. Coverage and test-report paths are mapped automatically per test framework.</p>
-      <p><strong>Supported scanners:</strong> SonarQube (quality + coverage gates) and Wiz (IaC, secrets, and vulnerability scanning, policy-driven via <code>scanPolicy</code>).</p>
+      <p><strong>Supported scanners:</strong> SonarQube (quality + coverage gates) and Wiz (IaC, secrets, and vulnerability scanning, policy-driven via <code>scanPolicy</code>). A third gate — the <strong>Review</strong> stage — is a peer of these two with a distinct scope: policy-as-code compliance controls rather than cloud posture or code quality. It gets its own tab (<em>EPIC Compliance</em>).</p>
 
       <h2>Infrastructure Stage</h2>
-      <p>EPIC supports automated infrastructure provisioning via Terraform. When a <code>/.infra</code> folder is present in the application repository, EPIC runs <code>terraform init</code>, <code>plan</code>, and <code>apply</code> (or <code>plan -destroy</code> / <code>apply</code> for teardown). If absent, the infra stage is skipped and the deploy stage uses values from the <code>cloud</code> section of <code>epic.json</code>.</p>
+      <p>EPIC supports automated infrastructure provisioning via Terraform. The stage runs when <code>terraformAction</code> is not <code>none</code> — the orchestrator sets that from the presence of an infrastructure folder (resolved from <code>app.infraPath</code>, defaulting to <code>.infra</code>) plus the requested action. On <code>apply</code> EPIC runs <code>terraform init</code>, <code>plan</code>, and <code>apply</code>; on <code>destroy</code> it runs <code>plan -destroy</code> then <code>apply</code>. When the action is <code>none</code> the stage is skipped entirely and the deploy stage falls back to values from the <code>cloud</code> section of <code>epic.json</code>.</p>
 
       <h3>/.infra Folder Structure</h3>
       <pre><code>.infra/
@@ -289,6 +310,7 @@ export class WebApps implements AfterViewInit {
           <tr><td><code>dotnet</code></td><td>EC2 via SSM</td><td>ZIP upload to S3, remote install + systemd restart</td></tr>
           <tr><td><code>python</code></td><td>EC2 via SSM</td><td>ZIP upload to S3, remote install + venv + systemd restart</td></tr>
           <tr><td><code>java</code></td><td>EC2 via SSM</td><td>JAR upload to S3, remote install + systemd restart</td></tr>
+          <tr><td><code>go</code></td><td>EC2 via SSM</td><td>Static binary upload to S3, remote install + systemd restart</td></tr>
           <tr><td><code>ami</code></td><td>SSM Parameter Store + SSM Documents</td><td>Label SSM params, run config / test documents</td></tr>
         </tbody>
       </table>
@@ -298,8 +320,19 @@ export class WebApps implements AfterViewInit {
         <thead><tr><th>appType</th><th>Target</th><th>Mechanism</th></tr></thead>
         <tbody>
           <tr><td>Any (<code>php</code>, <code>dotnet</code>, <code>python</code>, <code>java</code>, <code>node</code>)</td><td>App Service</td><td><code>az webapp deploy --type zip</code></td></tr>
+          <tr><td><code>html</code>, <code>angular</code>, <code>react</code></td><td>Static site</td><td>Upload to a Storage Account static-web endpoint</td></tr>
         </tbody>
       </table>
+
+      <h3>SAP Deploy Targets</h3>
+      <table>
+        <thead><tr><th>appType</th><th>Target</th><th>Mechanism</th></tr></thead>
+        <tbody>
+          <tr><td><code>cap</code></td><td>Cloud Foundry (BTP)</td><td><code>cf deploy</code> of the built MTA archive</td></tr>
+          <tr><td><code>btp</code></td><td>BTP subaccount</td><td>Terraform-provisioned (infra-only appType)</td></tr>
+        </tbody>
+      </table>
+      <p>Cloud provider is resolved by the orchestrator: <code>appType: btp | cap</code> → SAP, else <code>awsAccountId</code> → AWS, else <code>azureSubscriptionId</code> → Azure. Each run is tagged with <code>epicRepo</code>, <code>epicAppName</code>, <code>epicAppType</code>, <code>epicEnvironment</code>, and <code>epicCloud</code> so an upstream platform can attribute it.</p>
 
       <h2>Pipeline Contract</h2>
       <p>Each application includes a configuration file at <code>.pipeline/epic.json</code> with two sections:</p>
@@ -368,13 +401,15 @@ export class WebApps implements AfterViewInit {
       <p>Adding a new build type, test framework, or scanner is three small steps: create a folder under the appropriate stage directory, implement the YAML template following existing conventions, and register it in the stage dispatcher (<code>main.yml</code>) using the <code>\${{ if eq(...) }}</code> pattern. No changes to <code>epic-orchestrator.yml</code> are required.</p>
 
       <h2>Summary</h2>
-      <p>EPIC provides a standardized CI/CD backbone for enterprise application delivery across AWS, Azure, and SAP BTP. It cleanly separates:</p>
+      <p>EPIC provides a standardized CI/CD backbone for enterprise application delivery across AWS, Azure, and SAP. It cleanly separates:</p>
       <ul>
         <li><strong>Application configuration</strong> (<code>app</code> section — identity, tooling, build intent)</li>
         <li><strong>Cloud deployment</strong> (<code>cloud</code> section — targets, credentials, resources)</li>
         <li><strong>Infrastructure provisioning</strong> (<code>/.infra</code> + Terraform)</li>
+        <li><strong>Governance</strong> (compliance gate + security / quality scanning, all before deploy)</li>
         <li><strong>Orchestration logic</strong> (engine + orchestrator)</li>
       </ul>
+      <p>Shared plumbing lives under <code>common/</code> — the GitHub clone step, build-status reporting back to the source repo, and JFrog Artifactory upload / download for teams that publish build artifacts to a binary repository.</p>
       <p>The result: pipelines that are clean, scalable, and governable across teams.</p>
     `;
   }
@@ -404,7 +439,7 @@ export class WebApps implements AfterViewInit {
         <li><strong>Standalone components</strong> — each component declares its own imports; bootstrapped from a single <code>appConfig</code>.</li>
         <li><strong>Signal-based state</strong> — data signals (<code>apps</code>, <code>appDetail</code>, <code>pagedRuns</code>, <code>stepLog</code>) and UI signals (modal visibility, auth state) feed <code>computed</code> derivations (<code>filteredApps</code>, <code>pagedApps</code>) so change detection stays fine-grained.</li>
         <li><strong>Single HTTP service</strong> — every call to the backend goes through one injectable service with strongly-typed request / response models.</li>
-        <li><strong>HTTP interceptor</strong> — attaches an <code>X-Epic-User</code> header to every request for server-side audit logging.</li>
+        <li><strong>HTTP interceptor</strong> — attaches the Entra ID (MSAL) bearer token to API requests so the backend can authenticate the caller. It's scoped to the API origin only, and deliberately <em>never</em> triggers interactive login: on any silent-token failure it proceeds unauthenticated and lets the API return 401, so the interceptor can't cause a redirect loop. Interactive login is owned solely by the app's MSAL progress handler.</li>
         <li><strong>Optimistic UI + polling</strong> — the dashboard polls for run status on an interval and overlays a local pending state until the orchestrator catches up.</li>
       </ul>
 
@@ -413,6 +448,7 @@ export class WebApps implements AfterViewInit {
         <li><strong>App dashboard</strong> — a searchable, filterable table of every app a user manages: technology, cloud, environment, last-run status, success rate, and average duration. Sortable and paginated.</li>
         <li><strong>Run orchestration</strong> — trigger a new run with per-stage toggles (build, unit tests, scan, infra deploy, app deploy, integration tests), monitor it live, or cancel an in-flight run.</li>
         <li><strong>Run history &amp; logs</strong> — paginated run history with expandable stage detail down to individual job and step logs, with copy-to-clipboard.</li>
+        <li><strong>Compliance reports</strong> — a run's compliance gate surfaces inline as a pass / partial / fail / N/A summary table, expands into a native in-app report view of every finding with its control ID and evidence, and offers the full Markdown report as a download. Findings are available even when the gate <em>fails</em> — which is exactly when a developer needs to read them.</li>
         <li><strong>Onboarding</strong> — register an existing GitHub repo into EPIC, or add an already-onboarded app to a personal tracking list.</li>
         <li><strong>epic.json builder</strong> — a short wizard that emits a ready-to-paste pipeline config for any supported app type and cloud.</li>
         <li><strong>New-app wizard</strong> — a multi-step flow that picks a cloud, app type, and architecture (frontend / backend / database / queue / storage), then generates a starter <code>epic.json</code> plus a project steering document.</li>
@@ -522,7 +558,12 @@ Integrations (GitHub API, Azure DevOps API, cloud)</code></pre>
           <tr><td>GET</td><td><code>/api/apps/{name}/runs</code></td><td>Paged run history</td></tr>
           <tr><td>POST</td><td><code>/api/apps/{name}/runs</code></td><td>Trigger a run with stage flags</td></tr>
           <tr><td>POST</td><td><code>/api/apps/{name}/runs/{id}/cancel</code></td><td>Cancel an in-flight run</td></tr>
+          <tr><td>GET</td><td><code>/api/apps/{name}/runs/{id}/compliance-summary</code></td><td>Inline pass / fail counts for the run's compliance gate</td></tr>
+          <tr><td>GET</td><td><code>/api/apps/{name}/runs/{id}/compliance-report-json</code></td><td>Full machine-readable compliance findings for the native report view</td></tr>
+          <tr><td>GET</td><td><code>/api/apps/{name}/runs/{id}/compliance-report</code></td><td>Downloadable Markdown compliance report</td></tr>
+          <tr><td>GET</td><td><code>/api/apps/{name}/runs/{id}/scan-result-url</code></td><td>Deep link to the run's security-scan results</td></tr>
           <tr><td>POST</td><td><code>/api/apps</code></td><td>Onboard an app from a GitHub repo</td></tr>
+          <tr><td>GET</td><td><code>/api/apps/github-sources</code></td><td>List the GitHub orgs / sources available to onboard from</td></tr>
           <tr><td>GET</td><td><code>/api/apps/configs</code></td><td>Find <code>epic.json</code> files in a repo / branch</td></tr>
           <tr><td>GET / POST / DELETE</td><td><code>/api/users/me/apps</code></td><td>Manage a user's tracked-app list</td></tr>
         </tbody>
@@ -535,8 +576,15 @@ Integrations (GitHub API, Azure DevOps API, cloud)</code></pre>
         <li><strong>Idempotent migrations</strong> — EF Core migrations run at startup and are safe to apply from multiple instances.</li>
       </ul>
 
-      <h2>Authentication</h2>
-      <p>User identity flows in via an <code>X-Epic-User</code> header (set by the portal's interceptor) and is surfaced through an injected <code>ICurrentUser</code> abstraction — a clean seam for dropping in full OAuth / token validation later without touching controllers.</p>
+      <h2>Authentication &amp; Audit</h2>
+      <p>The API originally trusted an <code>X-Epic-User</code> header set by the portal, behind an injected <code>ICurrentUser</code> abstraction. That abstraction was deliberately a seam — and it's since been filled with the real thing:</p>
+      <ul>
+        <li><strong>Entra ID JWT bearer validation</strong> — the portal's MSAL access token is validated on every request against the tenant's signing keys, audience, and issuer.</li>
+        <li><strong>Deny-by-default authorization</strong> — a fallback policy requires an authenticated user for every endpoint, so a new controller is protected the moment it exists rather than the moment someone remembers to annotate it.</li>
+        <li><strong><code>ClaimsCurrentUser</code></strong> — resolves the caller's identity from validated token claims. Because it implements the same <code>ICurrentUser</code> interface, <em>no controller or service changed</em> when the trust model was replaced. That's the payoff of the original seam.</li>
+        <li><strong><code>DevCurrentUser</code></strong> — a local-development implementation registered in its place, so <code>dotnet run</code> works without a tenant round-trip.</li>
+        <li><strong>Audit log</strong> — an <code>IAuditLog</code> abstraction records who triggered or cancelled which run, which is the part auditors actually ask for.</li>
+      </ul>
 
       <h2>Testing</h2>
       <p>Unit tests use <strong>xUnit</strong> with <strong>Moq</strong> for external dependencies and EF Core's in-memory provider for isolated <code>DbContext</code> tests. A representative health-check test:</p>
@@ -608,13 +656,15 @@ public async Task Get_WithHealthyDb_Returns200()
         </tbody>
       </table>
 
-      <h2>AWS Modules</h2>
+      <p>The library has grown to <strong>42 modules — 27 AWS and 15 Azure</strong>.</p>
+
+      <h2>AWS Modules (27)</h2>
       <p><strong>Compute</strong> — Lambda, EC2, Elastic Beanstalk.<br>
-      <strong>Networking</strong> — VPC lookup, security groups, application load balancer, API Gateway.<br>
+      <strong>Networking</strong> — shared-VPC lookup, security groups, application load balancer, API Gateway.<br>
       <strong>Storage &amp; CDN</strong> — S3, CloudFront, static-site uploader, an integrated static-web composite, Route 53.<br>
-      <strong>Databases</strong> — DynamoDB (with Aurora PostgreSQL and RDS Proxy on the roadmap).<br>
-      <strong>Security &amp; secrets</strong> — IAM role, Secrets Manager, ACM certificate.<br>
-      <strong>Observability &amp; messaging</strong> — CloudWatch alarms, SNS.<br>
+      <strong>Databases</strong> — Aurora PostgreSQL, RDS Proxy, DynamoDB.<br>
+      <strong>Security &amp; secrets</strong> — IAM role, KMS, Secrets Manager, SSM Parameter Store, ACM certificate.<br>
+      <strong>Observability &amp; messaging</strong> — CloudWatch (logs / metric filters / dashboards), CloudWatch alarms, CloudTrail, SNS, SQS, SES.<br>
       <strong>Governance</strong> — a foundational tagging module consumed by every other module.</p>
 
       <table>
@@ -623,33 +673,51 @@ public async Task Get_WithHealthyDb_Returns200()
           <tr><td><code>aws-lambda</code></td><td>Serverless function with optional VPC config + IAM policies</td></tr>
           <tr><td><code>aws-ec2</code></td><td>EC2 instance with IAM profile, encrypted root volume, user data</td></tr>
           <tr><td><code>aws-elastic-beanstalk</code></td><td>Managed app platform with scaling + HTTPS</td></tr>
+          <tr><td><code>aws-network</code></td><td>Resolves the existing shared VPC + private subnets from SSM Parameter Store</td></tr>
           <tr><td><code>aws-security-group</code></td><td>Security groups with CIDR + SG-referenced rules</td></tr>
           <tr><td><code>aws-load-balancer</code></td><td>Application Load Balancer with health checks + TLS</td></tr>
           <tr><td><code>aws-api-gateway</code></td><td>REST API (regional / edge / private) with CORS + authorizer</td></tr>
           <tr><td><code>aws-s3</code></td><td>S3 bucket: versioning, SSE, logging, lifecycle, policy</td></tr>
           <tr><td><code>aws-cloudfront</code></td><td>CloudFront distribution with custom domain + WAF hook</td></tr>
           <tr><td><code>aws-static-web</code></td><td>Composite: tags + S3 + CloudFront + asset upload</td></tr>
+          <tr><td><code>aws-deploy-<wbr>static-site</code></td><td>Uploads a built static site into an existing bucket as tracked objects</td></tr>
           <tr><td><code>aws-route53</code></td><td>Route 53 ALIAS / CNAME records</td></tr>
+          <tr><td><code>aws-aurora-<wbr>postgresql</code></td><td>Aurora PostgreSQL cluster: writer / reader instances, subnet + parameter groups, dedicated SG</td></tr>
+          <tr><td><code>aws-rds-proxy</code></td><td>RDS Proxy brokering Lambda→Aurora connections; Secrets Manager auth, IAM client auth</td></tr>
           <tr><td><code>aws-dynamodb</code></td><td>DynamoDB table with GSIs, streams, TTL, PITR</td></tr>
           <tr><td><code>aws-iam-role</code></td><td>IAM role + trust policy, with raw-control escape hatches</td></tr>
+          <tr><td><code>aws-kms</code></td><td>Customer-managed key + alias</td></tr>
           <tr><td><code>aws-secretmanager</code></td><td>Secrets Manager secret with optional rotation</td></tr>
+          <tr><td><code>aws-ssm-<wbr>parameter-store</code></td><td>Non-secret runtime config (feature flags, endpoints, intervals)</td></tr>
           <tr><td><code>aws-certificate</code></td><td>ACM certificate (public / private / self-signed)</td></tr>
+          <tr><td><code>aws-cloudwatch</code></td><td>Log group with explicit retention, metric filters, optional dashboard</td></tr>
           <tr><td><code>aws-cloudwatch-alarm</code></td><td>CloudWatch metric alarm with actions</td></tr>
+          <tr><td><code>aws-cloudtrail</code></td><td>Multi-region trail with KMS encryption, CloudWatch Logs, event selectors</td></tr>
           <tr><td><code>aws-sns</code></td><td>SNS topic + email subscriptions</td></tr>
+          <tr><td><code>aws-sqs</code></td><td>Standard / FIFO queue with encryption, resource policy, dead-letter wiring</td></tr>
+          <tr><td><code>aws-ses</code></td><td>SES configuration set for transactional email</td></tr>
           <tr><td><code>aws-tags</code></td><td>Standard governance tag map (foundational)</td></tr>
         </tbody>
       </table>
 
-      <h2>Azure Modules</h2>
+      <h2>Azure Modules (15)</h2>
       <table>
         <thead><tr><th>Module</th><th>Provisions</th></tr></thead>
         <tbody>
           <tr><td><code>azure-app-service</code></td><td>App Service (Linux / Windows) with runtime + Key Vault refs</td></tr>
           <tr><td><code>azure-function</code></td><td>Azure Functions (Consumption / Premium)</td></tr>
+          <tr><td><code>azure-container-app</code></td><td>Container App Environment + Container App</td></tr>
+          <tr><td><code>azure-container-<wbr>registry</code></td><td>Azure Container Registry</td></tr>
+          <tr><td><code>azure-network</code></td><td>Virtual network + subnets, optional public IPs</td></tr>
+          <tr><td><code>azure-application-<wbr>gateway</code></td><td>Application Gateway v2 (L7 routing + TLS)</td></tr>
           <tr><td><code>azure-key-vault</code></td><td>Key Vault + secrets, RBAC, network ACLs, soft delete</td></tr>
+          <tr><td><code>azure-entra-app</code></td><td>Entra ID app registration + service principal + rotating client secret</td></tr>
+          <tr><td><code>azure-user-<wbr>assigned-identity</code></td><td>User-assigned managed identity with scoped RBAC assignments</td></tr>
           <tr><td><code>azure-postgresql</code></td><td>PostgreSQL Flexible Server with databases + firewall rules</td></tr>
           <tr><td><code>azure-sql</code></td><td>SQL Server + databases with Entra admin + firewall rules</td></tr>
           <tr><td><code>azure-storage</code></td><td>Storage Account + containers, versioning, soft delete</td></tr>
+          <tr><td><code>azure-log-analytics</code></td><td>Log Analytics workspace</td></tr>
+          <tr><td><code>azure-communication-<wbr>service</code></td><td>Communication Services + Email Communication Service + sender domain</td></tr>
           <tr><td><code>azure-tags</code></td><td>Standard governance tag map (foundational)</td></tr>
         </tbody>
       </table>
@@ -675,6 +743,80 @@ public async Task Get_WithHealthyDb_Returns200()
   tags = local.epic_tags
 }</code></pre>
       <p>Outputs (table names, ARNs, endpoints, distribution IDs) flow downstream to other modules or back to the pipeline's deploy stage. The result is infrastructure that is fast to assemble, consistent by construction, and governed the same way across every team.</p>
+    `;
+  }
+
+  /* ---------- EPIC — Compliance (the Review gate) ---------- */
+  private epicComplianceHtml(): string {
+    return `
+      <h2>Overview</h2>
+      <p>EPIC Compliance is a <strong>policy-as-code gate</strong> that sits inside the pipeline. It's a standalone Go CLI that scans a checked-out repository against an enterprise controls framework and emits findings <strong>keyed to NIST 800-53 control IDs</strong>. The pipeline's Review stage runs it between Download and Build, and gates on its <strong>exit code</strong> — so a non-compliant repository never reaches a build agent, let alone a deploy target.</p>
+      <p>It is deliberately <em>not</em> a general code reviewer. It's a third gate alongside the two that were already there, with a scope neither one covers:</p>
+      <table>
+        <thead><tr><th>Gate</th><th>Scope</th></tr></thead>
+        <tbody>
+          <tr><td>Wiz</td><td>Cloud security posture — IaC, secrets, vulnerabilities</td></tr>
+          <tr><td>SonarQube</td><td>Code quality, coverage, maintainability</td></tr>
+          <tr><td><strong>EPIC Compliance</strong></td><td><strong>Organizational policy controls as code</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h2>Why a Compiled, Version-Pinned Binary</h2>
+      <p>The reviewer builds as a <strong>static, dependency-free linux/amd64 executable</strong> with its version baked in via linker flags. The pipeline pulls a <strong>version-pinned</strong> copy from a KMS-encrypted S3 artifact bucket into the run's <em>cleaned workspace</em> — never a global install, never <code>latest</code>. That combination is the point:</p>
+      <ul>
+        <li><strong>No drift on a shared agent</strong> — the workspace is wiped each run, so every build gets exactly the pinned tool, not whatever the last team left behind.</li>
+        <li><strong>Reproducible verdicts</strong> — a re-run of an old build re-runs the tool that graded it.</li>
+        <li><strong>Rollout is a variable change</strong> — bumping the pinned version in the pipeline's variable group is the entire deployment. No YAML edit, no agent maintenance.</li>
+      </ul>
+
+      <h2>Profile First, Then Grade</h2>
+      <p>This is the part that makes the tool usable rather than noisy. Before a single control rule runs, the engine <strong>profiles the repository</strong>: what the app <em>is</em> (client-side SPA, server API, infrastructure-as-code, library), what it <em>has</em> (server-side request handling, an audit sink, IaC), and what it <em>does for authentication</em> (delegated SSO vs. a local login vs. none).</p>
+      <p>That classification lets the engine <strong>disposition each control to the architectural layer that actually enforces it</strong>. A client-side SPA that delegates login to an identity provider cannot own account lockout, a system-use banner, concurrent-session caps, or server-side authorization and audit-of-record — those live in the IdP, the backend API, or the hosting platform. Without this step, the reviewer grades every repo against the full framework and floods developers with false FAILs for controls their code structurally cannot satisfy. A tool that cries wolf gets ignored, and an ignored gate is worse than no gate.</p>
+      <p>Detection is <strong>deterministic and signature-based</strong> over an indexed view of the repo. When an LLM is configured it runs a confirmation pass — but the deterministic result is always the <em>floor</em>: an LLM error can never change the classification, so offline CI stays reproducible.</p>
+
+      <h2>A Hybrid Engine</h2>
+      <p>Controls split cleanly into two kinds, and the engine treats them differently:</p>
+      <ul>
+        <li><strong>Mechanical controls</strong> — "is TLS enforced," "is encryption at rest configured" — are matched deterministically against indexed file contents, with concrete evidence locations attached to the finding.</li>
+        <li><strong>Interpretive controls</strong> — the ones that need judgment about what the code <em>means</em> — are routed to a frontier LLM through an internal Portkey gateway, with retry on transient gateway errors and request pacing to stay under rate limits.</li>
+      </ul>
+      <p>The LLM path <strong>fails safe, not open</strong>: a gateway error falls back to deterministic per-control evaluation rather than skipping the control or passing it by default.</p>
+
+      <h2>The Verdict Model</h2>
+      <p>A binary pass/fail can't describe compliance honestly, so findings carry one of five verdicts:</p>
+      <table>
+        <thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>PASS</code></td><td>Control satisfied, with code evidence.</td></tr>
+          <tr><td><code>PARTIAL</code></td><td>Mechanism present but incomplete or inconsistent — a warning, not a block.</td></tr>
+          <tr><td><code>FAIL</code></td><td>Control applies and the evidence shows it isn't met.</td></tr>
+          <tr><td><code>N/A</code></td><td>The control's precondition doesn't exist in this app — <em>attributed</em>, with the reason, not silently dropped.</td></tr>
+          <tr><td><code>MANUAL</code></td><td>A real control only human or runtime attestation can confirm (personnel, process, pen tests).</td></tr>
+        </tbody>
+      </table>
+      <p>Only <code>FAIL</code> on hard-mapped controls gates the pipeline (<code>--fail-on hard-fail</code>, the default); <code>PARTIAL</code>, <code>MANUAL</code>, and <code>N/A</code> surface as information. Stricter (<code>any-fail</code>) and advisory (<code>never</code>) policies are one flag away.</p>
+
+      <h2>The Gate Contract</h2>
+      <p>The pipeline integration is deliberately tiny — the stage does not parse output, it reads an exit code:</p>
+      <table>
+        <thead><tr><th>Exit</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td>Gate passed — the pipeline proceeds.</td></tr>
+          <tr><td><code>1</code></td><td>A gating finding was raised — the pipeline stops.</td></tr>
+          <tr><td><code>2</code></td><td>Tool error — distinct from a compliance failure, so a broken scanner is never mistaken for a broken app.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Three Reports, Three Audiences</h2>
+      <table>
+        <thead><tr><th>Format</th><th>Consumer</th></tr></thead>
+        <tbody>
+          <tr><td>SARIF 2.1.0</td><td>Standard findings interchange — flows into Advanced Security tooling</td></tr>
+          <tr><td>JSON</td><td>The EPIC API and portal — powers the inline summary and the native in-app report view</td></tr>
+          <tr><td>Markdown</td><td>Humans — offered as a downloadable report in the portal</td></tr>
+        </tbody>
+      </table>
+      <p>All three publish on <strong>success <em>or</em> failure</strong>. A gate that fails and takes its evidence with it is a gate developers learn to route around; publishing on failure is what makes the finding actionable in the one moment it matters.</p>
     `;
   }
 
@@ -782,18 +924,20 @@ public async Task Get_WithHealthyDb_Returns200()
 
       <h2>The Idea</h2>
       <p>NINE is a complete, self-contained AI assistant — the kind you'd reach for a cloud API to build — that runs <strong>entirely on one laptop</strong> with <em>nothing</em> leaving the machine. The model weights, the inference, the memory, the tools, the image and voice generation, even the web UI are all local. No OpenAI key, no Anthropic key, no telemetry. The motivation was simple: own the entire stack end-to-end, understand every layer of a modern agentic AI by building it from the model up, and have a private assistant whose conversations never touch someone else's servers.</p>
-      <p>The hardware is an Apple M4 Max with 128&nbsp;GB of unified memory, so the inference backend is <strong>MLX</strong> — Apple's array framework, tuned for M-series silicon — rather than Ollama or llama.cpp. The whole system is roughly <strong>22,000 lines of hand-written Python</strong> across ~37 modules, plus a single-file (~6,000-line) offline web app.</p>
+      <p>The hardware is an Apple M4 Max with 128&nbsp;GB of unified memory, so the inference backend is <strong>MLX</strong> — Apple's array framework, tuned for M-series silicon — rather than Ollama or llama.cpp. The whole system is roughly <strong>23,600 lines of hand-written Python</strong> across 38 modules, plus a single-file (~7,000-line) offline web app.</p>
 
       <h2>What She Can Do</h2>
       <p>NINE isn't a chat box. She runs a real tool-agent loop — generate, call a tool, observe the result, repeat — and can act in the world:</p>
       <ul>
         <li><strong>See</strong> — a vision model reads attached images, then the text model acts on what it saw.</li>
+        <li><strong>Hear</strong> — local speech-to-text turns an audio or video file into a transcript she can reason over.</li>
         <li><strong>Code &amp; build</strong> — read / edit / grep files, run commands, scaffold and launch real projects in a sandboxed workspace.</li>
-        <li><strong>Draw</strong> — local FLUX text-to-image and instruction-based image editing, plus deterministic code-laid-out SVG diagrams and exact-text image overlays.</li>
-        <li><strong>Film</strong> — local text&rarr;video and image&rarr;video (with a generated audio track), assembled into multi-scene shorts and scored with local music.</li>
+        <li><strong>Draw</strong> — local text-to-image across three tiers, instruction-based image editing, a diffusion upscaler, plus deterministic code-laid-out SVG diagrams and exact-text image overlays.</li>
+        <li><strong>Film</strong> — a full movie pipeline: persistent projects with locked character bibles for consistency, local text&rarr;video and image&rarr;video, scene assembly with narration, an embedding-matched sound library, and a locally-composed score.</li>
         <li><strong>Speak</strong> — local text-to-speech that streams sentence-by-sentence while she's still writing.</li>
         <li><strong>Remember</strong> — durable memory across every conversation, retrieved by meaning.</li>
-        <li><strong>Browse</strong> — web search / fetch / image search, all SSRF-guarded.</li>
+        <li><strong>Browse</strong> — web search / fetch / image search, all SSRF-guarded — plus a crawl-a-site-then-chat-about-it grounded RAG mode.</li>
+        <li><strong>Read her messages</strong> — local iMessage search and read, straight off the Mac's own database.</li>
         <li><strong>Act on her own</strong> — register a watcher, end the turn, and start an autonomous turn when it fires.</li>
         <li><strong>Delegate</strong> — fan focused subtasks out to fresh sub-agents, in parallel.</li>
       </ul>
@@ -805,11 +949,12 @@ public async Task Get_WithHealthyDb_Returns200()
         <tbody>
           <tr><td>Model stack</td><td>A three-mode, all-Qwen "brain" with a vision model that sees but never drives, and manual, deterministic routing.</td></tr>
           <tr><td>Custom models</td><td>A from-scratch checkpoint→MLX converter for a hybrid-attention MoE model the stock tooling can't handle.</td></tr>
-          <tr><td>Agent loop</td><td>A model-agnostic streaming parser driven by per-family format specs, plus a confabulation guard.</td></tr>
+          <tr><td>Agent loop</td><td>A model-agnostic streaming parser driven by per-family format specs, an up-front grounding layer, and a confabulation guard.</td></tr>
           <tr><td>Memory</td><td>Two-scope semantic recall with locally-embedded, threshold-tuned retrieval — and cross-session recall.</td></tr>
           <tr><td>Runtime</td><td>A single MLX worker thread feeding a FastAPI server that streams tokens, tool calls, and media to the browser.</td></tr>
         </tbody>
       </table>
+      <p>The thread running through all of it: the local 30B driver is <em>weaker</em> than a frontier cloud model, so the surrounding system has to carry the load — ground the model in real bytes before it can guess, do the hard part in Python, and catch it when it claims something it didn't do.</p>
       <p>It's a personal / research project — a way to build a genuinely capable agent from the silicon up — not a product. Everything below is real, working code.</p>
     `;
   }
@@ -822,15 +967,15 @@ public async Task Get_WithHealthyDb_Returns200()
       <table>
         <thead><tr><th>Mode</th><th>Driver model</th><th>Why this one</th></tr></thead>
         <tbody>
-          <tr><td>Uncensored <em>(default)</em></td><td>Josiefied-Qwen3-30B-A3B (8-bit, MoE)</td><td>An abliterated-and-&ldquo;healed&rdquo; model that won't refuse benign requests. 8-bit for steadier tool calls; 6-bit / 4-bit are lighter alternates.</td></tr>
-          <tr><td>Censored</td><td>Qwen3-32B (4-bit, dense, aligned)</td><td>The stock aligned model when guardrails are wanted.</td></tr>
-          <tr><td>Coder</td><td>Ornith-1.0-35B (8-bit, MoE)</td><td>Strongest at agentic coding; 8-bit for stability on long sessions. A 9B dense edge tier is a lighter option. (See <em>Custom Models</em>.)</td></tr>
+          <tr><td>Advanced <em>(default)</em></td><td>Josiefied-Qwen3-30B-A3B (8-bit, MoE)</td><td>An abliterated-and-&ldquo;healed&rdquo; model that won't refuse benign requests. 8-bit for steadier tool calls; 6-bit / 4-bit are lighter alternates.</td></tr>
+          <tr><td>Standard</td><td>Qwen3-32B (4-bit, dense, aligned)</td><td>The stock aligned model when guardrails are wanted.</td></tr>
+          <tr><td>Coder</td><td>Ornith-1.0-35B (8-bit, MoE)</td><td>Strongest at agentic coding; 8-bit for stability on long sessions. A 9B dense edge tier is a lighter option, and Qwen3-Coder-30B is a drop-in fallback. (See <em>Custom Models</em>.)</td></tr>
           <tr><td>Eyes <em>(all modes)</em></td><td>Qwen3-VL-32B (4-bit, VLM)</td><td>Sees &amp; describes images; hands off to the driver.</td></tr>
         </tbody>
       </table>
 
       <h2>Deterministic Routing — No Fuzzy Auto-Router</h2>
-      <p>A common failure mode in multi-model systems is a learned router that picks the wrong brain unpredictably. NINE's routing is <strong>fully manual and deterministic</strong>: two per-session toggles (Uncensored, and Code which forces the Coder) pick the driver, and a <strong>driver badge</strong> on every turn shows exactly which model produced it. The runtime mode is the <em>session</em> — you always know who you're talking to.</p>
+      <p>A common failure mode in multi-model systems is a learned router that picks the wrong brain unpredictably. NINE's routing is <strong>fully manual and deterministic</strong>: two per-session toggles (Advanced, and Code which forces the Coder) pick the driver, and a <strong>driver badge</strong> on every turn shows exactly which model produced it. The runtime mode is the <em>session</em> — you always know who you're talking to.</p>
 
       <h2>Two-Phase Image Turns</h2>
       <p>When a turn includes an image, NINE runs it in two phases: the <strong>vision model sees and describes</strong> the image in service of the request, then the <strong>text driver acts</strong> on that description — editing files, running commands, or answering. This keeps the capable-but-non-agentic VLM out of the tool loop while still letting NINE &ldquo;see.&rdquo; If no vision model is downloaded, she falls back to a text turn and says so plainly.</p>
@@ -842,7 +987,12 @@ public async Task Get_WithHealthyDb_Returns200()
       <p>Models are managed from the UI, not the code. You can see what's downloaded, pull more in the background, pre-pick each mode's default, or <strong>switch the live model with no restart</strong>. A live swap reloads only the LLM — <strong>memory, sessions, and personality are preserved</strong>. New model <em>families</em> are a data change, not engine surgery: a format spec plus a catalog entry (see <em>Agent Loop &amp; Tools</em> and <em>Custom Models</em>).</p>
 
       <h2>Local Image, Video, Voice &amp; Vision</h2>
-      <p>The generative side is local too. Text-to-image runs on <strong>FLUX</strong> via <code>mflux</code> in quality (photorealistic) and fast (distilled, few-step) tiers, lazy-loaded and kept resident once warm; a separate <strong>FLUX Kontext</strong> model does instruction-based image editing, and an <strong>InsightFace</strong> pipeline handles identity-preserving face swaps. <strong>Video</strong> is a local <strong>LTX</strong> model doing text&rarr;video and image&rarr;video <em>with a generated audio track</em>, and a storyboard pipeline stitches ten-second scenes into longer shorts — scored by a local <strong>MusicGen</strong> model over an ambient-sound layer. For things diffusion is bad at, NINE doesn't ask the model to fake it: architecture diagrams are laid out <strong>deterministically in code</strong> as crisp SVG, exact lettering is composited with PIL, and data charts go through real matplotlib. Voice is local TTS (Kokoro via <code>mlx-audio</code>) on its own worker thread so speech doesn't block generation.</p>
+      <p>The generative side is local too. Text-to-image runs in <strong>three selectable tiers</strong>: quality (FLUX.1-Krea via <code>mflux</code>, photorealistic), fast (FLUX.1-schnell, ~4 steps), and an advanced tier that runs on a <strong>separate ComfyUI sidecar</strong> (SDXL / Pony, its own venv, localhost-only, lazy-started with per-step progress over a WebSocket). The sidecar exists for an architectural reason, not a preference: FLUX is photoreal but structurally weak at complex multi-subject composition, where an SDXL pipeline with regional layout and ControlNet pose conditioning holds up. A <strong>FLUX Kontext</strong> model does instruction-based editing, <strong>SeedVR2</strong> does single-step diffusion upscaling (a restorer that reconstructs detail, not a resample), and an <strong>InsightFace</strong> pipeline handles identity-preserving face swaps.</p>
+      <p><strong>Video</strong> is a local <strong>LTX</strong> model doing text&rarr;video and image&rarr;video <em>with a generated audio track</em>, and a storyboard pipeline stitches ten-second scenes into longer shorts. Audio for those scenes is layered deliberately: <strong>MusicGen</strong> composes the score, while ambient sound comes from a separate SFX model <em>or</em> a local recorded-clip library matched to the scene by embedding similarity — because the video model bakes music into its audio no matter what you prompt, so the environmental layer has to be produced independently and mixed in.</p>
+      <p>For things diffusion is bad at, NINE doesn't ask the model to fake it: architecture diagrams are laid out <strong>deterministically in code</strong> as crisp SVG, exact lettering is composited with PIL, and data charts go through real matplotlib. Voice runs both directions — local TTS out (Kokoro or Qwen3-TTS, selectable) on its own worker thread so speech never blocks generation, and local speech-to-text in via <code>mlx-audio</code>, which handles wav/mp3/flac natively and m4a/aac/ogg/opus/webm through ffmpeg.</p>
+
+      <h2>Generation Models Get Their Own Memory Budget</h2>
+      <p>The LLM cache is byte-budgeted and evicts by LRU — but the image and video models load <em>outside</em> that cache, which was a blind spot with real consequences: a live video render died mid-generation because nothing accounted for the several gigabytes it was about to request on top of a co-resident 30B driver. A dedicated <strong>admission check</strong> now gates generation-model loads against actual free unified memory, evicting resident LLMs first if that's what it takes. Failing to <em>start</em> a render with a clear message beats OOM-ing halfway through one.</p>
     `;
   }
 
@@ -890,32 +1040,45 @@ python scripts/convert_ornith_to_mlx.py \\
       <h2>Streaming Parse: Think / Tool / Answer</h2>
       <p>The hard part is that all of this arrives as <em>one token stream</em>. A streaming parser splits that stream, live, into three kinds of content — hidden reasoning, tool calls, and the visible answer — driven by the active model's <code>FormatSpec</code> (so it's the same code for every family). Reasoning is shown in collapsible blocks; tool calls are extracted and dispatched the instant they complete; the answer streams to the browser token-by-token.</p>
 
-      <h2>60 Tools Across 15 Categories</h2>
-      <p>NINE's capability surface is a typed tool registry — parsed from messy model output, validated, dispatched, and returned as polished results:</p>
+      <h2>62 Tools Across 15 Categories</h2>
+      <p>NINE's capability surface is a typed tool registry — parsed from messy model output, validated, dispatched, and returned as polished results. Every tool carries a semantic version and a documented list of its own limitations, and a version only moves after the behavior is confirmed working in the live app — not when the code compiles:</p>
       <table>
         <thead><tr><th>Category</th><th>Representative tools</th></tr></thead>
         <tbody>
           <tr><td>Files &amp; Code</td><td><code>read_file</code>, <code>write_file</code>, <code>edit_file</code> (surgical replace), <code>grep</code>, <code>glob</code>, <code>list_dir</code></td></tr>
-          <tr><td>Documents</td><td>create / edit / append markdown &amp; <code>.docx</code>, edits in place, images embedded</td></tr>
-          <tr><td>Image &amp; Diagrams</td><td><code>generate_image</code>, <code>create_diagram</code> (code-laid-out SVG), <code>overlay_text</code></td></tr>
-          <tr><td>Video / GIF / Face</td><td><code>animate_image</code>, <code>make_gif</code>, <code>face_swap</code>, <code>edit_image</code></td></tr>
-          <tr><td>Voice</td><td><code>speak</code> — local TTS, streamed</td></tr>
-          <tr><td>Apps &amp; Shell</td><td><code>scaffold_app</code>, <code>run_app</code>, <code>run_command</code>, <code>start_process</code></td></tr>
+          <tr><td>Documents</td><td>create / edit / append / read markdown &amp; <code>.docx</code>, edits in place, images embedded</td></tr>
+          <tr><td>Image &amp; Diagrams</td><td><code>generate_image</code>, <code>edit_image</code>, <code>stylize_image</code>, <code>upscale_image</code>, <code>create_diagram</code> (code-laid-out SVG), <code>create_svg</code>, <code>overlay_text</code></td></tr>
+          <tr><td>Media Discovery</td><td><code>show_media</code>, <code>find_media</code> — pull a file from <em>any</em> past chat by description</td></tr>
+          <tr><td>Video / GIF / Face</td><td><code>animate_image</code>, <code>make_gif</code>, <code>caption_gif</code>, <code>face_swap</code></td></tr>
+          <tr><td>Voice / Audio</td><td><code>speak</code> (local TTS, streamed), <code>transcribe_audio</code> (local speech-to-text)</td></tr>
+          <tr><td>Apps &amp; Projects</td><td><code>scaffold_app</code>, <code>run_app</code>, <code>stop_app</code></td></tr>
+          <tr><td>Shell &amp; Processes</td><td><code>run_command</code>, <code>start_process</code>, logs / ports / waits</td></tr>
           <tr><td>Autonomy</td><td><code>notify_when</code> — message you after a turn ends</td></tr>
-          <tr><td>Memory &amp; Sessions</td><td><code>remember</code>, <code>recall</code>, <code>pin_memory</code>, <code>read_session</code></td></tr>
-          <tr><td>Internet</td><td><code>web_search</code>, <code>web_fetch</code>, <code>web_image_search</code> (SSRF-guarded)</td></tr>
-          <tr><td>Market &amp; Multi-Agent</td><td>live quotes + matplotlib charts; <code>delegate</code>, <code>delegate_parallel</code></td></tr>
+          <tr><td>Memory &amp; Sessions</td><td><code>remember</code>, <code>recall</code>, <code>forget</code>, <code>pin_memory</code>, <code>read_session</code></td></tr>
+          <tr><td>Internet</td><td><code>web_search</code>, <code>web_fetch</code>, <code>web_image_search</code>, <code>save_web_media</code> (SSRF-guarded)</td></tr>
+          <tr><td>Stocks / Market</td><td>live quotes, market summary, real matplotlib price charts</td></tr>
+          <tr><td>iMessage</td><td>list / read / search local conversations (send is deliberately <em>not</em> registered as a model-callable tool)</td></tr>
+          <tr><td>Multi-Agent</td><td><code>delegate</code>, <code>delegate_parallel</code></td></tr>
         </tbody>
       </table>
 
+      <h2>Grounding: Don't Let the Model Guess</h2>
+      <p>The sharpest failure mode of a local 30B driver isn't a bad tool call — it's <em>not making one</em>. Asked to "read the config and tell me what's in it," she'd confidently recite the file she wrote three turns ago from her own context instead of touching the disk. The content is plausible. It's also stale, and there's no signal that she never looked.</p>
+      <p>The fix is an <strong>up-front grounding registry</strong>: one place that recognizes fact-shaped requests and injects the real answer into the prompt <em>before</em> generation starts. A "read X" grounds the actual bytes; a "search the files for X" grounds real matches; "list the folder" grounds the real listing; live questions (weather, currency, quotes) ground a real API response over stale training data. Each injection is persisted as an auditable step in the turn, so it's visible rather than magic.</p>
+      <p>The key property is that grounding <strong>doesn't take the wheel</strong> — the model still decides what to do with the facts. It only removes the option of inventing them.</p>
+
       <h2>The Design Bar: Do the Hard Part in Code</h2>
       <p>The standing principle behind every tool is that the <strong>30B local driver is the weakest link</strong>, so the tool must carry the load: do the hard, deterministic part in Python (not in the model), be robust to messy model inputs, and return polished output. The diagram tool is the canonical example — the model supplies only a logical graph (nodes, groups, edges); the code does professional layout, nested labeled containers, service-colored cards, and arrowed connectors. That's how NINE produces output well above what a 30B model could draw on its own.</p>
+      <p>Project scaffolding is the same idea applied to a different failure. Local models don't reliably know the correct <em>non-interactive</em> invocation for each framework's CLI, and a scaffolder that hits a "? Would you like to add routing" prompt hangs the turn forever. So the proven command per framework is <strong>encoded in a registry</strong> and run with <strong>stdin closed</strong> — it structurally cannot prompt. Anything outside the registry falls back to a plain command with non-interactive flags. The model picks <em>what</em> to scaffold; it never has to remember <em>how</em>.</p>
 
       <h2>Cross-Turn Tool Memory</h2>
       <p>Without help, only an assistant's <em>words</em> survive into the next turn — every fact a tool discovered (a path, a file's contents, a command's output) evaporates. NINE attaches a <strong>compact, capped record of what each turn's tools returned</strong> as reference context riding the <em>following</em> user turn (never as assistant prose, so the weak model can't mimic it back). The result is the cross-turn continuity you'd expect from a frontier agent — she remembers what her own tools just did.</p>
 
       <h2>A Confabulation Guard</h2>
-      <p>Small local models will sometimes <em>claim</em> they did something — &ldquo;here's the image,&rdquo; with a fake markdown link — when no tool actually ran. A shared guard in the agent layer catches a media/image claim when <strong>no artifact was produced that turn</strong> (gated on whether media was actually generated, not just whether any tool ran), so a failed download can't fake success. It's kept precise: a legitimate vision description (&ldquo;the image shows…&rdquo;) is spared. Every confirmed behavior like this is pinned down by a regression script so fixes don't silently rot.</p>
+      <p>Small local models will sometimes <em>claim</em> they did something — &ldquo;here's the image,&rdquo; with a fake markdown link — when no tool actually ran. A shared guard in the agent layer catches a media/image claim when <strong>no artifact was produced that turn</strong> (gated on whether media was actually generated, not just whether any tool ran), so a failed download can't fake success. It's kept precise: a legitimate vision description (&ldquo;the image shows…&rdquo;) is spared, and so is a document read that merely <em>quotes</em> an image link rather than claiming to have made one — the guard's early versions false-tripped on exactly that and refused to answer. Every confirmed behavior like this is pinned down by a regression script so fixes don't silently rot.</p>
+
+      <h2>An Activity Log You Can Actually Audit</h2>
+      <p>Guards only help if you can see what happened. Each session writes an <strong>append-only JSONL activity trace</strong> — every grounded injection, tool call, result, and guard trip, in order, with timestamps. When she does something surprising, the answer isn't a re-run and a guess; it's a file. That log is what turned several "she hallucinated" reports into precise, reproducible bugs with a one-line fix.</p>
     `;
   }
 
@@ -943,6 +1106,10 @@ python scripts/convert_ornith_to_mlx.py \\
       <h2>Sessions Are Memory Too</h2>
       <p>NINE automatically recalls relevant context from your <em>other</em> chats every turn — semantically, only when it's actually relevant — and surfaces a visible &ldquo;⟲ recalled from N sessions&rdquo; note so it's never a black box. The <code>read_session</code> tool lets her dig deeper into a specific past chat when she needs to. You never have to ask.</p>
 
+      <h2>A Third Scope: Crawled Sites</h2>
+      <p>The same retrieval machinery powers a <strong>browser</strong> mode — point NINE at a site, she crawls it, embeds the pages with the same local embedder, and from then on you can ask questions about it with the relevant passages retrieved and folded in. It's grounded RAG built from the pieces that were already there: the crawl store mirrors the sessions/memory design rather than inventing a fourth persistence pattern.</p>
+      <p>That mirroring is a deliberate habit across the codebase. Chat sessions are ephemeral (their media dies with the chat), but movie projects and the reusable asset library are <strong>standalone persistent stores</strong> you build over days — different lifetime, same shape.</p>
+
       <h2>Acting On Her Own</h2>
       <p>A normal turn is request → response with no back-channel. NINE breaks that with <code>notify_when</code>: she registers a <strong>watcher</strong> (a process log matches, a server comes up, a build exits) and the turn <em>ends</em>. When the watcher fires, she starts an <strong>autonomous turn</strong> — the full tool agent, not just a notice — and streams the work to your browser live. She can fix the code, re-run the build, and set up new checks on her own.</p>
       <p>Autonomy is fenced carefully. Web tools are <strong>disabled in autonomous turns</strong> to keep the &ldquo;lethal trifecta&rdquo; (private data + untrusted content + exfiltration) closed; chains are capped; and a single launch flag disables the whole capability.</p>
@@ -962,20 +1129,32 @@ python scripts/convert_ornith_to_mlx.py \\
       <p>The codebase is organized by concern, with the model/agent core cleanly separated from the capabilities:</p>
       <pre><code>src/nine/
 ├── config.py        # model registry (catalog + categories), identity, env isolation
+├── settings.py      # user-facing runtime prefs, persisted to settings.json
 ├── engine.py        # per-model MLX/VLM backend + streaming channel parser
 ├── formats.py       # FormatSpec per model family (parsing is data-driven)
+├── memguard.py      # unified-memory admission for the generation models
 ├── tools.py         # tool-call parser, ToolRegistry, built-in tools
 ├── agent.py         # stream parser (think/tool/answer) + tool-agent loop + confab guard
+├── grounding.py     # up-front ground-truth injection registry
 ├── memory.py        # MemoryStore (JSONL) + Embedder (semantic) + memory tools
 ├── sessions.py      # SessionStore + cross-session recall index
+├── session_log.py   # append-only per-session forensic activity trace
 ├── orchestrator.py  # delegate / delegate_parallel sub-agents
-├── imaging.py  diagrams.py  video.py  audio.py  docs.py
-├── webtools.py  stocks.py  proctools.py  autonomy.py
+├── autonomy.py      # watchers + autonomous turns
+│
+├── imaging.py  comfy.py  diagrams.py  faceswap.py   # stills (mflux + SDXL sidecar)
+├── video.py  gifs.py  movies.py  assemble.py  library.py   # motion + film projects
+├── audio.py  stt.py  music.py  sfx.py  sfx_library.py      # voice out / in, score, ambience
+├── docs.py  scaffolding.py  proctools.py                   # documents, projects, processes
+├── webtools.py  browser.py  livedata.py  stocks.py         # internet + live grounding
+├── imessage.py                                             # local Messages database
+│
 ├── server.py        # FastAPI server (single MLX worker + ndjson/SSE streaming)
 └── web/index.html   # the offline single-page UI</code></pre>
+      <p>38 modules, ~23,600 lines. The grouping is the design: the model/agent core at the top is <em>capability-agnostic</em> — it knows about format specs, tool schemas, and streams, not about FLUX or ffmpeg. Everything below it is a capability that plugs in.</p>
 
       <h2>Streaming to the Browser</h2>
-      <p>The server is FastAPI, streaming the turn to the UI over ndjson/SSE — tokens, reasoning blocks, tool-call lines, and inline media all arrive as the turn unfolds. The frontend is a <strong>self-contained single-page app: no CDN, fully offline, localhost-only</strong>, with collapsible reasoning, a chronological tool/answer flow, a sidebar of auto-named past sessions, and the ability to <strong>queue prompts while she works</strong> (they line up and process in order, serialized server-side).</p>
+      <p>The server is FastAPI, streaming the turn to the UI over ndjson/SSE — tokens, reasoning blocks, tool-call lines, and inline media all arrive as the turn unfolds. The frontend is a <strong>self-contained single-page app: no CDN, fully offline, localhost-only</strong> — one ~7,000-line file, with collapsible reasoning and a running token count, a chronological tool/answer flow, a sidebar of auto-named past sessions, per-session toggles, an in-app document viewer, Media / Documents / Projects panels, the Movies and Browser widgets, and the ability to <strong>queue prompts while she works</strong> (they line up and process in order, serialized server-side).</p>
 
       <h2>Sandbox &amp; Isolation</h2>
       <p>The agent is given real shell and filesystem power, so it's fenced:</p>
