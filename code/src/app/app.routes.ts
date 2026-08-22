@@ -16,7 +16,7 @@ export const routes: Routes = [
     path: 'resume',
     loadComponent: () => import('./sections/resume/resume').then(m => m.Resume),
     title: 'Resume — Robb Morgan',
-    data: { description: 'Thirty years of technology leadership. Principal Solutions Engineer and Architect. Cross-industry consulting, enterprise pipelines, cloud, regulated environments, AI strategy.' },
+    data: { description: 'Thirty years of technology leadership. AI Architect and Engineer. Cross-industry consulting, enterprise pipelines, cloud, regulated environments, AI strategy.' },
   },
   {
     path: 'novels',

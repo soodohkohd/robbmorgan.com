@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, computed, inject, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { SectionShell } from '../section-shell/section-shell';
 import { AGENT_ANATOMY_INTRO, AGENT_ANATOMY_TABS } from './agent-anatomy.content';
 
@@ -44,6 +45,7 @@ export class WebApps implements AfterViewInit {
    *  sticky elements' `offsetTop` returns the CURRENT stuck position
    *  once stuck, so re-reading drifts the value upward on each call. */
   private headTop = 0;
+
 
   readonly topics: readonly Topic[] = [
     {
@@ -179,7 +181,7 @@ export class WebApps implements AfterViewInit {
 
   private sanitizer = inject(DomSanitizer);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private location = inject(Location);
 
   /* ---------- deep links ----------
    * /code?topic=<slug>&section=<sub-tab slug>. Selection is in-page state, so
@@ -209,17 +211,21 @@ export class WebApps implements AfterViewInit {
   }
 
   /** Reflect the current topic + sub-tab into the query string so what you're
-   *  reading is what you can copy out of the address bar. `replaceUrl` keeps
-   *  tab switches out of session history — Back should leave the page, not
-   *  rewind through every tab the reader touched. */
+   *  reading is what you can copy out of the address bar.
+   *
+   *  Deliberately `Location.replaceState` and NOT `router.navigate`. The router
+   *  is configured with `scrollPositionRestoration: 'enabled'`, so every
+   *  navigation — including a query-param-only one — scrolls the page to the
+   *  top when it completes. That silently overrode the scroll on every tab
+   *  change and made this page behave differently from The Desk, which never
+   *  navigates. replaceState updates the URL without a navigation: no scroll
+   *  restoration, no history entry, and no NavigationEnd to re-run the
+   *  route-level meta updater for a route that hasn't changed. */
   private syncUrl(): void {
-    const topic = this.selectedSlug();
+    const params = new URLSearchParams({ topic: this.selectedSlug() });
     const section = this.activeSubSlug();
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: section ? { topic, section } : { topic },
-      replaceUrl: true,
-    });
+    if (section) params.set('section', section);
+    this.location.replaceState(this.location.path().split('?')[0], params.toString());
   }
 
   /** Agent Anatomy bodies carry inline `<svg>` diagrams, and Angular's HTML
@@ -252,23 +258,21 @@ export class WebApps implements AfterViewInit {
     this.scrollAfterSelect();
   }
 
-  /** Sub-tab click inside the EPIC Pipeline topic. Same scroll-to-dock
-   *  behavior as the top-level pills so switching components docks the
-   *  title bar instead of stranding the reader mid-prose. */
+  /** Sub-tab click inside the EPIC Pipeline topic. Lands on the section
+   *  itself rather than the top of the page &mdash; see `sectionTop()`. */
   selectEpic(slug: string): void {
     this.selectedEpicSlug.set(slug);
     this.scrollAfterSelect();
   }
 
-  /** Sub-tab click inside the NINE topic. Same scroll-to-dock behavior as
-   *  the EPIC sub-tabs. */
+  /** Sub-tab click inside the NINE topic. Same landing as the EPIC sub-tabs. */
   selectNine(slug: string): void {
     this.selectedNineSlug.set(slug);
     this.scrollAfterSelect();
   }
 
-  /** Sub-tab click inside the Agent Anatomy topic. Same scroll-to-dock
-   *  behavior as the EPIC and NINE sub-tabs. */
+  /** Sub-tab click inside the Agent Anatomy topic. Same landing as the EPIC
+   *  and NINE sub-tabs. */
   selectAgent(slug: string): void {
     this.selectedAgentSlug.set(slug);
     this.scrollAfterSelect();
@@ -290,15 +294,15 @@ export class WebApps implements AfterViewInit {
     this.scrollAfterSelect(scrollToBottom);
   }
 
-  /** Shared scroll behavior for every tab switch on this page.
+  /** Shared scroll behavior for every tab switch on this page — the same
+   *  logic The Desk uses for chapters.
    *
-   *  Default: smooth-scroll to 1px past the shell's minimize threshold, so
-   *  the natural scroll handler docks the title bar on its own.
+   *  Default: 1px past the shell's minimize threshold, so the natural scroll
+   *  handler docks the title bar on its own.
    *
-   *  scrollToBottom: jump to the foot of the newly-rendered section. The
-   *  setTimeout matters &mdash; rAF can fire before Angular has rendered the
-   *  new body, leaving scrollHeight at the OUTGOING section's value. Same
-   *  150ms wait as The Desk, for the same reason. */
+   *  scrollToBottom (Previous only): the foot of the newly-rendered section.
+   *  The setTimeout matters — rAF can fire before Angular has rendered the new
+   *  body, leaving scrollHeight at the OUTGOING section's value. */
   private scrollAfterSelect(scrollToBottom = false): void {
     this.syncUrl();
     if (typeof window === 'undefined') return;
