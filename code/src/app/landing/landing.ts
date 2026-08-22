@@ -744,9 +744,13 @@ The monitor should show a typing session now. Hot reload picks it up.
       polygon: '0,21.5 65.8,0 100,64.4 21.0,100',
     },
     {
+      // key stays 'web-apps' even though the route moved to /code: it's the
+      // `spot` value on every historical hotspot_click event in App Insights
+      // and the data-spot hook for four landing.scss rules. Renaming it would
+      // split the analytics series for a cosmetic gain.
       key: 'web-apps',
       label: 'Code',
-      route: '/web-apps',
+      route: '/code',
       polygon: '0,0.3 100,0 100,98.7 1.0,100',
     },
     {
@@ -776,7 +780,8 @@ The monitor should show a typing session now. Hot reload picks it up.
     {
       key: 'blog',
       label: 'Thoughts',
-      route: '/blog',
+      // key stays 'blog' for analytics continuity — see the 'web-apps' note above.
+      route: '/thoughts',
       polygon: '0,0 66.4,2.6 100,94.3 24.8,100',
     },
     {

@@ -116,7 +116,7 @@ DATA_LAG_DAYS = 3
 # Routes to check in `inspect` mode — mirror app.routes.ts (drop the ''
 # wildcard 404). '' is the homepage. Keep in sync if routes change.
 ROUTES = [
-    "", "resume", "novels", "web-apps", "mobile-apps", "blog",
+    "", "resume", "novels", "code", "mobile-apps", "thoughts",
     "music", "contact", "certs", "photos", "rocket", "the-desk",
 ]
 

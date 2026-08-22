@@ -1,9 +1,15 @@
-import { AfterViewInit, Component, computed, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SectionShell } from '../section-shell/section-shell';
+import { AGENT_ANATOMY_INTRO, AGENT_ANATOMY_TABS } from './agent-anatomy.content';
 
 interface Topic {
   slug: string;
   label: string;
+  /** Full title rendered above the body. Falls back to `label` — used when the
+   *  pill needs to stay short but the heading wants the whole name. */
+  title?: string;
   /** Short blurb below the topic title (one or two sentences). */
   intro?: string;
   /** Pre-rendered HTML body for the topic (used when the topic has no sub-tabs). */
@@ -11,6 +17,10 @@ interface Topic {
   /** Current-project (work-in-progress) pill: dark walnut fill + a
    *  "Current Project:" prefix, matching the Mobile Apps section. */
   wip?: boolean;
+  /** Kept in the source but not rendered — no pill, unreachable. Used to
+   *  retire a topic whose content has gone stale without deleting the write-up,
+   *  so it can come back by dropping this flag. */
+  hidden?: boolean;
 }
 
 /** A sub-tab inside a topic that's deep enough to split into its own
@@ -37,6 +47,13 @@ export class WebApps implements AfterViewInit {
 
   readonly topics: readonly Topic[] = [
     {
+      slug: 'agent-anatomy',
+      label: 'Agent Anatomy',
+      title: 'Anatomy of an AI Agent',
+      intro: AGENT_ANATOMY_INTRO,
+      // bodyHtml omitted — this topic renders the Agent Anatomy sub-tabs instead.
+    },
+    {
       slug: 'nine',
       label: 'NINE',
       intro:
@@ -53,19 +70,23 @@ export class WebApps implements AfterViewInit {
     {
       slug: 'angular-packages',
       label: 'Angular Packages',
+      hidden: true, // retired 2026-08-22 — package list is out of date
       intro:
         'A small Angular component library published on npm — drop-in pieces I built for grids, forms, layout, and other UI primitives I use across my own apps.',
       bodyHtml: this.angularPackagesHtml(),
     },
     {
       slug: 'rocket',
-      label: 'Rocket',
-      wip: true,
+      label: 'Rocket Game',
       intro:
         'A vertical arcade shooter built in Flutter with <em>no</em> game engine — the entire simulation runs on a single <code>Ticker</code>. Below is how the game loop, rendering, controls, and cross-platform web port are put together. The web port is playable right here on the site at <a href="/rocket">/rocket</a>.',
       bodyHtml: this.rocketHtml(),
     },
   ];
+
+  /** The topics that actually get a pill. Hidden ones stay in `topics` so
+   *  their content (and the method that builds it) is still referenced. */
+  readonly visibleTopics: readonly Topic[] = this.topics.filter(t => !t.hidden);
 
   /** Sub-tabs shown only when the EPIC Pipeline topic is selected. */
   readonly epicTabs: readonly SubTab[] = [
@@ -86,9 +107,14 @@ export class WebApps implements AfterViewInit {
     { slug: 'nine-runtime',   label: 'Architecture',        bodyHtml: this.nineRuntimeHtml() },
   ];
 
+  /** Sub-tabs shown only when the Agent Anatomy topic is selected. Bodies live
+   *  in agent-anatomy.content.ts — see the note at the top of that file. */
+  readonly agentTabs: readonly SubTab[] = AGENT_ANATOMY_TABS;
+
   selectedSlug = signal<string>(this.topics[0].slug);
   selectedEpicSlug = signal<string>(this.epicTabs[0].slug);
   selectedNineSlug = signal<string>(this.nineTabs[0].slug);
+  selectedAgentSlug = signal<string>(this.agentTabs[0].slug);
 
   selectedTopic = computed<Topic>(
     () => this.topics.find(t => t.slug === this.selectedSlug()) ?? this.topics[0],
@@ -100,6 +126,110 @@ export class WebApps implements AfterViewInit {
 
   selectedNineTab = computed<SubTab>(
     () => this.nineTabs.find(t => t.slug === this.selectedNineSlug()) ?? this.nineTabs[0],
+  );
+
+  selectedAgentTab = computed<SubTab>(
+    () => this.agentTabs.find(t => t.slug === this.selectedAgentSlug()) ?? this.agentTabs[0],
+  );
+
+  /* ---------- prev/next across the sub-tabs of a topic ----------
+   * Mirrors the chapter nav on The Desk: a reader who finishes a section
+   * gets a way forward without going back up to the tab strip. Only the
+   * sub-tabs move; the top-level pills stay a deliberate choice.
+   *
+   * Three topics own their own selection signal, but only one renders at a
+   * time, so these resolve "whichever group is live" and the template binds
+   * a single nav. */
+  private activeSubTabs = computed<readonly SubTab[] | null>(() => {
+    switch (this.selectedSlug()) {
+      case 'agent-anatomy': return this.agentTabs;
+      case 'nine':          return this.nineTabs;
+      case 'epic-pipeline': return this.epicTabs;
+      default:              return null; // single-body topic — no nav
+    }
+  });
+
+  /** Slug of the live sub-tab, whichever group is showing. */
+  private activeSubSlug = computed<string | null>(() => {
+    switch (this.selectedSlug()) {
+      case 'agent-anatomy': return this.selectedAgentSlug();
+      case 'nine':          return this.selectedNineSlug();
+      case 'epic-pipeline': return this.selectedEpicSlug();
+      default:              return null;
+    }
+  });
+
+  private activeSubIndex = computed<number>(() => {
+    const tabs = this.activeSubTabs();
+    const slug = this.activeSubSlug();
+    return tabs && slug ? tabs.findIndex(t => t.slug === slug) : -1;
+  });
+
+  prevSubTab = computed<SubTab | null>(() => {
+    const tabs = this.activeSubTabs();
+    const i = this.activeSubIndex();
+    return tabs && i > 0 ? tabs[i - 1] : null;
+  });
+
+  nextSubTab = computed<SubTab | null>(() => {
+    const tabs = this.activeSubTabs();
+    const i = this.activeSubIndex();
+    return tabs && i >= 0 && i < tabs.length - 1 ? tabs[i + 1] : null;
+  });
+
+  private sanitizer = inject(DomSanitizer);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  /* ---------- deep links ----------
+   * /code?topic=<slug>&section=<sub-tab slug>. Selection is in-page state, so
+   * without this a link can only ever point at the default tab — which makes
+   * the long-form pieces unshareable past their first section.
+   *
+   * Read once from the snapshot in the constructor rather than subscribing:
+   * every later change to these params is one this component made itself. */
+  constructor() {
+    const params = this.route.snapshot.queryParamMap;
+
+    // Validate against visibleTopics, not topics — a hidden topic shouldn't be
+    // reachable by guessing its slug.
+    const topic = params.get('topic');
+    if (topic && this.visibleTopics.some(t => t.slug === topic)) {
+      this.selectedSlug.set(topic);
+    }
+
+    const section = params.get('section');
+    if (section && this.activeSubTabs()?.some(t => t.slug === section)) {
+      switch (this.selectedSlug()) {
+        case 'agent-anatomy': this.selectedAgentSlug.set(section); break;
+        case 'nine':          this.selectedNineSlug.set(section); break;
+        case 'epic-pipeline': this.selectedEpicSlug.set(section); break;
+      }
+    }
+  }
+
+  /** Reflect the current topic + sub-tab into the query string so what you're
+   *  reading is what you can copy out of the address bar. `replaceUrl` keeps
+   *  tab switches out of session history — Back should leave the page, not
+   *  rewind through every tab the reader touched. */
+  private syncUrl(): void {
+    const topic = this.selectedSlug();
+    const section = this.activeSubSlug();
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: section ? { topic, section } : { topic },
+      replaceUrl: true,
+    });
+  }
+
+  /** Agent Anatomy bodies carry inline `<svg>` diagrams, and Angular's HTML
+   *  sanitizer has no SVG elements in its allowlist — bound through plain
+   *  [innerHTML] the diagrams get stripped and their labels spill out as loose
+   *  text. The markup is hardcoded first-party content in
+   *  agent-anatomy.content.ts (no user input, no interpolation), so it's
+   *  trusted explicitly. The other topics stay on the sanitized path. */
+  selectedAgentBody = computed<SafeHtml>(() =>
+    this.sanitizer.bypassSecurityTrustHtml(this.selectedAgentTab().bodyHtml),
   );
 
   ngAfterViewInit(): void {
@@ -119,8 +249,7 @@ export class WebApps implements AfterViewInit {
    *  and minimizes the title on its own. */
   select(slug: string): void {
     this.selectedSlug.set(slug);
-    if (typeof window === 'undefined') return;
-    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    this.scrollAfterSelect();
   }
 
   /** Sub-tab click inside the EPIC Pipeline topic. Same scroll-to-dock
@@ -128,16 +257,58 @@ export class WebApps implements AfterViewInit {
    *  title bar instead of stranding the reader mid-prose. */
   selectEpic(slug: string): void {
     this.selectedEpicSlug.set(slug);
-    if (typeof window === 'undefined') return;
-    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    this.scrollAfterSelect();
   }
 
   /** Sub-tab click inside the NINE topic. Same scroll-to-dock behavior as
    *  the EPIC sub-tabs. */
   selectNine(slug: string): void {
     this.selectedNineSlug.set(slug);
+    this.scrollAfterSelect();
+  }
+
+  /** Sub-tab click inside the Agent Anatomy topic. Same scroll-to-dock
+   *  behavior as the EPIC and NINE sub-tabs. */
+  selectAgent(slug: string): void {
+    this.selectedAgentSlug.set(slug);
+    this.scrollAfterSelect();
+  }
+
+  /** Prev/next click from the nav at the foot of a sub-tab body. Routes to
+   *  whichever sub-tab group the current topic owns.
+   *
+   *  `scrollToBottom` (Previous only) lands the reader at the foot of the
+   *  section they just stepped back into &mdash; where the Next button that
+   *  brought them forward was &mdash; instead of at its top. */
+  selectSubTab(slug: string, scrollToBottom = false): void {
+    switch (this.selectedSlug()) {
+      case 'agent-anatomy': this.selectedAgentSlug.set(slug); break;
+      case 'nine':          this.selectedNineSlug.set(slug); break;
+      case 'epic-pipeline': this.selectedEpicSlug.set(slug); break;
+      default: return;
+    }
+    this.scrollAfterSelect(scrollToBottom);
+  }
+
+  /** Shared scroll behavior for every tab switch on this page.
+   *
+   *  Default: smooth-scroll to 1px past the shell's minimize threshold, so
+   *  the natural scroll handler docks the title bar on its own.
+   *
+   *  scrollToBottom: jump to the foot of the newly-rendered section. The
+   *  setTimeout matters &mdash; rAF can fire before Angular has rendered the
+   *  new body, leaving scrollHeight at the OUTGOING section's value. Same
+   *  150ms wait as The Desk, for the same reason. */
+  private scrollAfterSelect(scrollToBottom = false): void {
+    this.syncUrl();
     if (typeof window === 'undefined') return;
-    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    if (scrollToBottom) {
+      setTimeout(() => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      }, 150);
+    } else {
+      window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    }
   }
 
   /* ---------- EPIC — ADO Pipeline ---------- */
@@ -242,6 +413,7 @@ export class WebApps implements AfterViewInit {
           <tr><td><code>dotnet_<wbr>framework</code></td><td>MSBuild</td><td><code>.build/</code></td></tr>
           <tr><td><code>go</code></td><td><code>go build</code></td><td>Static linux/amd64 binary (CGO disabled) → <code>.build/</code></td></tr>
           <tr><td><code>java</code></td><td>Maven or Gradle</td><td>JAR → <code>.build/</code></td></tr>
+          <tr><td><code>node</code></td><td>npm</td><td>Runnable app in <code>.build/</code>, or an Azure Functions v4 package when <code>buildType: function</code></td></tr>
           <tr><td><code>php</code></td><td>Composer</td><td><code>.build/</code></td></tr>
           <tr><td><code>python</code></td><td>pip / setuptools</td><td>Syntax check, wheel, egg, or sdist</td></tr>
           <tr><td><code>ami</code></td><td>EC2 Image Builder</td><td>AMI IDs → SSM → <code>.build/ami-manifest.json</code></td></tr>
@@ -321,6 +493,7 @@ export class WebApps implements AfterViewInit {
         <tbody>
           <tr><td>Any (<code>php</code>, <code>dotnet</code>, <code>python</code>, <code>java</code>, <code>node</code>)</td><td>App Service</td><td><code>az webapp deploy --type zip</code></td></tr>
           <tr><td><code>html</code>, <code>angular</code>, <code>react</code></td><td>Static site</td><td>Upload to a Storage Account static-web endpoint</td></tr>
+          <tr><td><code>node</code> with <code>buildType: function</code></td><td>Function App</td><td><code>az functionapp deployment source config-zip</code> — runtime-agnostic, since the runtime is set on the Function App itself rather than at deploy time</td></tr>
         </tbody>
       </table>
 
@@ -340,6 +513,7 @@ export class WebApps implements AfterViewInit {
         <li><strong><code>app</code></strong> — application identity, build configuration, and tooling. Read by the orchestrator and passed as engine template parameters.</li>
         <li><strong><code>cloud</code></strong> — cloud deployment targets and resource configuration. Read at runtime by the infra and deploy stages.</li>
       </ul>
+      <p>Within <code>app</code>, <code>appType</code> selects the builder and <code>buildType</code> selects its <em>packaging mode</em> when one builder can emit more than one shape. The <code>node</code> builder is the case that motivated it: the default (<code>app</code>) lays out a runnable Node app for an App Service zip-deploy, while <code>buildType: function</code> emits an Azure Functions v4 package and routes the deploy stage to the Function App target instead. Adding a packaging mode is a build-template change, not a new <code>appType</code>.</p>
 
       <h3>Example: AWS Angular App (S3 + CloudFront)</h3>
       <pre><code>{
@@ -429,7 +603,7 @@ export class WebApps implements AfterViewInit {
           <tr><td>Reactivity</td><td>Angular Signals + computed; RxJS for HTTP</td></tr>
           <tr><td>Auth</td><td>Entra ID single sign-on via MSAL (OAuth2 / OIDC)</td></tr>
           <tr><td>Styling</td><td>SCSS, component-scoped view encapsulation</td></tr>
-          <tr><td>Tests</td><td>Unit tests run in CI through the EPIC pipeline</td></tr>
+          <tr><td>Tests</td><td>Karma + Jasmine, headless Chrome in CI; LCOV coverage feeds the pipeline's SonarQube scan</td></tr>
         </tbody>
       </table>
 
@@ -449,6 +623,7 @@ export class WebApps implements AfterViewInit {
         <li><strong>Run orchestration</strong> — trigger a new run with per-stage toggles (build, unit tests, scan, infra deploy, app deploy, integration tests), monitor it live, or cancel an in-flight run.</li>
         <li><strong>Run history &amp; logs</strong> — paginated run history with expandable stage detail down to individual job and step logs, with copy-to-clipboard.</li>
         <li><strong>Compliance reports</strong> — a run's compliance gate surfaces inline as a pass / partial / fail / N/A summary table, expands into a native in-app report view of every finding with its control ID and evidence, and offers the full Markdown report as a download. Findings are available even when the gate <em>fails</em> — which is exactly when a developer needs to read them.</li>
+        <li><strong>Contract-less runs</strong> — when a repo or branch has no <code>epic.json</code> yet, the run modal locks every stage except <em>Review</em>. The compliance gate can therefore be run against a repository before it is onboarded at all, which is the point at which its findings are most useful.</li>
         <li><strong>Onboarding</strong> — register an existing GitHub repo into EPIC, or add an already-onboarded app to a personal tracking list.</li>
         <li><strong>epic.json builder</strong> — a short wizard that emits a ready-to-paste pipeline config for any supported app type and cloud.</li>
         <li><strong>New-app wizard</strong> — a multi-step flow that picks a cloud, app type, and architecture (frontend / backend / database / queue / storage), then generates a starter <code>epic.json</code> plus a project steering document.</li>
@@ -475,9 +650,8 @@ export class WebApps implements AfterViewInit {
   "app": {
     "appName": "epic-web",
     "appType": "angular",
-    "runtimeVersion": "20",
     "scanTool": "sonarqube",
-    "buildTestTool": "jest"
+    "buildTestTool": "karma"
   },
   "cloud": {
     "awsAccountId": "999999999999",
@@ -573,6 +747,8 @@ Integrations (GitHub API, Azure DevOps API, cloud)</code></pre>
       <ul>
         <li><strong>Caching</strong> — immutable pipeline-timeline data is cached with a long TTL; run counts with a short TTL — keeping the API off the external services' rate limits.</li>
         <li><strong>Graceful degradation</strong> — when GitHub or Azure DevOps is unavailable, the API serves the last-known data from its own database instead of failing the request.</li>
+        <li><strong>Retry, deliberately without a circuit breaker</strong> — transient <code>429</code> / <code>408</code> / <code>5xx</code> responses from GitHub and Azure DevOps are retried with exponential backoff that honors <code>Retry-After</code>. A breaker was left out on purpose: tripping one would fail requests outright, which is exactly what the serve-stale behavior above exists to avoid. Both clients are typed <code>HttpClient</code>s with a 60-second timeout.</li>
+        <li><strong>SSRF defense on the GitHub client</strong> — repo, branch, and path segments arrive from user input and are percent-encoded before they reach a URL, so a crafted repo name can't reshape the request.</li>
         <li><strong>Idempotent migrations</strong> — EF Core migrations run at startup and are safe to apply from multiple instances.</li>
       </ul>
 
@@ -583,7 +759,7 @@ Integrations (GitHub API, Azure DevOps API, cloud)</code></pre>
         <li><strong>Deny-by-default authorization</strong> — a fallback policy requires an authenticated user for every endpoint, so a new controller is protected the moment it exists rather than the moment someone remembers to annotate it.</li>
         <li><strong><code>ClaimsCurrentUser</code></strong> — resolves the caller's identity from validated token claims. Because it implements the same <code>ICurrentUser</code> interface, <em>no controller or service changed</em> when the trust model was replaced. That's the payoff of the original seam.</li>
         <li><strong><code>DevCurrentUser</code></strong> — a local-development implementation registered in its place, so <code>dotnet run</code> works without a tenant round-trip.</li>
-        <li><strong>Audit log</strong> — an <code>IAuditLog</code> abstraction records who triggered or cancelled which run, which is the part auditors actually ask for.</li>
+        <li><strong>Audit log</strong> — an <code>IAuditLog</code> abstraction emits a six-field structured record on every state-changing action (event, actor, resource, outcome, source IP, UTC timestamp): onboarding, adding or removing an app, triggering or cancelling a run. The fields are chosen to satisfy specific NIST 800-53 access-control and audit-record controls, which is the form auditors actually ask for rather than a free-text log line.</li>
       </ul>
 
       <h2>Testing</h2>
@@ -656,7 +832,7 @@ public async Task Get_WithHealthyDb_Returns200()
         </tbody>
       </table>
 
-      <p>The library has grown to <strong>42 modules — 27 AWS and 15 Azure</strong>.</p>
+      <p>The library has grown to <strong>44 modules — 27 AWS and 17 Azure</strong>.</p>
 
       <h2>AWS Modules (27)</h2>
       <p><strong>Compute</strong> — Lambda, EC2, Elastic Beanstalk.<br>
@@ -700,7 +876,7 @@ public async Task Get_WithHealthyDb_Returns200()
         </tbody>
       </table>
 
-      <h2>Azure Modules (15)</h2>
+      <h2>Azure Modules (17)</h2>
       <table>
         <thead><tr><th>Module</th><th>Provisions</th></tr></thead>
         <tbody>
@@ -717,6 +893,8 @@ public async Task Get_WithHealthyDb_Returns200()
           <tr><td><code>azure-sql</code></td><td>SQL Server + databases with Entra admin + firewall rules</td></tr>
           <tr><td><code>azure-storage</code></td><td>Storage Account + containers, versioning, soft delete</td></tr>
           <tr><td><code>azure-log-analytics</code></td><td>Log Analytics workspace</td></tr>
+          <tr><td><code>azure-application-<wbr>insights</code></td><td>Workspace-based Application Insights component; emits both the instrumentation key and the connection string as sensitive outputs</td></tr>
+          <tr><td><code>azure-service-bus</code></td><td>Service Bus namespace + queues with dead-lettering, delivery count, lock duration, and TTL &mdash; the settings a retry-with-DLQ worker needs</td></tr>
           <tr><td><code>azure-communication-<wbr>service</code></td><td>Communication Services + Email Communication Service + sender domain</td></tr>
           <tr><td><code>azure-tags</code></td><td>Standard governance tag map (foundational)</td></tr>
         </tbody>
@@ -769,6 +947,20 @@ public async Task Get_WithHealthyDb_Returns200()
         <li><strong>Rollout is a variable change</strong> — bumping the pinned version in the pipeline's variable group is the entire deployment. No YAML edit, no agent maintenance.</li>
       </ul>
 
+      <h2>Two Channels: Pinned in CI, Rolling on the Laptop</h2>
+      <p>The same tool ships through two deliberately different distribution channels, and conflating them would break one of the two things each is for.</p>
+      <table>
+        <thead><tr><th>&nbsp;</th><th>Pipeline</th><th>Local shift-left</th></tr></thead>
+        <tbody>
+          <tr><td>Binary</td><td><code>linux/amd64</code> only</td><td>macOS (Apple Silicon + Intel), Linux, Windows</td></tr>
+          <tr><td>Published to</td><td>KMS-encrypted artifact bucket</td><td>A rolling release, assets overwritten in place</td></tr>
+          <tr><td>Versioned</td><td>Yes — pinned by variable</td><td>No — always latest</td></tr>
+          <tr><td>Optimizes for</td><td>Reproducible, auditable verdicts</td><td>Newest checks, zero setup friction</td></tr>
+        </tbody>
+      </table>
+      <p>CI is pinned because a verdict has to be reproducible: re-running an old build should re-run the tool that graded it. Local is deliberately the opposite — a developer running the gate against a working tree wants today's checks, and pinning them to whatever CI is on would mean shipping a new instruction every time the catalog changed. A one-line shell function wraps the download and invocation, so running the gate before pushing costs a single command.</p>
+      <p>The one honest asymmetry: <strong>local runs are deterministic-only.</strong> The interpretive pass (below) needs gateway credentials that don't belong on a laptop, so a local run is slightly noisier than CI. A local FAIL is a strong signal; a local PARTIAL may still be reclassified once CI grades it. Catching a hard failure before it reaches the pipeline is worth that much imprecision.</p>
+
       <h2>Profile First, Then Grade</h2>
       <p>This is the part that makes the tool usable rather than noisy. Before a single control rule runs, the engine <strong>profiles the repository</strong>: what the app <em>is</em> (client-side SPA, server API, infrastructure-as-code, library), what it <em>has</em> (server-side request handling, an audit sink, IaC), and what it <em>does for authentication</em> (delegated SSO vs. a local login vs. none).</p>
       <p>That classification lets the engine <strong>disposition each control to the architectural layer that actually enforces it</strong>. A client-side SPA that delegates login to an identity provider cannot own account lockout, a system-use banner, concurrent-session caps, or server-side authorization and audit-of-record — those live in the IdP, the backend API, or the hosting platform. Without this step, the reviewer grades every repo against the full framework and floods developers with false FAILs for controls their code structurally cannot satisfy. A tool that cries wolf gets ignored, and an ignored gate is worse than no gate.</p>
@@ -778,7 +970,7 @@ public async Task Get_WithHealthyDb_Returns200()
       <p>Controls split cleanly into two kinds, and the engine treats them differently:</p>
       <ul>
         <li><strong>Mechanical controls</strong> — "is TLS enforced," "is encryption at rest configured" — are matched deterministically against indexed file contents, with concrete evidence locations attached to the finding.</li>
-        <li><strong>Interpretive controls</strong> — the ones that need judgment about what the code <em>means</em> — are routed to a frontier LLM through an internal Portkey gateway, with retry on transient gateway errors and request pacing to stay under rate limits.</li>
+        <li><strong>Interpretive controls</strong> — the ones that need judgment about what the code <em>means</em> — are routed to a frontier LLM through an internal AI gateway, with retry on transient gateway errors and request pacing to stay under rate limits.</li>
       </ul>
       <p>The LLM path <strong>fails safe, not open</strong>: a gateway error falls back to deterministic per-control evaluation rather than skipping the control or passing it by default.</p>
 

@@ -1,7 +1,7 @@
 <app-section-shell
   eyebrow="From the keyboard"
   title="Code"
-  lede="Pick a project below — each one expands with details, repo / package links, and the design thinking behind it."
+  lede="Concepts, architecture, and design decisions — how these systems are put together, why they're built that way, and the code that came out of it. Pick a topic below; each one opens into its own set of deep dives."
 >
   <img
     slot="icon"
@@ -13,7 +13,7 @@
 
   <!-- Topic selector -->
   <div class="topic-tabs" role="tablist" aria-label="Code topics">
-    @for (topic of topics; track topic.slug) {
+    @for (topic of visibleTopics; track topic.slug) {
       <button
         type="button"
         class="topic-tab"
@@ -28,7 +28,7 @@
 
   <!-- Selected topic content -->
   <article class="topic" [attr.data-topic]="selectedSlug()">
-    <h2 class="topic-title">{{ selectedTopic().label }}</h2>
+    <h2 class="topic-title">{{ selectedTopic().title ?? selectedTopic().label }}</h2>
     @if (selectedTopic().intro) {
       <p class="topic-intro" [innerHTML]="selectedTopic().intro"></p>
     }
@@ -63,8 +63,54 @@
         }
       </div>
       <div class="topic-body" [innerHTML]="selectedNineTab().bodyHtml"></div>
+    } @else if (selectedSlug() === 'agent-anatomy') {
+      <!-- Agent Anatomy sub-tabs (story / the seven layers / putting it together) -->
+      <div class="epic-subtabs" role="tablist" aria-label="Agent anatomy topics">
+        @for (tab of agentTabs; track tab.slug) {
+          <button
+            type="button"
+            class="epic-subtab"
+            role="tab"
+            [class.is-active]="selectedAgentSlug() === tab.slug"
+            [attr.aria-selected]="selectedAgentSlug() === tab.slug"
+            (click)="selectAgent(tab.slug)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+      <div class="topic-body" [innerHTML]="selectedAgentBody()"></div>
     } @else {
       <div class="topic-body" [innerHTML]="selectedTopic().bodyHtml"></div>
+    }
+
+    <!-- Prev/next across the sub-tabs of a story. Rendered once for whichever
+         sub-tab group is live; topics with a single body get nothing. -->
+    @if (prevSubTab() || nextSubTab()) {
+      <nav class="subtab-nav" aria-label="Section navigation">
+        @if (prevSubTab(); as prev) {
+          <button
+            type="button"
+            class="subtab-nav-btn subtab-nav-prev"
+            (click)="selectSubTab(prev.slug, true)"
+          >
+            <span class="subtab-nav-direction">← Previous</span>
+            <span class="subtab-nav-label">{{ prev.label }}</span>
+          </button>
+        } @else {
+          <span class="subtab-nav-spacer" aria-hidden="true"></span>
+        }
+        @if (nextSubTab(); as next) {
+          <button
+            type="button"
+            class="subtab-nav-btn subtab-nav-next"
+            (click)="selectSubTab(next.slug)"
+          >
+            <span class="subtab-nav-direction">Next →</span>
+            <span class="subtab-nav-label">{{ next.label }}</span>
+          </button>
+        } @else {
+          <span class="subtab-nav-spacer" aria-hidden="true"></span>
+        }
+      </nav>
     }
   </article>
 </app-section-shell>

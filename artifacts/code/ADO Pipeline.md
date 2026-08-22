@@ -1,4 +1,4 @@
-NOTES: the following needs to talk about the ADO Pipeline in generic terms. do NOT mention EPIC or PG&E
+NOTES: the following needs to talk about the ADO Pipeline in generic terms. do NOT name the client organization
 
 ---
 
@@ -206,7 +206,7 @@ EPIC expects a standard Terraform layout:
 
 | Setting | Value |
 |---------|-------|
-| Backend | S3 (`pge-epic-terraform-state`) |
+| Backend | S3 (`epic-terraform-state`) |
 | Encryption | KMS |
 | Locking | DynamoDB |
 | State key | `{awsAccountId}/{appName}-{appType}/{environment}/terraform.tfstate` |
@@ -224,7 +224,7 @@ EPIC expects a standard Terraform layout:
 
 **AWS:**
 1. EPIC base AWS credentials are loaded from the ADO service connection
-2. EPIC assumes `arn:aws:iam::{awsAccountId}:role/pge-epic-deployment-role` via STS
+2. EPIC assumes `arn:aws:iam::{awsAccountId}:role/epic-deployment-role` via STS
 3. Temporary credentials are injected into the Terraform environment
 
 **Azure:**
@@ -398,7 +398,7 @@ This file has two sections:
   "cloud": {
     "awsAccountId": "999999999999",
     "awsRegion": "us-west-2",
-    "s3": "pge-epic-my-app-web-dev",
+    "s3": "my-app-web-dev",
     "cloudfront": "X9X9X9XX99XX9X"
   }
 }

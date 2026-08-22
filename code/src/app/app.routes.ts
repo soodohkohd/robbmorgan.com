@@ -25,11 +25,16 @@ export const routes: Routes = [
     data: { description: 'Novels by Robb Morgan. Long-form fiction written between deploys.' },
   },
   {
-    path: 'web-apps',
+    path: 'code',
     loadComponent: () => import('./sections/web-apps/web-apps').then(m => m.WebApps),
     title: 'Code — Robb Morgan',
-    data: { description: 'EPIC (Enterprise Pipeline for Infrastructure and Cloud) and other engineering work — the kind of platform tooling that turns shipping software into a habit, not an event.' },
+    data: { description: 'Concepts, architecture, and design decisions behind the systems I build — the anatomy of an AI agent, a fully local AI, enterprise CI/CD, and a game engine.' },
   },
+  // Legacy path. /web-apps was the indexed URL until Aug 2026 and is still in
+  // Google's index, in the App Insights history, and in anything anyone linked.
+  // Kept as a redirect rather than deleted so those don't 404. The component
+  // directory keeps its old name; only the public URL moved.
+  { path: 'web-apps', redirectTo: 'code', pathMatch: 'full' },
   {
     path: 'mobile-apps',
     loadComponent: () => import('./sections/mobile-apps/mobile-apps').then(m => m.MobileApps),
@@ -37,11 +42,14 @@ export const routes: Routes = [
     data: { description: 'Mobile apps built by Robb Morgan, including Rocket: Asteroid Hunter and other side-project games and utilities.' },
   },
   {
-    path: 'blog',
+    path: 'thoughts',
     loadComponent: () => import('./sections/blog/blog').then(m => m.Blog),
     title: 'Thoughts — Robb Morgan',
     data: { description: 'Field notes from three decades in technology. The IC ladder, AI-DLC, pipelines as products, consultants vs. in-house, hiring algorithms — written for engineers and the people who hire them.' },
   },
+  // Legacy path, same reasoning as /web-apps above: /blog was the indexed URL
+  // until Aug 2026. The hotspot always said "Thoughts"; now the URL does too.
+  { path: 'blog', redirectTo: 'thoughts', pathMatch: 'full' },
   {
     path: 'music',
     loadComponent: () => import('./sections/music/music').then(m => m.Music),

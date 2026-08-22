@@ -269,6 +269,11 @@
   }
 }
 
+/* ---------- Agent Anatomy (.agent-doc) ---------- */
+/* Offloaded to styles.scss — see the "CODE PAGE — Agent Anatomy" section
+   there. Kept out of this file to stay under the per-component style
+   budget; the selectors are all scoped under .agent-doc. */
+
 /* ---------- Angular Packages list (rendered via [innerHTML]) ---------- */
 /* Same ::ng-deep escape hatch as the prose styles above. */
 
