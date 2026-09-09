@@ -29,7 +29,7 @@ interface AgentTab {
 
 /** Blurb under the topic title, adapted from the document's masthead lede. */
 export const AGENT_ANATOMY_INTRO =
-  'Platform, model, tool, agent, skill, MCP, interface. Seven words that get used interchangeably in meetings and mean seven different things. This is a crash course I wrote to fix that, for the technical and business people who end up in those meetings together &mdash; one story that holds all seven, a field guide for the conversation itself, then a tab per layer. Start with <em>The Story</em>; the rest is reference you can dip into. Story &asymp; 3 minutes, whole thing &asymp; 35.';
+  'Platform, model, tool, agent, skill, MCP, interface. Seven words that get used interchangeably in meetings and mean seven different things. This is a crash course I wrote to fix that, for the technical and business people who end up in those meetings together &mdash; one story that holds all seven, a field guide for the conversation itself, then a tab per layer. There\'s also a tab on <em>Steering</em>, the frameworks-and-packs question, which turns out not to be a layer at all. Start with <em>The Story</em>; the rest is reference you can dip into. Story &asymp; 3 minutes, whole thing &asymp; 40.';
 
 export const AGENT_ANATOMY_TABS: readonly AgentTab[] = [
   { slug: 'agent-story',     label: 'The Story',       bodyHtml: storyHtml() },
@@ -39,6 +39,7 @@ export const AGENT_ANATOMY_TABS: readonly AgentTab[] = [
   { slug: 'agent-tool',      label: 'Tool',            bodyHtml: toolHtml() },
   { slug: 'agent-harness',   label: 'Agent & Harness', bodyHtml: harnessHtml() },
   { slug: 'agent-skill',     label: 'Skill',           bodyHtml: skillHtml() },
+  { slug: 'agent-steering',  label: 'Steering',        bodyHtml: steeringHtml() },
   { slug: 'agent-mcp',       label: 'MCP',             bodyHtml: mcpHtml() },
   { slug: 'agent-interface', label: 'Interface',       bodyHtml: interfaceHtml() },
   { slug: 'agent-together',  label: 'All Seven Layers', bodyHtml: togetherHtml() },
@@ -195,9 +196,11 @@ function storyHtml(): string {
         </dl>
       </div>
 
+      <p><strong>One thing is deliberately missing from that list.</strong> Everything people call a <em>framework</em>, a <em>steering pack</em>, or a <em>house-rules file</em> &mdash; Kiro, Superpowers, BMAD, <code>AGENTS.md</code>, the <code>CLAUDE.md</code> in your repo &mdash; has no layer of its own, because it never lands anywhere new. It resolves into text in the prompt, or into configuration the harness reads. That's a real answer rather than a dodge, and it has a consequence worth carrying: <strong>steering persuades, it never enforces.</strong> There's a <em>Steering</em> tab for the whole taxonomy, including a survey of what's out there and where each one stops.</p>
+
       <figure class="agent-fig">
         <div class="fig-frame">
-          <svg viewBox="0 0 860 452" role="img" aria-label="Layered topology: the interface hands a task to the agent harness; skills feed text into the prompt and MCP servers feed tool definitions into the tool registry; the harness sends one HTTPS request per turn to the platform, which contains the model and the governance controls." xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 860 452" role="img" aria-label="Layered topology: the interface hands a task to the agent harness; steering files and skills feed text into the prompt and MCP servers feed tool definitions into the tool registry; the harness sends one HTTPS request per turn to the platform, which hosts the model and the governance controls. Steering is drawn with a dashed border because it is not a layer of its own. A note records that the provider trains the model while the platform serves it, and that these are often different companies." xmlns="http://www.w3.org/2000/svg">
             <defs>
               <marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
                 <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
@@ -224,18 +227,24 @@ function storyHtml(): string {
               <text x="594" y="202" font-size="10" opacity="0.68">message history</text>
               <text x="594" y="218" font-size="10" opacity="0.68">permissions · stop rule</text>
 
-              <rect x="20" y="120" width="248" height="56" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <text x="38" y="144" font-size="12.5" font-weight="600">SKILL</text>
-              <text x="38" y="163" font-size="10" opacity="0.68">markdown on disk</text>
-              <line x1="268" y1="148" x2="296" y2="148" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
+              <rect x="20" y="100" width="248" height="52" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3"/>
+              <text x="38" y="122" font-size="12.5" font-weight="600">STEERING</text>
+              <text x="38" y="140" font-size="10" opacity="0.68">AGENTS.md · house rules · packs</text>
+              <line x1="268" y1="126" x2="296" y2="126" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
 
-              <rect x="20" y="196" width="248" height="56" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <text x="38" y="220" font-size="12.5" font-weight="600">MCP SERVER</text>
-              <text x="38" y="239" font-size="10" opacity="0.68">process or endpoint</text>
-              <line x1="268" y1="224" x2="296" y2="224" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
+              <rect x="20" y="162" width="248" height="52" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="38" y="184" font-size="12.5" font-weight="600">SKILL</text>
+              <text x="38" y="202" font-size="10" opacity="0.68">markdown on disk</text>
+              <line x1="268" y1="188" x2="296" y2="188" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
 
-              <text x="144" y="286" font-size="10" text-anchor="middle" opacity="0.62">skills → text into the prompt</text>
-              <text x="144" y="304" font-size="10" text-anchor="middle" opacity="0.62">MCP → definitions into the registry</text>
+              <rect x="20" y="224" width="248" height="52" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <text x="38" y="246" font-size="12.5" font-weight="600">MCP SERVER</text>
+              <text x="38" y="264" font-size="10" opacity="0.68">process or endpoint</text>
+              <line x1="268" y1="250" x2="296" y2="250" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
+
+              <text x="144" y="300" font-size="10" text-anchor="middle" opacity="0.62">steering + skills → text into the prompt</text>
+              <text x="144" y="318" font-size="10" text-anchor="middle" opacity="0.62">MCP → definitions into the registry</text>
+              <text x="144" y="336" font-size="9.5" text-anchor="middle" opacity="0.52">dashed = not a layer of its own</text>
 
               <line x1="570" y1="266" x2="570" y2="300" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar1)"/>
               <text x="582" y="290" font-size="10.5" opacity="0.7">one HTTPS request per turn</text>
@@ -248,10 +257,11 @@ function storyHtml(): string {
               <rect x="576" y="344" width="246" height="66" fill="none" stroke="currentColor" stroke-width="1.5"/>
               <text x="594" y="370" font-size="12.5" font-weight="600">GOVERNANCE</text>
               <text x="594" y="390" font-size="10" opacity="0.68">keys · quotas · logs · region</text>
+              <text x="320" y="423" font-size="9.5" opacity="0.6">the provider trains the model · the platform serves it · often different companies</text>
             </g>
           </svg>
         </div>
-        <figcaption>Only the accented box does any thinking; everything else exists to feed it, constrain it, or act on what it says. Note where the two extension mechanisms land: skills enter as <em>text in the prompt</em>, MCP enters as <em>definitions in the tool registry</em>. That difference is the single most useful distinction in this whole piece.</figcaption>
+        <figcaption>Only the accented box does any thinking; everything else exists to feed it, constrain it, or act on what it says. Note where the three extension mechanisms land: steering and skills enter as <em>text in the prompt</em>, MCP enters as <em>definitions in the tool registry</em>. That difference is the single most useful distinction in this whole piece. Steering is drawn dashed because it isn't a layer &mdash; it's a name for material that resolves into the prompt or into harness configuration, which is why it has a tab but no number.</figcaption>
       </figure>
 
       <div class="sub">
@@ -287,6 +297,10 @@ function meetingHtml(): string {
             <tr><td>"We need a multi-agent system"</td><td>Usually one agent with more tools, or a plain workflow. Genuine multi-agent earns its keep on context isolation and parallelism &mdash; not on org-chart resemblance</td><td><strong class="accent">Yes</strong></td></tr>
             <tr><td>"Let's train it on our data"</td><td>Almost always: retrieve our data and put it in the prompt. Almost never: fine-tuning. See the <em>Model</em> tab</td><td><strong class="accent">Yes</strong></td></tr>
             <tr><td>"That only costs a few credits"</td><td>Unknown until someone converts it. A credit is a vendor-set rate, not a unit of work &mdash; and it can be repriced</td><td><strong class="accent">Yes</strong></td></tr>
+            <tr><td>"We're standardizing on <em>&lt;name&gt;</em>"</td><td>One of five things: a code framework, an IDE, a plugin, a file format, or a way of working. See <em>Steering</em></td><td><strong class="accent">Yes</strong></td></tr>
+            <tr><td>"Just add it to the CLAUDE.md"</td><td>Put it in every prompt, on every turn, forever. Often right &mdash; and it's the most expensive place in the system to put anything</td><td><strong class="accent">Yes</strong></td></tr>
+            <tr><td>"The steering doc says it has to do X"</td><td>The steering doc <em>asks</em>. If X must happen, X belongs in harness code</td><td><strong class="accent">Yes</strong></td></tr>
+            <tr><td>"Anthropic's CLI" / "the OpenAI agent"</td><td>Three layers at once &mdash; provider, harness, interface &mdash; and the harness needn't come from whoever trained the model</td><td>Rarely, but it hides a choice</td></tr>
           </tbody>
         </table>
       </div>
@@ -299,6 +313,7 @@ function meetingHtml(): string {
         <li><strong>Debugging.</strong> "The agent did the wrong thing." Split it: did it <em>choose</em> wrong or <em>execute</em> wrong? Choosing wrong is the model, the prompt, a tool description, or a skill. Executing wrong is dispatch, permissions, or the tool's own code. Different fixes, often different people.</li>
         <li><strong>Scoping.</strong> "We want an agent that files tickets and emails customers." Don't correct it &mdash; translate it on the spot: two tools (<code>create_ticket</code>, <code>send_email</code>), their input schemas, and the question nobody thinks to ask &mdash; which of them may run without a human saying yes?</li>
         <li><strong>Build vs. buy.</strong> "Should we build an agent?" You are rarely building the arrangement from scratch. You're choosing a harness &mdash; Claude Code, the Agent SDK, Managed Agents, or your own loop &mdash; and then designing the tools, skills, and gates around it.</li>
+        <li><strong>Adoption.</strong> "We should standardize on <em>&lt;name&gt;</em>." Before anyone estimates it, ask what adopting it actually involves: writing code against an API, installing an application, dropping files in a folder, or changing how the team works. Those are four different projects that arrive wearing the same word, and only the last one needs anybody's permission.</li>
       </ul>
 
       <p>And you don't need the vocabulary to get the precision. Rather than "well, actually, that's the harness," ask the question that forces the distinction on its own:</p>
@@ -383,6 +398,9 @@ function meetingHtml(): string {
             <tr><td>Has the right tool, uses it wrong</td><td>Skill</td><td>Missing procedure. A documentation problem, not a model problem.</td></tr>
             <tr><td>Can't see a tool you know exists</td><td>MCP</td><td>Server not registered, crashed on startup, or auth expired.</td></tr>
             <tr><td>Ignores a skill you wrote</td><td>Skill</td><td>The <code>description</code> doesn't name the words a user would actually say.</td></tr>
+            <tr><td>Follows the house rules <em>most</em> of the time</td><td>Steering</td><td>Working as designed. Steering is advice. If the rule must hold every time, move it into harness code.</td></tr>
+            <tr><td>Rules worked, then stopped after the file grew</td><td>Steering</td><td>Always-on bloat. Everything in an instructions file competes with everything else in it; trim, or move procedures into skills.</td></tr>
+            <tr><td>Every run got slower and pricier after an install</td><td>Steering</td><td>A pack's always-on tokens are now on every turn. Check what it added at rest.</td></tr>
             <tr><td>Four minutes of blank screen</td><td>Interface</td><td>Not streaming. Users assume a hang and kill it.</td></tr>
             <tr><td>It did something destructive</td><td>Interface</td><td>No approval gate on a write tool. The seam between the model asking and the harness executing was left open.</td></tr>
             <tr><td>No way to stop a runaway</td><td>Interface</td><td>No interrupt path wired from the surface into the loop.</td></tr>
@@ -419,6 +437,23 @@ function platformHtml(): string {
       <h2>The Vendor Boundary</h2>
       <p>The platform is the <em>vendor boundary</em>. You don't download a frontier model and run it &mdash; you send an HTTPS request to a platform, and it returns a response. Everything about that transaction that isn't "what did the model say" is the platform's job.</p>
       <p>The same model is often available on several platforms, with different pricing, different feature availability, and different compliance postures. That's the practical reason the distinction matters: <strong>choosing a platform is a procurement and compliance decision; choosing a model is an engineering decision.</strong> They are made by different people for different reasons.</p>
+
+      <div class="sub">
+        <div class="subhead">Provider, platform, model &mdash; three things, not one</div>
+        <p>Almost everyone's first mental model is that the model is simply <em>part of</em> the company that made it. Close enough for conversation, wrong in the way that matters for a contract.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Word</th><th>What it names</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Provider</strong></td><td>The company that trains and owns the model. You may have no commercial relationship with them at all.</td><td>Anthropic</td></tr>
+              <tr><td><strong>Platform</strong></td><td>The service that serves the model over an API. Your bill, your keys, your region, your terms.</td><td>The Claude Developer Platform &mdash; or Bedrock, or Vertex, or Foundry</td></tr>
+              <tr><td><strong>Model</strong></td><td>The trained artifact itself. The same one, wherever it's served.</td><td>Claude Opus 5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The reason to keep them apart: <strong>the provider and the platform are frequently different companies.</strong> Running Claude on Bedrock means Anthropic trained the model and AWS bills you for it, holds your keys, sets your rate limits, and signs your data terms. Ask "who's our AI vendor?" and there are two defensible answers.</p>
+        <p>This also quietly settles a question that comes up in every build-vs-buy conversation: <strong>the provider does not have to supply your agent.</strong> Anthropic ships harnesses; so do a hundred companies that train no models at all. Model choice and harness choice are independent decisions, made against different criteria &mdash; see <em>Agent &amp; Harness</em>.</p>
+      </div>
 
       <h2>Examples</h2>
       <div class="scroll">
@@ -506,14 +541,14 @@ function modelHtml(): string {
         <table>
           <thead><tr><th>Model</th><th>Context</th><th>In $/MTok</th><th>Out $/MTok</th><th>Typical use</th></tr></thead>
           <tbody>
-            <tr><td>Claude Fable 5</td><td class="num-cell">1M</td><td class="num-cell">10.00</td><td class="num-cell">50.00</td><td>Hardest reasoning, long-horizon autonomous work</td></tr>
+            <tr><td>Claude Fable 5.1</td><td class="num-cell">1M</td><td class="num-cell">10.00</td><td class="num-cell">50.00</td><td>Hardest reasoning, long-horizon autonomous work</td></tr>
             <tr><td>Claude Opus 5</td><td class="num-cell">1M</td><td class="num-cell">5.00</td><td class="num-cell">25.00</td><td>Default for serious agentic and coding work</td></tr>
-            <tr><td>Claude Sonnet 5</td><td class="num-cell">1M</td><td class="num-cell">3.00</td><td class="num-cell">15.00</td><td>High volume where quality still matters</td></tr>
+            <tr><td>Claude Sonnet 5</td><td class="num-cell">1M</td><td class="num-cell">2.00</td><td class="num-cell">10.00</td><td>High volume where quality still matters</td></tr>
             <tr><td>Claude Haiku 4.5</td><td class="num-cell">200K</td><td class="num-cell">1.00</td><td class="num-cell">5.00</td><td>High-volume grunt work: classification, extraction, sub-agent workers</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="footnote">A frontier model priced 5&times; a small one is <em>not</em> 5&times; the cost of a system. Smarter models take fewer dead ends, so a task can finish in a third of the turns. Measure cost per completed task, never cost per token &mdash; there's a worked example on the <em>Agent &amp; Harness</em> tab. Model IDs, prices, and context windows current as of August 2026; verify against the platform's live model list before quoting them in a budget.</p>
+      <p class="footnote">A frontier model priced 5&times; a small one is <em>not</em> 5&times; the cost of a system. Smarter models take fewer dead ends, so a task can finish in a third of the turns. Measure cost per completed task, never cost per token &mdash; there's a worked example on the <em>Agent &amp; Harness</em> tab. Model IDs, prices, and context windows current as of September 2026; verify against the platform's live model list before quoting them in a budget.</p>
 
       <div class="sub">
         <div class="subhead">When the bill is in credits, not tokens</div>
@@ -1042,6 +1077,30 @@ client.messages.create(system=system_prompt, tools=tools, messages=history, ...)
         <p>One row deserves a caveat. <strong>Claude Code ships a terminal UI as well as a harness</strong> &mdash; two layers in one product. That's a packaging decision, not an argument that they're the same thing; the same harness also runs headless in CI with no interface at all. It is, however, a good part of the reason everyone conflates the two: for most people the first agent they ever touch arrives with its interface welded on. The harness underneath is a backend concern &mdash; filesystem, secrets, minutes of runtime &mdash; and the surface in front of it is a separate layer, which is why it gets its own tab.</p>
       </div>
 
+      <div class="sub">
+        <div class="subhead">"The CLI" is three layers in a trench coat</div>
+        <p>Following on from that caveat, because it's the single most common way this stack gets described wrong: <em>a model provider gives you a CLI, and the CLI is the agent.</em> Every clause in that sentence is doing something slightly dishonest.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>The assumption</th><th>What's actually true</th></tr></thead>
+            <tbody>
+              <tr><td>The CLI <em>is</em> the harness</td><td>The CLI is the <strong>interface</strong>. The harness is the loop underneath it, and it doesn't care that a terminal is attached &mdash; the same one runs headless in CI, in a container, or behind an HTTP endpoint.</td></tr>
+              <tr><td>A harness is a CLI</td><td>Some are. Others are libraries you call (<code>query(prompt, options)</code>), IDE extensions, Slack bots, cron jobs, or a hosted service. "CLI" describes the packaging of one popular kind.</td></tr>
+              <tr><td>The harness comes from the model's provider</td><td>Sometimes, and it's a reasonable default. But most harnesses in use are built by companies that train no models &mdash; and every one of them calls somebody else's model. <strong>Harness choice and model choice are separate decisions.</strong></td></tr>
+              <tr><td>Picking the CLI picks everything</td><td>It picks a harness, an interface, a default tool set, and a steering format all at once. That's convenient, and it's also four decisions taken in one click.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>One more distinction hiding inside the phrase "it comes with its own tooling," which is true but means two things. A harness ships <strong>machinery</strong> &mdash; the loop, dispatch, context management, permission gates &mdash; and it ships a <strong>default tool set</strong> &mdash; read a file, edit a file, run a command, search the web. Only the second are <em>tools</em> in this guide's sense. The first is the harness itself, and it's the part you're actually choosing between.</p>
+      </div>
+
+      <div class="sub">
+        <div class="subhead">Where "frameworks" and "steering packs" fit</div>
+        <p>The adjacent question, and the one that usually arrives about ninety seconds after "which harness?": what about LangGraph, Kiro, Superpowers, <code>hve-core</code>, the <code>CLAUDE.md</code> in every repo?</p>
+        <p>Short answer: <strong>some of those are harnesses and the rest aren't software at all.</strong> An agent <em>framework</em> is code you build a harness out of &mdash; it belongs in the table above. A <em>steering pack</em> is text and configuration layered onto a harness you already run, which means it resolves into prompt text and skills rather than into code. The two get the same word and behave nothing alike: one you write programs against, the other you drop into a folder.</p>
+        <p>It's enough of a mess to earn its own tab &mdash; see <em>Steering</em>, including the reason it isn't numbered as a layer.</p>
+      </div>
+
       <h2>Should You Build One at All?</h2>
       <p>Four gates. If any answer is no, drop back to a workflow or a single call.</p>
       <ul>
@@ -1151,10 +1210,253 @@ description: Write a postmortem in the company format. Use when the user
       <p><strong>Where skills run.</strong> The format is portable across surfaces &mdash; Claude Code reads them from <code>.claude/skills/</code> in a repo or <code>~/.claude/skills/</code> for personal ones; the Claude apps load uploaded skills; the API supports them in the code-execution container; Managed Agents attach them to an agent config. Same folder, different hosts.</p>
       <p><strong>Naming trap.</strong> "Agent Skills" and "Managed Agents" sound related and aren't. Skills are a <em>file format for instructions</em>. Managed Agents is a <em>hosted product for running agents</em>. You can use either without the other.</p>
 
+      <div class="sub">
+        <div class="subhead">The other kind of instruction file</div>
+        <p>A skill is the <em>on-demand</em> half of written instruction. There's an always-on half too, and most projects have one whether or not anyone planned it: <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>.kiro/steering/</code>, <code>copilot-instructions.md</code>. Same idea, opposite loading behavior &mdash; that text is in the prompt on every turn of every run, matched or not.</p>
+        <p>The dividing line is simple enough to apply without thinking about it: <strong>if it applies to every task, it's project instructions; if it applies to some tasks, it's a skill.</strong> Conventions, stack, tone, and the handful of hard don'ts go in the always-on file and stay short. Procedures go in skills, where you pay for them only when they're used.</p>
+        <p>This is also where every third-party pack you install ends up &mdash; packs are mostly skills plus always-on text plus harness configuration. The <em>Steering</em> tab covers the whole category, the current landscape, and what each of them can't do.</p>
+      </div>
+
       <div class="deps">
         <div><h4>Depends on</h4><p>A harness with a skill loader.</p></div>
         <div><h4>Composes with</h4><p>MCP &mdash; a skill routinely tells the agent which MCP tool to reach for.</p></div>
         <div><h4>Fails as</h4><p>Never triggering (bad description), or triggering constantly (too-broad description).</p></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- Steering (cross-cutting — no layer number) ---------- */
+function steeringHtml(): string {
+  return `
+    <div class="agent-doc">
+      <div class="layer-tag"><span class="layer-num">&#10041;</span><span class="layer-eyebrow">Cross-cutting &mdash; not a layer of its own</span></div>
+
+      <div class="plain">
+        <p><b>In plain terms</b>The house rules you hand an agent &mdash; <em>this is how we do things here</em> &mdash; and the ready-made packs of them people share, sell, and argue about.</p>
+        <p><b>In the room</b>The style guide taped to the wall, and the standing instruction you repeat every time you slide a note under the door.</p>
+        <p><b>Everyday parallel</b>An employee handbook. It shapes what people do. It has never once physically stopped anybody.</p>
+      </div>
+
+      <div class="define">
+        <p><span class="k">Definition.</span> Text or configuration layered onto an agent you already have, to shape how it works &mdash; without changing the model, the harness code, or the tools. Steering gets no layer number here because it never lands in a new place. It always resolves into one of two places already on the map: <span class="k">text in the prompt</span>, or <span class="k">configuration the harness reads</span>.</p>
+      </div>
+
+      <p>This tab exists because the vocabulary here is worse than anywhere else in the guide. One word &mdash; usually "framework" &mdash; gets used for five things that live in five different places, and the difference decides who does the work, what it costs, and whether it can be relied on.</p>
+
+      <h2>Five Things That All Get Called "A Framework"</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>What it's called</th><th>What it actually is</th><th>Where it lands</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Agent framework / SDK</strong></td>
+              <td>Code you build a harness out of &mdash; the loop, dispatch, state, retries. You write programs against its API.</td>
+              <td><strong class="accent">Harness</strong><br><span class="src">LangGraph, CrewAI, Claude Agent SDK</span></td>
+            </tr>
+            <tr>
+              <td><strong>Agentic IDE / coding agent</strong></td>
+              <td>A finished harness with an interface welded onto it. You install an application, not a library.</td>
+              <td><strong class="accent">Harness + Interface</strong><br><span class="src">Kiro, Cursor, Claude Code, Copilot CLI</span></td>
+            </tr>
+            <tr>
+              <td><strong>Plugin / pack</strong></td>
+              <td>Skills, slash commands, sub-agent definitions, and hooks bundled up to be installed into a harness you already run.</td>
+              <td><strong class="accent">Skill + harness config</strong><br><span class="src">microsoft/hve-core, Superpowers, Kiro Powers</span></td>
+            </tr>
+            <tr>
+              <td><strong>Project instructions / steering files</strong></td>
+              <td>Always-on text folded into the system prompt on every single turn.</td>
+              <td><strong class="accent">Prompt text</strong><br><span class="src">CLAUDE.md, AGENTS.md, .kiro/steering/, copilot-instructions.md</span></td>
+            </tr>
+            <tr>
+              <td><strong>Methodology</strong></td>
+              <td>A way of working &mdash; team shape, review discipline, what "done" means. No software at all.</td>
+              <td><strong class="accent">Nothing &mdash; it's a practice</strong><br><span class="src">Hypervelocity Engineering, spec-driven development</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Only the first two are software you run.</strong> The third and fourth are files that get read &mdash; by the harness at startup, and by the model in the prompt. The fifth is a set of habits that, if it's doing its job, eventually gets written down as the third and fourth. Calling all five "a framework" is how a room ends up believing it has adopted a system when what it has adopted is a folder of Markdown.</p>
+
+      <p class="pull"><em>The test: what do I actually do to adopt this?</em></p>
+
+      <p>Write code against an API &rarr; framework. Install an application &rarr; agentic IDE. Drop files into a folder &rarr; pack or project instructions. Change how the team works &rarr; methodology. Four different answers, four different budgets, four different people who have to agree.</p>
+
+      <div class="sub">
+        <div class="subhead">When the practice and the pack share a name</div>
+        <p>The confusion isn't hypothetical, and the two best-known examples both do it.</p>
+        <p><strong>Microsoft's Hypervelocity Engineering</strong> is rows five and three at once. HVE proper is an engineering operating model &mdash; small multidisciplinary teams, reusable primitives, AI folded through the whole delivery flow. <code>hve-core</code> is a concrete artifact: a Copilot plugin of agents, prompts, instructions, and skills. Someone saying "we're adopting HVE" could mean a reorganization or an afternoon's install, and those are not the same meeting.</p>
+        <p><strong>Kiro</strong> is rows two and four at once. It's AWS's agentic IDE &mdash; its own harness, its own interface, spec-first by design. It also popularized the word <em>steering</em> through <code>.kiro/steering/</code>, a convention any tool can copy without adopting Kiro at all. "We should use Kiro steering" might mean switching IDEs or might mean writing a conventions file this afternoon.</p>
+        <p>The move is the same one the rest of this guide keeps making: don't correct the name, ask what changes. <em>"When you say we're adopting that &mdash; am I installing something, writing files, or changing how the team works?"</em></p>
+      </div>
+
+      <h2>The Current Landscape</h2>
+      <p>What follows is the shortlist people actually argue about, grouped by the row of the table above that each one belongs to. The column that matters is the last one &mdash; <em>where it stops</em> &mdash; because every entry here is described by its makers in terms of what it does, and the interesting risk is always in what it leaves to you.</p>
+
+      <div class="sub">
+        <div class="subhead">Agent frameworks &mdash; code in the harness slot</div>
+        <p>You import these and write programs against them. They give you a loop; they do not give you infrastructure, and none of them decides anything at runtime that the model doesn't.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Framework</th><th>What it gives you</th><th>Where it stops</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>LangGraph</strong></td>
+                <td>Agents as nodes in an explicit directed graph &mdash; you declare where control flows, where errors route, where a human intervenes. Strongest persistence and checkpointing story of the group, plus time-travel debugging.</td>
+                <td>The learning curve is the price: graph concepts and state schemas up front. Choosing it is choosing to specify control flow rather than let the model own it &mdash; which is sometimes the opposite of what you wanted an agent for.</td>
+              </tr>
+              <tr>
+                <td><strong>CrewAI</strong></td>
+                <td>Role-based crews &mdash; the fastest path from idea to several agents talking. Largest community; broad protocol support.</td>
+                <td>Thinner on checkpointing and streaming, and the role paradigm struggles to express conditional branching and state rollback. Prototyping here and migrating to LangGraph on hitting that ceiling is a well-worn path.</td>
+              </tr>
+              <tr>
+                <td><strong>OpenAI Agents SDK</strong></td>
+                <td>The handoff as the core abstraction: agents pass control to each other explicitly, carrying context across. Zero to working agent in hours.</td>
+                <td>Built around one provider's models. That's fine until model flexibility becomes a requirement, which is the usual reason teams leave it.</td>
+              </tr>
+              <tr>
+                <td><strong>Google ADK</strong></td>
+                <td>Code-first, model-agnostic, graph-based execution, tight Vertex AI integration for teams already on GCP.</td>
+                <td>The youngest of the group, and it assumes Google Cloud fluency. Its graph engine arrived in 2026 &mdash; the same architectural move LangGraph made years earlier.</td>
+              </tr>
+              <tr>
+                <td><strong>Claude Agent SDK</strong></td>
+                <td>Claude Code's harness as a library &mdash; the loop, context management, permissions, sub-agents, and built-in file/shell/search tools, minus the terminal.</td>
+                <td>Harness only. You still host it, deploy it, and build the interface. Opinionated toward coding and filesystem work.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The honest summary of this row in 2026: they are all good enough to ship on, and the choice is less about quality than about whether the framework's execution model matches the shape of your work. Migration between them is real work but bounded &mdash; prompts and tools port directly, and it's the orchestration layer that gets rewritten.</p>
+      </div>
+
+      <div class="sub">
+        <div class="subhead">Packs, plugins, and methods &mdash; files for a harness you already run</div>
+        <p>These install into something. None of them is a harness; all of them are some mix of skills, commands, sub-agent definitions, hooks, and templates.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Pack</th><th>What it gives you</th><th>Where it stops</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Superpowers</strong><br><span class="src">Claude Code plugin</span></td>
+                <td>A composable skill library covering the development lifecycle &mdash; brainstorming, test-driven development, sub-agent-driven work, code review. Deliberately makes the agent slow down and ask before writing.</td>
+                <td>That deliberation is friction on small tasks, and the project has spent releases cutting its own overhead back down. Third-party and fast-moving; skill counts and commands shift between versions.</td>
+              </tr>
+              <tr>
+                <td><strong>microsoft/hve-core</strong><br><span class="src">Copilot plugin</span></td>
+                <td>Instructions, prompts, agents, and skills packaging Microsoft's Hypervelocity Engineering practice into a Copilot workflow &mdash; specialized agents for research, planning, implementation, review.</td>
+                <td>Microsoft's own docs describe it as a source of patterns to learn from rather than a stable platform or production dependency, and warn of backward-incompatible change. Take that at face value before wiring it into a delivery plan.</td>
+              </tr>
+              <tr>
+                <td><strong>BMAD-METHOD</strong><br><span class="src">installer + Markdown/YAML personas</span></td>
+                <td>Agile roles as agent personas &mdash; product owner, architect, developer, tester &mdash; with up-front planning that shards into self-contained story files. Its artifact trail (brief, PRD, architecture, stories, code) lands in Git and doubles as evidence.</td>
+                <td>The sharpest criticism, mostly from people who like it: the quality gate is agents reviewing agents, which is not verification so much as the same optimism twice. Also heavily prescriptive &mdash; excessive for small work &mdash; and a steep enough learning curve that adopting it is a project.</td>
+              </tr>
+              <tr>
+                <td><strong>GitHub Spec Kit</strong><br><span class="src">CLI + templates</span></td>
+                <td>Spec-driven development as scaffolding: a CLI that bootstraps <code>spec</code> &rarr; <code>plan</code> &rarr; <code>tasks</code> &rarr; code, plus a <code>constitution.md</code> of non-negotiable project principles. Works across a long list of coding agents.</td>
+                <td>It generates and organizes documents; it doesn't check that the code matches them. The discipline is yours to keep. Lighter to adopt than BMAD, and correspondingly less opinionated about how you work.</td>
+              </tr>
+              <tr>
+                <td><strong>Kiro Powers</strong><br><span class="src">bundled MCP servers</span></td>
+                <td>Pre-packaged MCP servers for AWS domains &mdash; CDK, CloudFormation, pricing &mdash; shipped with Kiro.</td>
+                <td>Strictly reach, not judgment. This is an <em>MCP</em> story wearing a pack's clothes, and it's the row here that isn't really steering at all &mdash; see the <em>MCP</em> tab.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>One piece of advice recurs across every honest write-up of this category and is worth more than any individual entry: <strong>pick one as your spine and stop.</strong> Stacking overlapping packs produces contradictory instructions and burns context on the argument.</p>
+      </div>
+
+      <div class="sub">
+        <div class="subhead">Instruction formats &mdash; text straight into the prompt</div>
+        <p>The lowest-ceremony option, and the one most teams should start with. No install, no dependency, no version to track.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Format</th><th>What it gives you</th><th>Where it stops</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>AGENTS.md</strong></td>
+                <td>The nearest thing to a cross-vendor standard. Released by OpenAI in 2025, now stewarded by the Linux Foundation's Agentic AI Foundation, and read natively by most major coding agents. Plain Markdown, no schema, nearest-file-wins in a monorepo.</td>
+                <td>Thin by design &mdash; the lack of schema is what keeps it neutral, and also means it can express nothing but prose. Tools differ in precedence and fallback behavior, so "supported" doesn't mean "identical."</td>
+              </tr>
+              <tr>
+                <td><strong>CLAUDE.md</strong>, <strong>copilot-instructions.md</strong>, <strong>.kiro/steering/</strong>, <strong>.cursorrules</strong></td>
+                <td>The same idea, per tool, usually predating the standard and often with extra features the standard won't take.</td>
+                <td>One file per tool is how you get four files that drift. The common pattern now is to write <code>AGENTS.md</code> as the source of truth and point the tool-specific files at it.</td>
+              </tr>
+              <tr>
+                <td><strong>SKILL.md</strong></td>
+                <td>Anthropic's format for on-demand procedural knowledge &mdash; frontmatter plus a body plus bundled files. Loaded on match, not always.</td>
+                <td>Not a competitor to the above; it solves the other half. Project instructions are always-on context, skills are on-demand capability. Most teams need both.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>There is real evidence on this row, which is rare enough here to be worth stating carefully. A 2026 study across 138 repositories found <strong>developer-written</strong> instruction files improved agent task success modestly and cut agent-introduced bugs substantially &mdash; while <strong>LLM-generated</strong> instruction files made success rates <em>worse</em> and added meaningfully to inference cost. Vendor-run evaluations report much larger effects in both directions, and should be read as vendor-run evaluations.</p>
+        <p>The practical reading is unglamorous and matches the always-on arithmetic below: <strong>write it yourself, keep it short, make every line specific.</strong> "Write clean code" changes nothing. "Run <code>npm test -- --run</code>, never <code>npm test</code>" changes behavior on the first turn. And asking the agent to generate its own instructions file is the one move the evidence actively argues against.</p>
+      </div>
+
+      <div class="sub">
+        <div class="subhead">Four limitations that apply to every row above</div>
+        <p>Whatever you adopt, these come with it. None is a defect in any particular product; they're properties of the mechanism.</p>
+        <ul>
+          <li><strong>None of it enforces anything.</strong> Frameworks give you somewhere to <em>put</em> enforcement; packs and instruction files cannot contain it at all. The guarantee lives in harness code or it doesn't exist.</li>
+          <li><strong>All of it costs context, most of it forever.</strong> A pack that adds a few thousand always-on tokens taxes every turn of every run from then on, and competes with your own instructions for the model's attention. Ask what the resting cost is before installing.</li>
+          <li><strong>Portability is partial and rarely stated.</strong> Skills and plain-Markdown instructions travel well. Commands, hooks, sub-agent definitions, and anything that touches harness configuration usually don't. A pack built for one harness makes switching harnesses a migration.</li>
+          <li><strong>Agents reviewing agents is not verification.</strong> Several of these ship a review or QA phase implemented as another model pass. That's genuinely useful for catching sloppiness and genuinely useless as a correctness guarantee &mdash; the reviewer shares the author's blind spots. Whatever you'd have required before &mdash; tests, a human, a staging environment &mdash; you still require.</li>
+        </ul>
+        <p class="footnote">Products in this section current as of September 2026, and this is the fastest-churning corner of the whole guide &mdash; versions, scope, and names change on a monthly cadence. Treat the categories as durable and the specific rows as a snapshot.</p>
+      </div>
+
+      <h2>Always-On or On-Demand</h2>
+      <p>Once you're writing steering text rather than buying it, there's exactly one structural decision, and it's the one people get wrong: <strong>does this sit in context all the time, or only when it's relevant?</strong> That's the split between project instructions and a skill, and it's a cost decision as much as an organizational one.</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>&nbsp;</th><th>Project instructions</th><th>Skill</th></tr></thead>
+          <tbody>
+            <tr><td>Where it lives</td><td><code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.kiro/steering/*.md</code></td><td>A folder with a <code>SKILL.md</code></td></tr>
+            <tr><td>In context</td><td><strong>Always</strong> &mdash; every turn of every run</td><td>The one-line description always; the body only on a match</td></tr>
+            <tr><td>What triggers it</td><td>Nothing. It's simply there.</td><td>The model matching the description against the task</td></tr>
+            <tr><td>What it costs</td><td>Every turn, forever, whether or not it applied</td><td>Only the runs that actually use it</td></tr>
+            <tr><td>Right for</td><td>Short and universal &mdash; the stack, naming, tone, the handful of hard don'ts</td><td>Long procedures needed some of the time</td></tr>
+            <tr><td>Fails as</td><td>Bloat. It grows until everything in it is diluted by everything else in it.</td><td>Never firing, because the description doesn't name the trigger</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The rule of thumb is unglamorous and holds up: <strong>if it applies to every task, it's project instructions; if it applies to some tasks, it's a skill.</strong> When an instructions file grows past a page or two, most of what's in it wants to be skills &mdash; and the tell is that the file has started containing procedures rather than conventions. See the <em>Skill</em> tab for the loading mechanism.</p>
+      <p>There's a second reason to care beyond cost. A long always-on file is <em>uniformly</em> present, which reads to the model as uniformly important. Twenty lines of sharp house rules land harder than four hundred lines that include them.</p>
+
+      <div class="sub">
+        <div class="subhead">Steering persuades. It never enforces.</div>
+        <p>This is the whole reason steering doesn't get a layer number, and it's the sentence to carry out of this tab.</p>
+        <p>Every one of these mechanisms &mdash; a pack, a steering file, a skill, a house-rules doc &mdash; ends up as <strong>text the model reads</strong>. Nothing in the loop branches on it. The model follows a steering rule for exactly the same reason it follows any other instruction: it's clear, it's relevant, and it's in context. It can also not.</p>
+        <p>So the division of labor is the same one the <em>Agent &amp; Harness</em> tab draws, and it's worth being blunt about: <strong>if a rule has a safety, spend, or compliance consequence, a steering document is the wrong place for it.</strong> "Never run migrations against production" in a steering file is a strong suggestion. The same rule as an approval gate in harness code is a guarantee. Teams routinely write the first and believe they've shipped the second &mdash; the same mistake as shipping an audit log and believing it's an approval gate.</p>
+        <p>None of which makes steering weak. Most of what you want from an agent genuinely is a matter of taste and convention, and taste doesn't belong in code. Just know which of the two you're writing.</p>
+      </div>
+
+      <div class="sub">
+        <div class="subhead">Before you adopt somebody else's pack</div>
+        <p>Packs are the fastest-moving corner of this whole space and mostly a good deal &mdash; someone else has already made the mistakes. Five questions worth asking anyway, because the costs are invisible in a README:</p>
+        <ul>
+          <li><strong>What does it put in context on every turn?</strong> This is the one nobody checks. A pack that adds four thousand tokens of always-on instructions is a standing charge on every run you make from then on, and it competes for attention with your own.</li>
+          <li><strong>Which harness does it assume?</strong> Skills are broadly portable; commands, hooks, and sub-agent definitions are usually not. A pack built for one harness is a partial migration if you switch.</li>
+          <li><strong>Does it enforce anything?</strong> No. It can't &mdash; see above. If the pitch implies guarantees, the guarantees are in your harness or they don't exist.</li>
+          <li><strong>Is it stable, and does it claim to be?</strong> Several of the best-known packs say plainly in their own docs that they're patterns to learn from rather than a foundation to depend on. Take them at their word before wiring one into a delivery plan.</li>
+          <li><strong>Who reviews changes to it?</strong> Updating a pack changes production behavior without touching a line of application code. Which is the same argument the <em>Agent &amp; Harness</em> tab makes about prompts and tool descriptions, now arriving from outside your repo.</li>
+        </ul>
+      </div>
+
+      <div class="deps">
+        <div><h4>Depends on</h4><p>A harness that reads it, and a prompt with room for it.</p></div>
+        <div><h4>Resolves into</h4><p>Prompt text, skills, or harness configuration. Never a new layer.</p></div>
+        <div><h4>Fails as</h4><p>Context bloat, rules quietly ignored, and guarantees that were only ever suggestions.</p></div>
       </div>
     </div>
   `;
@@ -1363,7 +1665,7 @@ function togetherHtml(): string {
           <thead><tr><th>#</th><th>Layer</th><th>What happens</th></tr></thead>
           <tbody>
             <tr><td class="step">00</td><td>Interface</td><td>The request is typed into a CLI, or posted from a web app, or fired by cron. The interface hands a string to the harness and starts rendering a stream.</td></tr>
-            <tr><td class="step">01</td><td>Harness</td><td>Assembly. Builds the system prompt (base + the one-line description of every installed skill), the tool array (yours + MCP-discovered + built-in), and the message history.</td></tr>
+            <tr><td class="step">01</td><td>Harness</td><td>Assembly. Builds the system prompt (base + your always-on project instructions + the one-line description of every installed skill), the tool array (yours + MCP-discovered + built-in), and the message history.</td></tr>
             <tr><td class="step">02</td><td>Platform</td><td>Authenticates the key, checks the rate limit, finds that 90% of the prompt prefix is cached, routes to the model in the required region.</td></tr>
             <tr><td class="step">03</td><td>Model</td><td>Reads it. Matches "postmortem" against the <code>incident-report</code> skill description. Emits a <code>tool_use</code> for the skill-loading tool.</td></tr>
             <tr><td class="step">04</td><td>Harness</td><td>Dispatch. Reads <code>SKILL.md</code> from disk, returns the body as a <code>tool_result</code>.</td></tr>
@@ -1390,6 +1692,12 @@ function togetherHtml(): string {
           <tbody>
             <tr><td>Agent vs. harness</td><td>The idea vs. the implementation. "Agent" names a behavior &mdash; the model picks the steps. The thing you deploy and page someone about is a harness.</td></tr>
             <tr><td>Harness vs. interface</td><td>Backend vs. frontend. The harness runs the loop and needs secrets and a filesystem. The interface renders and collects consent. Often different processes; sometimes different teams.</td></tr>
+            <tr><td>Provider vs. platform</td><td>Who trained the model vs. who serves and bills for it. Frequently different companies &mdash; Claude on Bedrock means Anthropic built it and AWS holds your keys, your limits, and your data terms.</td></tr>
+            <tr><td>CLI vs. harness</td><td>Packaging vs. layer. A CLI is an <em>interface</em> that happens to ship with a harness behind it. The same harness runs headless with no terminal anywhere, and plenty of harnesses were never CLIs.</td></tr>
+            <tr><td>Framework vs. harness</td><td>A framework is code you <em>build</em> a harness out of. It occupies the harness slot; it isn't a separate layer. If adopting it means writing programs against an API, it's a framework.</td></tr>
+            <tr><td>Framework vs. steering pack</td><td>Code vs. text. Both get called "framework." One you import and program against; the other you drop in a folder and the model reads. Only the first can enforce anything.</td></tr>
+            <tr><td>Pack vs. methodology</td><td>The files vs. the practice. They routinely share a name &mdash; HVE is an operating model <em>and</em> a plugin; Kiro is an IDE <em>and</em> a steering-file convention. "Adopting it" means something different for each.</td></tr>
+            <tr><td>Project instructions vs. skill</td><td>Always-on vs. on-demand. Instructions are in the prompt every turn whether they applied or not; a skill's body loads only when its description matches. Cost and attention both follow that split.</td></tr>
             <tr><td>Tool vs. function</td><td>A tool is the <em>declaration</em> of a capability &mdash; name, description, schema. A function is one possible <em>implementation</em> of it. Server-side and MCP tools have implementations you never write, which is the clearest proof the two aren't the same artifact.</td></tr>
             <tr><td>Loop vs. agent</td><td>A <code>for</code> loop calling a model 50 times is a batch job. It's an agent only when the model's output decides whether the loop continues and what happens next.</td></tr>
             <tr><td>Subtask vs. sub-agent</td><td>A subtask is a line on a checklist the agent works through <em>in its own loop</em>. A sub-agent gets its own transcript, model, and tools. The question that separates them: <strong>does it get its own context window?</strong></td></tr>
@@ -1424,6 +1732,8 @@ function togetherHtml(): string {
           <dt>Interface</dt><dd>Where a human sees what's happening and gets to say no.</dd>
         </dl>
       </div>
+
+      <p>And the eighth sentence, for the thing that isn't a layer: <strong>steering</strong> &mdash; every framework, pack, and house-rules file &mdash; ends up as text the model reads or configuration the harness reads, which is why it can shape an agent's taste but never guarantee its behavior.</p>
     </div>
   `;
 }

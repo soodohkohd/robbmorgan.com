@@ -1273,6 +1273,16 @@ button {
     color: var(--walnut-deep);
   }
 
+  /* ---------- example list under a table cell (Steering taxonomy) ---------- */
+  .src {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+
   /* ---------- small trailing note ---------- */
   .footnote {
     margin-top: -0.4rem;
