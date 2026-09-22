@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { SectionShell } from '../section-shell/section-shell';
 import { AGENT_ANATOMY_INTRO, AGENT_ANATOMY_TABS } from './agent-anatomy.content';
+import { LOOM_INTRO, LOOM_TABS } from './loom.content';
 
 interface Topic {
   slug: string;
@@ -48,6 +49,14 @@ export class WebApps implements AfterViewInit {
 
 
   readonly topics: readonly Topic[] = [
+    {
+      slug: 'loom',
+      label: 'Loom',
+      title: 'Loom: Defeating Model Staleness Without Retraining',
+      wip: true,
+      intro: LOOM_INTRO,
+      // bodyHtml omitted — this topic renders the Loom sub-tabs instead.
+    },
     {
       slug: 'agent-anatomy',
       label: 'Agent Anatomy',
@@ -113,10 +122,15 @@ export class WebApps implements AfterViewInit {
    *  in agent-anatomy.content.ts — see the note at the top of that file. */
   readonly agentTabs: readonly SubTab[] = AGENT_ANATOMY_TABS;
 
+  /** Sub-tabs shown only when the Loom topic is selected. Bodies live in
+   *  loom.content.ts, which mirrors the project's DESIGN.md + RESULTS.md. */
+  readonly loomTabs: readonly SubTab[] = LOOM_TABS;
+
   selectedSlug = signal<string>(this.topics[0].slug);
   selectedEpicSlug = signal<string>(this.epicTabs[0].slug);
   selectedNineSlug = signal<string>(this.nineTabs[0].slug);
   selectedAgentSlug = signal<string>(this.agentTabs[0].slug);
+  selectedLoomSlug = signal<string>(this.loomTabs[0].slug);
 
   selectedTopic = computed<Topic>(
     () => this.topics.find(t => t.slug === this.selectedSlug()) ?? this.topics[0],
@@ -134,16 +148,21 @@ export class WebApps implements AfterViewInit {
     () => this.agentTabs.find(t => t.slug === this.selectedAgentSlug()) ?? this.agentTabs[0],
   );
 
+  selectedLoomTab = computed<SubTab>(
+    () => this.loomTabs.find(t => t.slug === this.selectedLoomSlug()) ?? this.loomTabs[0],
+  );
+
   /* ---------- prev/next across the sub-tabs of a topic ----------
    * Mirrors the chapter nav on The Desk: a reader who finishes a section
    * gets a way forward without going back up to the tab strip. Only the
    * sub-tabs move; the top-level pills stay a deliberate choice.
    *
-   * Three topics own their own selection signal, but only one renders at a
+   * Four topics own their own selection signal, but only one renders at a
    * time, so these resolve "whichever group is live" and the template binds
    * a single nav. */
   private activeSubTabs = computed<readonly SubTab[] | null>(() => {
     switch (this.selectedSlug()) {
+      case 'loom':          return this.loomTabs;
       case 'agent-anatomy': return this.agentTabs;
       case 'nine':          return this.nineTabs;
       case 'epic-pipeline': return this.epicTabs;
@@ -154,6 +173,7 @@ export class WebApps implements AfterViewInit {
   /** Slug of the live sub-tab, whichever group is showing. */
   private activeSubSlug = computed<string | null>(() => {
     switch (this.selectedSlug()) {
+      case 'loom':          return this.selectedLoomSlug();
       case 'agent-anatomy': return this.selectedAgentSlug();
       case 'nine':          return this.selectedNineSlug();
       case 'epic-pipeline': return this.selectedEpicSlug();
@@ -203,6 +223,7 @@ export class WebApps implements AfterViewInit {
     const section = params.get('section');
     if (section && this.activeSubTabs()?.some(t => t.slug === section)) {
       switch (this.selectedSlug()) {
+        case 'loom':          this.selectedLoomSlug.set(section); break;
         case 'agent-anatomy': this.selectedAgentSlug.set(section); break;
         case 'nine':          this.selectedNineSlug.set(section); break;
         case 'epic-pipeline': this.selectedEpicSlug.set(section); break;
@@ -278,6 +299,12 @@ export class WebApps implements AfterViewInit {
     this.scrollAfterSelect();
   }
 
+  /** Sub-tab click inside the Loom topic. Same landing as the others. */
+  selectLoom(slug: string): void {
+    this.selectedLoomSlug.set(slug);
+    this.scrollAfterSelect();
+  }
+
   /** Prev/next click from the nav at the foot of a sub-tab body. Routes to
    *  whichever sub-tab group the current topic owns.
    *
@@ -286,6 +313,7 @@ export class WebApps implements AfterViewInit {
    *  brought them forward was &mdash; instead of at its top. */
   selectSubTab(slug: string, scrollToBottom = false): void {
     switch (this.selectedSlug()) {
+      case 'loom':          this.selectedLoomSlug.set(slug); break;
       case 'agent-anatomy': this.selectedAgentSlug.set(slug); break;
       case 'nine':          this.selectedNineSlug.set(slug); break;
       case 'epic-pipeline': this.selectedEpicSlug.set(slug); break;

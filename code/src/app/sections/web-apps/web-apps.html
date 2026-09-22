@@ -33,7 +33,22 @@
       <p class="topic-intro" [innerHTML]="selectedTopic().intro"></p>
     }
 
-    @if (selectedSlug() === 'epic-pipeline') {
+    @if (selectedSlug() === 'loom') {
+      <!-- Loom sub-tabs (question / probe / results / failure split / store / integrity / limits) -->
+      <div class="epic-subtabs" role="tablist" aria-label="Loom topics">
+        @for (tab of loomTabs; track tab.slug) {
+          <button
+            type="button"
+            class="epic-subtab"
+            role="tab"
+            [class.is-active]="selectedLoomSlug() === tab.slug"
+            [attr.aria-selected]="selectedLoomSlug() === tab.slug"
+            (click)="selectLoom(tab.slug)"
+          >{{ tab.label }}</button>
+        }
+      </div>
+      <div class="topic-body" [innerHTML]="selectedLoomTab().bodyHtml"></div>
+    } @else if (selectedSlug() === 'epic-pipeline') {
       <!-- EPIC component sub-tabs (pipeline / web / api / modules) -->
       <div class="epic-subtabs" role="tablist" aria-label="EPIC components">
         @for (tab of epicTabs; track tab.slug) {
