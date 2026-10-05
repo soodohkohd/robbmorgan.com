@@ -28,14 +28,63 @@
     <h2 class="post-title">{{ selectedPost().title }}</h2>
     <p class="post-date">{{ selectedPost().date }}</p>
 
-    <img
-      class="post-image"
-      [src]="selectedPost().image"
-      [alt]="selectedPost().imageAlt"
-      loading="lazy"
-      decoding="async"
-    />
+    @if (selectedPost().image) {
+      <img
+        class="post-image"
+        [src]="selectedPost().image"
+        [alt]="selectedPost().imageAlt"
+        loading="lazy"
+        decoding="async"
+      />
+    }
 
-    <div class="post-body" [innerHTML]="selectedPost().bodyHtml"></div>
+    @if (selectedPart(); as part) {
+      <!-- Multi-part essay: a part strip, one part at a time, prev/next at
+           the foot. Same pattern as the sub-tabs on the Code page. -->
+      <div class="part-tabs" role="tablist" aria-label="Essay sections">
+        @for (p of selectedPost().parts; track p.slug) {
+          <button
+            type="button"
+            class="part-tab"
+            role="tab"
+            [class.is-active]="part.slug === p.slug"
+            [attr.aria-selected]="part.slug === p.slug"
+            (click)="selectPart(p.slug)"
+          >{{ p.label }}</button>
+        }
+      </div>
+      <div class="post-body" [innerHTML]="part.bodyHtml"></div>
+
+      @if (prevPart() || nextPart()) {
+        <nav class="part-nav" aria-label="Section navigation">
+          @if (prevPart(); as prev) {
+            <button
+              type="button"
+              class="part-nav-btn part-nav-prev"
+              (click)="selectPart(prev.slug, true)"
+            >
+              <span class="part-nav-direction">← Previous</span>
+              <span class="part-nav-label">{{ prev.label }}</span>
+            </button>
+          } @else {
+            <span class="part-nav-spacer" aria-hidden="true"></span>
+          }
+          @if (nextPart(); as next) {
+            <button
+              type="button"
+              class="part-nav-btn part-nav-next"
+              (click)="selectPart(next.slug)"
+            >
+              <span class="part-nav-direction">Next →</span>
+              <span class="part-nav-label">{{ next.label }}</span>
+            </button>
+          } @else {
+            <span class="part-nav-spacer" aria-hidden="true"></span>
+          }
+        </nav>
+      }
+    } @else {
+      <div class="post-body" [innerHTML]="selectedPost().bodyHtml"></div>
+    }
   </article>
 </app-section-shell>

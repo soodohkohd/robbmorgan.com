@@ -1,6 +1,18 @@
 import { AfterViewInit, Component, computed, inject, signal } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { Analytics } from '../../analytics.service';
 import { SectionShell } from '../section-shell/section-shell';
+import { TENSION_PARTS } from './tension.content';
+
+/** One section of a long-form post that's split into parts. Mirrors the
+ *  SubTab shape on the Code page: a strip of pills across the top, one part
+ *  rendered at a time, prev/next at the foot for linear reading. */
+interface PostPart {
+  slug: string;
+  label: string;
+  bodyHtml: string;
+}
 
 interface Post {
   slug: string;
@@ -9,11 +21,16 @@ interface Post {
   title: string;
   /** Publication date in human-readable form (e.g. "May 1, 2026"). */
   date: string;
-  image: string;
-  imageAlt: string;
+  /** Hero image. Optional: the long-form essays don't carry one. */
+  image?: string;
+  imageAlt?: string;
   /** Pre-formatted HTML for the post body — paragraphs, lists, etc.
-   *  Rendered via [innerHTML] in the template. */
-  bodyHtml: string;
+   *  Rendered via [innerHTML] in the template. Omitted when the post
+   *  uses `parts` instead. */
+  bodyHtml?: string;
+  /** Set instead of `bodyHtml` for a multi-part essay. The body is then
+   *  one part at a time, with its own pill strip and prev/next nav. */
+  parts?: readonly PostPart[];
 }
 
 @Component({
@@ -29,6 +46,14 @@ export class Blog implements AfterViewInit {
    *  once stuck, so re-reading drifts the value upward on each call. */
   private headTop = 0;
   readonly posts: readonly Post[] = [
+    {
+      slug: 'tension',
+      label: 'Tension',
+      title: 'Tension.',
+      date: 'October 5, 2026',
+      // No hero image — this one is long-form and leads with the prose.
+      parts: TENSION_PARTS,
+    },
     {
       slug: 'loom',
       label: 'Loom',
@@ -390,6 +415,35 @@ export class Blog implements AfterViewInit {
     () => this.posts.find(p => p.slug === this.selectedSlug()) ?? this.posts[0],
   );
 
+  /* ---------- parts, for a post that's split into them ----------
+   * Only set for multi-part posts; `selectedPart` is null for every
+   * ordinary post, which is what the template branches on. */
+  selectedPartSlug = signal<string | null>(this.posts[0].parts?.[0].slug ?? null);
+
+  selectedPart = computed<PostPart | null>(() => {
+    const parts = this.selectedPost().parts;
+    if (!parts) return null;
+    return parts.find(p => p.slug === this.selectedPartSlug()) ?? parts[0];
+  });
+
+  private selectedPartIndex = computed<number>(() => {
+    const parts = this.selectedPost().parts;
+    const part = this.selectedPart();
+    return parts && part ? parts.findIndex(p => p.slug === part.slug) : -1;
+  });
+
+  prevPart = computed<PostPart | null>(() => {
+    const parts = this.selectedPost().parts;
+    const i = this.selectedPartIndex();
+    return parts && i > 0 ? parts[i - 1] : null;
+  });
+
+  nextPart = computed<PostPart | null>(() => {
+    const parts = this.selectedPost().parts;
+    const i = this.selectedPartIndex();
+    return parts && i >= 0 && i < parts.length - 1 ? parts[i + 1] : null;
+  });
+
   ngAfterViewInit(): void {
     if (typeof window === 'undefined') return;
     // Measured at mount, before any scroll restoration could glue the
@@ -402,6 +456,51 @@ export class Blog implements AfterViewInit {
   }
 
   private analytics = inject(Analytics);
+  private route = inject(ActivatedRoute);
+  private location = inject(Location);
+
+  /* ---------- deep links ----------
+   * /thoughts?post=<slug>&part=<part slug>. Selection is in-page state, so
+   * without this a link can only ever point at the newest post — and a
+   * seven-part essay is unshareable past part one.
+   *
+   * Read once from the snapshot rather than subscribing: every later change
+   * to these params is one this component made itself. Same pattern as
+   * /code — see the deep-links note in web-apps.ts. */
+  constructor() {
+    const params = this.route.snapshot.queryParamMap;
+
+    const post = params.get('post');
+    if (post && this.posts.some(p => p.slug === post)) {
+      this.selectedSlug.set(post);
+      this.selectedPartSlug.set(
+        this.posts.find(p => p.slug === post)?.parts?.[0].slug ?? null,
+      );
+    }
+
+    // Validated against the post that's now selected, so a part slug from
+    // another post (or a bare ?part= on a post with no parts) is ignored.
+    const part = params.get('part');
+    if (part && this.selectedPost().parts?.some(p => p.slug === part)) {
+      this.selectedPartSlug.set(part);
+    }
+  }
+
+  /** Reflect the current post + part into the query string so what you're
+   *  reading is what you can copy out of the address bar.
+   *
+   *  Deliberately `Location.replaceState` and NOT `router.navigate`. The
+   *  router is configured with `scrollPositionRestoration: 'enabled'`, so
+   *  every navigation — including a query-param-only one — scrolls to the top
+   *  when it completes, which would override the scroll on every pill click.
+   *  replaceState updates the URL without a navigation: no scroll
+   *  restoration and no extra history entry per tab change. */
+  private syncUrl(): void {
+    const params = new URLSearchParams({ post: this.selectedSlug() });
+    const part = this.selectedPartSlug();
+    if (part) params.set('part', part);
+    this.location.replaceState(this.location.path().split('?')[0], params.toString());
+  }
 
   /** Pill click: switch post, then smooth-scroll to 1px past the
    *  shell's minimize threshold. The SectionShell's onScroll handler
@@ -409,8 +508,44 @@ export class Blog implements AfterViewInit {
    *  and minimizes the title on its own. */
   select(slug: string): void {
     this.selectedSlug.set(slug);
+    // Reset to part one. Without this, coming back to a multi-part post
+    // strands the reader wherever they left off with no visible cue.
+    this.selectedPartSlug.set(
+      this.posts.find(p => p.slug === slug)?.parts?.[0].slug ?? null,
+    );
     this.analytics.track('blog_post_select', { slug });
+    this.scrollAfterSelect();
+  }
+
+  /** Part-pill click, and the prev/next pair at the foot of a part.
+   *
+   *  `scrollToBottom` (Previous only) lands the reader at the foot of the
+   *  part they just stepped back into — where the Next button that brought
+   *  them forward was — instead of at its top. */
+  selectPart(slug: string, scrollToBottom = false): void {
+    this.selectedPartSlug.set(slug);
+    this.analytics.track('blog_part_select', { post: this.selectedSlug(), part: slug });
+    this.scrollAfterSelect(scrollToBottom);
+  }
+
+  /** Shared scroll for every pill switch on this page — the same logic the
+   *  Code page and The Desk use.
+   *
+   *  Default: 1px past the shell's minimize threshold, so the natural scroll
+   *  handler docks the title bar on its own.
+   *
+   *  scrollToBottom (Previous only): the foot of the newly-rendered part. The
+   *  setTimeout matters — rAF can fire before Angular has rendered the new
+   *  body, leaving scrollHeight at the OUTGOING part's value. */
+  private scrollAfterSelect(scrollToBottom = false): void {
+    this.syncUrl();
     if (typeof window === 'undefined') return;
-    window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    if (scrollToBottom) {
+      setTimeout(() => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+      }, 150);
+    } else {
+      window.scrollTo({ top: this.headTop + 25, behavior: 'smooth' });
+    }
   }
 }

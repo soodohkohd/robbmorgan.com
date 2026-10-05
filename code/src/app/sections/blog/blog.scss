@@ -76,6 +76,114 @@
     0 10px 24px rgba(38, 24, 18, 0.14);
 }
 
+/* ---------- part strip, for a post split into parts ---------- */
+/* An underline tab strip rather than another row of brass pills: the row
+   above it already uses pills to pick the post, and two identical pill rows
+   read as one broken control. Same device the Code page uses for its
+   sub-tabs (.epic-subtabs in web-apps.scss). */
+
+.part-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0 0 2rem;
+  border-bottom: 1px solid rgba(58, 42, 31, 0.22);
+}
+
+.part-tab {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    color var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    color: var(--walnut-deep);
+    border-bottom-color: var(--brass-soft);
+    outline: none;
+  }
+
+  &.is-active {
+    color: var(--walnut-deep);
+    border-bottom-color: var(--brass);
+  }
+}
+
+/* ---------- prev/next at the foot of a part ---------- */
+/* Matches .subtab-nav on the Code page (styles.scss) so the long-form
+   readers feel like the same site. */
+
+.part-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(58, 42, 31, 0.22);
+}
+
+.part-nav-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1.1rem;
+  background: var(--parchment-card);
+  color: var(--walnut);
+  border: 1px solid rgba(58, 42, 31, 0.22);
+  border-radius: 8px;
+  cursor: pointer;
+  max-width: 16rem;
+  text-align: left;
+  transition:
+    background var(--dur-quick) var(--ease-soft),
+    border-color var(--dur-quick) var(--ease-soft);
+
+  &:hover, &:focus-visible {
+    background: #ecdcb6;
+    border-color: var(--brass);
+    outline: none;
+  }
+}
+
+.part-nav-next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.part-nav-direction {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.part-nav-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--walnut-deep);
+}
+
+.part-nav-spacer {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 599px) {
+  .part-nav { flex-direction: column; }
+  .part-nav-next { text-align: left; margin-left: 0; }
+}
+
 /* ---------- post body (innerHTML-rendered) ---------- */
 
 .post-body {
@@ -97,6 +205,22 @@
   strong {
     font-weight: 700;
     color: var(--walnut-deep);
+  }
+
+  /* Pull-quote — a brass rule on the left, no quotation marks. First used
+     for the 2006 op-ed excerpt in "Tension". */
+  blockquote {
+    margin: 0 0 1.1rem;
+    padding: 0.2rem 0 0.2rem 1.25rem;
+    border-left: 2px solid var(--brass);
+
+    p {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--walnut-deep);
+
+      &:last-child { margin-bottom: 0; }
+    }
   }
 
   ul {
