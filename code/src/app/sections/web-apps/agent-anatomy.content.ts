@@ -79,7 +79,7 @@ function storyHtml(): string {
 
         <p>So when someone asks <em>"which box is the agent?"</em>, the answer is the box drawn around all of them. Ask it of a diagram with no such box and you'll get a shrug &mdash; which is exactly why people quietly decide it must mean the harness. It doesn't.</p>
 
-        <p>Two more words come up in nearly every conversation about agents, and both fit in this same room. <strong>A CLI</strong> (Claude Code, Copilot CLI) is a ready-made version of <em>you</em>: a doorkeeper who already knows the routine, arriving with a starter list of things they'll do, a shelf for the binders, a way to reach the other departments, and a window for the client to watch through. Install it and the whole arrangement is running. The only things it doesn't bring are the consultant and the agency. That's why engineers say "the CLI" when they mean the entire agent.</p>
+        <p>Two more words come up in nearly every conversation about agents, and both fit in this same room. <strong>A CLI</strong> (Claude Code, Copilot CLI) is a ready-made version of <em>you</em>: a doorkeeper who already knows the routine, arriving with a starter list of things they'll do, a shelf for the binders, a way to reach the other departments, and a window for the client to watch through. Install it and the whole arrangement is running. The only things it doesn't bring are the consultant and the agency. That's why engineers say "the CLI", or "the harness", when they mean the entire agent.</p>
 
         <p><strong>A framework</strong>, in the sense you'll hear it most (HVE, Superpowers, GSD, Kiro's steering files), is a bigger, more opinionated set of binders. Someone has written down a whole way of working: playbooks, step-by-step routines, roles for helpers to play, house rules. You install the set into your ready-made doorkeeper, and it gets slid under the door when it applies. It can change how the consultant works a great deal. It can't make anyone obey it, because it's still only paper. Engineers sometimes mean something else by the word: a code library like LangGraph, which is the training kit for building your own doorkeeper from scratch. When someone says "framework", it's worth asking which one they mean.</p>
 
@@ -1786,8 +1786,8 @@ function slideHtml(): string {
       'Your company\'s playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so work is secure by design from the start.',
       'A binder of company procedures, handed in when relevant'],
     ['Agent', 'How work gets done',
-      'The whole arrangement running as a loop. The model picks the next step, the software carries it out or refuses, and the cycle repeats until the job is done.',
-      'You and the consultant, passing notes until the report is finished', true],
+      'The whole arrangement running as a loop. The model picks the next step, and the <strong>harness</strong>, the software running the loop, carries it out or refuses. The cycle repeats until the job is done.',
+      'You (the harness) and the consultant, passing notes until the report is finished', true],
     ['Tools', 'What it may ask for',
       'The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.',
       'Your list of things you are willing to do for them'],
@@ -1835,10 +1835,10 @@ function slideHtml(): string {
             <div class="as-parts" role="list">${rows}
               <div class="as-bracket as-fw" aria-hidden="true"><span>Framework</span></div>
               <div class="as-bracket as-plug" aria-hidden="true"><span>Plugin</span></div>
-              <div class="as-bracket as-cli" aria-hidden="true"><span>CLI</span></div>
+              <div class="as-bracket as-cli" aria-hidden="true"><span>CLI / Harness</span></div>
             </div>
             <div class="as-key">
-              <div class="as-key-item"><span class="as-key-term">CLI</span>A ready-made agent you install, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
+              <div class="as-key-item"><span class="as-key-term">CLI / Harness</span>A ready-made agent you install, such as Claude Code or Copilot CLI. Its engine, the harness, runs the Agent loop, so people use the two words interchangeably. It covers Interface down to Tools; you still choose the model and platform.</div>
               <div class="as-key-item"><span class="as-key-term">Plugin</span>An installable bundle for a CLI: skills, commands, MCP connections, and hooks (automatic checks that can block an action). It&rsquo;s how most frameworks are delivered.</div>
               <div class="as-key-item"><span class="as-key-term">Framework</span>A pack of playbooks and house rules, such as HVE, Superpowers, or GSD. It shapes how the agent works but can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph.</div>
             </div>
