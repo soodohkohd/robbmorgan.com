@@ -1490,9 +1490,32 @@ button {
 app-web-apps .topic-body:has(.as-stage) { max-width: none; }
 
 .as-intro {
-  max-width: 72ch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
   margin-bottom: 1.5rem;
   color: var(--ink-soft);
+
+  > span { flex: 1 1 32ch; max-width: 72ch; }
+}
+/* Opens public/agent-anatomy-slide.html, the standalone 16:9 version. */
+.as-popout {
+  flex: none;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--brass);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--walnut);
+  background: var(--parchment-soft);
+
+  &:hover,
+  &:focus-visible { background: var(--brass); color: var(--parchment); }
 }
 
 .as-stage { container-type: inline-size; }
@@ -1582,20 +1605,26 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
   color: var(--ink-soft);
   padding-bottom: 1cqw;
   border-bottom: 0.15cqw solid var(--ink);
+  margin-right: 6.2cqw; /* clear the two bracket columns in .as-parts */
 }
 .as-parts {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* rows | Framework bracket | CLI bracket. The brackets are explicitly
+     placed against the row tracks (CLI spans Interface..Tools, rows 1-5;
+     Framework sits on Skills, row 3), so they stretch with whatever height
+     the row text takes. Rows auto-place down column 1 in source order. */
+  grid-template-columns: 1fr 2.6cqw 2.6cqw;
+  column-gap: 0.5cqw;
 }
 .as-part {
-  flex: 1;
+  grid-column: 1;
   align-items: center;
   row-gap: 0.5cqw;
   padding: 1.5cqw 0;
   border-bottom: 0.1cqw solid rgba(26, 20, 16, 0.18);
 
-  &:last-child { border-bottom: none; }
+  &:has(+ .as-bracket) { border-bottom: none; }
 }
 .as-name {
   font-family: var(--serif);
@@ -1634,9 +1663,59 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
   outline: 0.2cqw dashed #8a5c22;
   outline-offset: -0.2cqw;
   padding-inline: 1.4cqw;
-  margin-inline: -1.4cqw;
+  margin-left: -1.4cqw;
 
   .as-name { color: #8a5c22; }
+}
+
+/* Square-bracket marks to the right of the rows: where "CLI" and
+   "framework" actually sit in the stack. Label runs vertically beside. */
+.as-bracket {
+  position: relative;
+  width: 1cqw;
+  margin-block: 1.2cqw;
+  border: 0.22cqw solid #8a5c22;
+  border-left: none;
+
+  span {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 0.5cqw);
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    font-family: var(--mono);
+    font-size: 1.05cqw;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #8a5c22;
+  }
+}
+.as-fw  { grid-column: 2; grid-row: 3; }
+.as-cli { grid-column: 3; grid-row: 1 / 6; }
+
+/* Key for the two brackets, under the rows. */
+.as-key {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4cqw;
+  margin-top: 1.4cqw;
+  padding-top: 1.4cqw;
+  border-top: 0.15cqw solid var(--ink);
+  font-size: 1.35cqw;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.as-key-term {
+  display: block;
+  margin-bottom: 0.3cqw;
+  font-family: var(--mono);
+  font-size: 1.1cqw;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a5c22;
 }
 .as-foot {
   margin-top: 1.6cqw;
@@ -1660,7 +1739,12 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
   .as-take b { font-size: 17px; }
   .as-stack { padding: 22px; }
   .as-head { display: none; }
+
   .as-part { grid-template-columns: 1fr; gap: 6px; padding: 14px 0; border-bottom-width: 1px; }
+  .as-parts { display: flex; flex-direction: column; }
+  .as-bracket { display: none; }
+  .as-key { grid-template-columns: 1fr; gap: 14px; margin-top: 8px; padding-top: 16px; border-top-width: 1px; font-size: 14px; }
+  .as-key-term { font-size: 11px; margin-bottom: 4px; }
   .as-agent { padding-inline: 12px; margin-inline: -12px; outline-width: 2px; outline-offset: -2px; }
   .as-name { font-size: 21px; }
   .as-q { font-size: 11px; margin-top: 4px; }

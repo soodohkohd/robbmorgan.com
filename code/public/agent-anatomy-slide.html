@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Anatomy of an AI Agent · The Meeting Slide</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<!--
+  Pop-out of the "The Meeting Slide" tab on /code?topic=agent-anatomy.
+  A standalone static page (not an Angular route) so it opens as a clean
+  16:9 frame to present, screenshot, or copy text from. The copy is kept
+  in sync by hand with slideHtml() in
+  src/app/sections/web-apps/agent-anatomy.content.ts.
+  Everything is sized in cqw against .stage, which is fitted to the
+  viewport at 16:9, so the slide scales as one picture.
+-->
+<style>
+:root {
+  --walnut-deep: #150c08;
+  --walnut: #2a1d14;
+  --parchment: #f8efd8;
+  --parchment-card: #ece1c4;
+  --ink: #1a1410;
+  --ink-soft: #5a4a3c;
+  --brass: #b08850;
+  --brass-deep: #8a5c22;
+  --brass-soft: #d4b387;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--walnut-deep); }
+body {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+
+.stage {
+  width: min(100%, calc((100dvh - 32px) * 16 / 9));
+  container-type: inline-size;
+}
+
+.slide {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  grid-template-columns: 28% 1fr;
+  background: var(--parchment);
+  box-shadow: 0 1.2cqw 4cqw rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+
+/* ---------- left panel ---------- */
+.lead {
+  background: var(--walnut);
+  color: var(--parchment);
+  padding: 3cqw 2.4cqw;
+  display: flex; flex-direction: column; gap: 1.9cqw;
+}
+.eyebrow {
+  font-family: var(--mono); font-size: .8cqw; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--brass-soft);
+}
+.title {
+  margin-top: .5cqw; font-family: var(--serif); font-weight: 600;
+  font-size: 3cqw; line-height: 1.04; letter-spacing: -.01em; text-wrap: balance;
+}
+.room {
+  font-family: var(--serif); font-style: italic;
+  font-size: 1.12cqw; line-height: 1.42; color: var(--brass-soft);
+  border-left: .2cqw solid var(--brass); padding-left: 1cqw;
+}
+.takeaways { display: flex; flex-direction: column; gap: 1cqw; margin-top: auto; }
+.take { font-size: 1cqw; line-height: 1.38; color: #e9dcc0; }
+.take b { display: block; font-family: var(--serif); font-size: 1.25cqw; color: var(--parchment); margin-bottom: .15cqw; }
+
+/* ---------- right: the stack ---------- */
+.stack { padding: 2.4cqw 2.6cqw 1.6cqw; display: flex; flex-direction: column; min-height: 0; }
+.head, .part {
+  display: grid; grid-template-columns: 11cqw 1fr 13cqw; gap: 1.4cqw;
+}
+.head {
+  font-family: var(--mono); font-size: .75cqw; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft); padding-bottom: .6cqw; border-bottom: .12cqw solid var(--ink);
+  margin-right: 5.8cqw; /* clear the two bracket columns */
+}
+/* rows | Framework bracket | CLI bracket; brackets placed against the row
+   tracks so they stretch with the rows they cover. */
+.parts {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr 2.4cqw 2.4cqw; column-gap: .5cqw;
+  grid-auto-rows: 1fr;
+}
+.part {
+  grid-column: 1; align-items: center;
+  padding: .35cqw 0;
+  border-bottom: .08cqw solid rgba(26,20,16,.18);
+}
+.part:has(+ .bracket) { border-bottom: none; }
+.name { font-family: var(--serif); font-weight: 600; font-size: 1.6cqw; line-height: 1.05; }
+.name small {
+  display: block; margin-top: .3cqw; font-family: var(--mono); font-weight: 400;
+  font-size: .72cqw; letter-spacing: .04em; color: var(--brass-deep);
+}
+.what { font-size: 1.02cqw; line-height: 1.34; }
+.story { font-family: var(--serif); font-style: italic; font-size: .96cqw; line-height: 1.28; color: var(--ink-soft); }
+
+.part.agent {
+  background: var(--parchment-card);
+  outline: .14cqw dashed var(--brass-deep); outline-offset: -.14cqw;
+  padding-inline: 1cqw; margin-left: -1cqw;
+}
+.part.agent .name { color: var(--brass-deep); }
+
+.bracket {
+  position: relative; width: .8cqw; margin-block: .9cqw;
+  border: .18cqw solid var(--brass-deep); border-left: none;
+}
+.bracket span {
+  position: absolute; top: 50%; left: calc(100% + .4cqw); transform: translateY(-50%);
+  writing-mode: vertical-rl; white-space: nowrap;
+  font-family: var(--mono); font-size: .8cqw; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--brass-deep);
+}
+.fw  { grid-column: 2; grid-row: 3; }
+.cli { grid-column: 3; grid-row: 1 / 6; }
+
+.key {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw;
+  margin-top: .8cqw; padding-top: .8cqw; border-top: .12cqw solid var(--ink);
+  font-size: .9cqw; line-height: 1.36; color: var(--ink-soft);
+}
+.key b {
+  font-family: var(--mono); font-size: .78cqw; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--brass-deep); margin-right: .5cqw;
+}
+.foot {
+  margin-top: .8cqw; display: flex; justify-content: space-between; gap: 2cqw;
+  font-family: var(--mono); font-size: .7cqw; color: var(--ink-soft); letter-spacing: .04em;
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="slide" aria-label="Anatomy of an AI Agent">
+    <div class="lead">
+      <div>
+        <div class="eyebrow">Agentic development</div>
+        <div class="title">Anatomy of an AI Agent</div>
+      </div>
+      <div class="room">Picture a brilliant consultant in a locked room. No memory, no hands. They can only read the notes you slide under the door and write back. Every other part of an agent exists to feed them, equip them, or check their work.</div>
+
+      <div class="takeaways">
+        <div class="eyebrow">Key takeaways</div>
+        <div class="take"><b>The AI asks. Software acts.</b>The model can only request an action. Every change to a real system passes a checkpoint you control, so approvals belong there.</div>
+        <div class="take"><b>Instructions persuade. Code enforces.</b>Playbooks and house rules are followed most of the time. Anything with safety, cost, or compliance stakes needs a hard check in code.</div>
+        <div class="take"><b>Building one is not shipping one.</b>A demo needs the model, tools, and loop. Production needs all seven parts, and the human interface is the one teams most often leave too late.</div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="head" aria-hidden="true"><span>Part</span><span>What it is</span><span>In the story</span></div>
+      <div class="parts" role="list">
+        <div class="part" role="listitem">
+          <div class="name">Interface<small>Who is in the loop</small></div>
+          <div class="what">Where people start the work, watch it happen, approve risky steps, and stop it. A chat window, an IDE, Slack, or a scheduled job.</div>
+          <div class="story">The client you check with before anything irreversible</div>
+        </div>
+        <div class="part" role="listitem">
+          <div class="name">MCP<small>What it can reach</small></div>
+          <div class="what">A standard connector for plugging in systems you don't own: the CRM, the data warehouse, the ticketing system. Build once, reuse everywhere.</div>
+          <div class="story">Your keys and logins to other departments</div>
+        </div>
+        <div class="part" role="listitem">
+          <div class="name">Skills<small>What it knows how to do</small></div>
+          <div class="what">Your company's playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so work is secure by design from the start.</div>
+          <div class="story">A binder of company procedures, handed in when relevant</div>
+        </div>
+        <div class="part agent" role="listitem">
+          <div class="name">Agent<small>How work gets done</small></div>
+          <div class="what">The whole arrangement running as a loop. The model picks the next step, the software carries it out or refuses, and the cycle repeats until the job is done.</div>
+          <div class="story">You and the consultant, passing notes until the report is finished</div>
+        </div>
+        <div class="part" role="listitem">
+          <div class="name">Tools<small>What it may ask for</small></div>
+          <div class="what">The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.</div>
+          <div class="story">Your list of things you are willing to do for them</div>
+        </div>
+        <div class="part" role="listitem">
+          <div class="name">Model<small>What does the thinking</small></div>
+          <div class="what">The AI itself. It reads and writes, and remembers nothing between requests. It can suggest an action <strong>but never perform one.</strong></div>
+          <div class="story">The consultant: brilliant, forgetful, no hands</div>
+        </div>
+        <div class="part" role="listitem">
+          <div class="name">Platform<small>Where it runs</small></div>
+          <div class="what">The managed service you buy AI through. Owns access, spending limits, logging, data location, and the bill.</div>
+          <div class="story">The agency that employs them and sends the invoice</div>
+        </div>
+        <div class="bracket fw" aria-hidden="true"><span>Framework</span></div>
+        <div class="bracket cli" aria-hidden="true"><span>CLI</span></div>
+      </div>
+      <div class="key">
+        <div><b>CLI</b>A ready-made agent you install and run, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
+        <div><b>Framework</b>A pack of playbooks, commands, and house rules installed into a CLI, such as HVE, Superpowers, or GSD. It lands in the Skills row. It shapes how the agent works, but it can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph, which build the Agent loop itself.</div>
+      </div>
+      <div class="foot">
+        <span>Stacked by dependency: each part relies on the ones beneath it.</span>
+        <span>robbmorgan.com/code</span>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
