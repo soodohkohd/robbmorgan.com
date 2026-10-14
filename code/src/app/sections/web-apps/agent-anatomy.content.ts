@@ -43,6 +43,7 @@ export const AGENT_ANATOMY_TABS: readonly AgentTab[] = [
   { slug: 'agent-mcp',       label: 'MCP',             bodyHtml: mcpHtml() },
   { slug: 'agent-interface', label: 'Interface',       bodyHtml: interfaceHtml() },
   { slug: 'agent-together',  label: 'All Seven Layers', bodyHtml: togetherHtml() },
+  { slug: 'agent-slide',     label: 'The Meeting Slide', bodyHtml: slideHtml() },
 ];
 
 /* ---------- The Story ---------- */
@@ -1734,6 +1735,81 @@ function togetherHtml(): string {
       </div>
 
       <p>And the eighth sentence, for the thing that isn't a layer: <strong>steering</strong> &mdash; every framework, pack, and house-rules file &mdash; ends up as text the model reads or configuration the harness reads, which is why it can shape an agent's taste but never guarantee its behavior.</p>
+    </div>
+  `;
+}
+
+/* ---------- The Meeting Slide ----------
+   The whole guide condensed to one slide for presenting to a mixed
+   room. Site-only: there is no counterpart in the standalone document.
+   Class names are all `as-` prefixed because .agent-doc already owns
+   generic names like .story, and the .topic-body ::ng-deep rules style
+   bare h2 / p / ul — so the slide is built from divs. Styles live in
+   styles.scss under "CODE PAGE — Agent Anatomy meeting slide". */
+function slideHtml(): string {
+  const parts: ReadonlyArray<[name: string, question: string, what: string, story: string, agent?: boolean]> = [
+    ['Interface', 'Who is in the loop',
+      'Where people start the work, watch it happen, approve risky steps, and stop it. A chat window, an IDE, Slack, or a scheduled job.',
+      'The client you check with before anything irreversible'],
+    ['MCP', 'What it can reach',
+      'A standard connector for plugging in systems you don\'t own: the CRM, the data warehouse, the ticketing system. Build once, reuse everywhere.',
+      'Your keys and logins to other departments'],
+    ['Skills', 'What it knows how to do',
+      'Your company\'s playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so work is secure by design from the start.',
+      'A binder of company procedures, handed in when relevant'],
+    ['Agent', 'How work gets done',
+      'The whole arrangement running as a loop. The model picks the next step, the software carries it out or refuses, and the cycle repeats until the job is done.',
+      'You and the consultant, passing notes until the report is finished', true],
+    ['Tools', 'What it may ask for',
+      'The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.',
+      'Your list of things you are willing to do for them'],
+    ['Model', 'What does the thinking',
+      'The AI itself. It reads and writes, and remembers nothing between requests. It can suggest an action <strong>but never perform one.</strong>',
+      'The consultant: brilliant, forgetful, no hands'],
+    ['Platform', 'Where it runs',
+      'The managed service you buy AI through. Owns access, spending limits, logging, data location, and the bill.',
+      'The agency that employs them and sends the invoice'],
+  ];
+
+  const rows = parts.map(([name, question, what, story, agent]) => `
+          <div class="as-part${agent ? ' as-agent' : ''}" role="listitem">
+            <div class="as-name">${name}<span class="as-q">${question}</span></div>
+            <div class="as-what">${what}</div>
+            <div class="as-story">${story}</div>
+          </div>`).join('');
+
+  return `
+    <div class="agent-doc">
+      <div class="as-intro">The whole guide on a single slide, written for a room that mixes technical and business people. Put it on screen as-is, or take a screenshot for your own deck.</div>
+
+      <div class="as-stage">
+        <section class="as-slide" aria-label="Anatomy of an AI Agent, summary slide">
+          <div class="as-lead">
+            <div>
+              <div class="as-eyebrow">Agentic development</div>
+              <div class="as-title">Anatomy of an AI Agent</div>
+            </div>
+            <div class="as-room">Picture a brilliant consultant in a locked room. No memory, no hands. They can only read the notes you slide under the door and write back. Every other part of an agent exists to feed them, equip them, or check their work.</div>
+
+            <div class="as-takeaways">
+              <div class="as-eyebrow">Key takeaways</div>
+              <div class="as-take"><b>The AI asks. Software acts.</b>The model can only request an action. Every change to a real system passes a checkpoint you control, so approvals belong there.</div>
+              <div class="as-take"><b>Instructions persuade. Code enforces.</b>Playbooks and house rules are followed most of the time. Anything with safety, cost, or compliance stakes needs a hard check in code.</div>
+              <div class="as-take"><b>Building one is not shipping one.</b>A demo needs the model, tools, and loop. Production needs all seven parts, and the human interface is the one teams most often leave too late.</div>
+            </div>
+          </div>
+
+          <div class="as-stack">
+            <div class="as-head" aria-hidden="true"><span>Part</span><span>What it is <span style="opacity:.6">/ in the story</span></span></div>
+            <div class="as-parts" role="list">${rows}
+            </div>
+            <div class="as-foot">
+              <span>Stacked by dependency: each part relies on the ones beneath it.</span>
+              <span>robbmorgan.com/code</span>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   `;
 }

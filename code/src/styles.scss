@@ -1474,6 +1474,211 @@ button {
 }
 
 /* ============================================================
+   CODE PAGE — Agent Anatomy meeting slide (.as-*)
+   The "The Meeting Slide" tab: the whole guide condensed to one slide.
+   Same [innerHTML] reason as the .agent-doc block above for living here.
+
+   Sized in container-query units (cqw) against .as-stage, so the slide
+   scales as one picture the way a slide does. It fills the page column:
+   the :has() rule lifts the 78ch prose cap for this tab only, and the
+   app-web-apps prefix outranks the component's encapsulated .topic-body.
+   Height follows content (no fixed 16:9) because seven rows of readable
+   text don't fit a 16:9 frame at the column's ~800px. Below 640px of
+   stage width the two panels and the rows stack into one column.
+   ============================================================ */
+
+app-web-apps .topic-body:has(.as-stage) { max-width: none; }
+
+.as-intro {
+  max-width: 72ch;
+  margin-bottom: 1.5rem;
+  color: var(--ink-soft);
+}
+
+.as-stage { container-type: inline-size; }
+
+.as-slide {
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  background: var(--parchment);
+  border: 1px solid rgba(26, 20, 16, 0.12);
+  box-shadow: 0 1.2cqw 4cqw rgba(20, 12, 8, 0.24);
+  overflow: hidden;
+  line-height: normal;
+}
+
+.as-eyebrow,
+.as-head,
+.as-foot {
+  font-family: var(--mono);
+  text-transform: uppercase;
+}
+
+.as-lead {
+  background: var(--walnut);
+  color: var(--parchment);
+  padding: 4.5cqw 3.6cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 3.2cqw;
+}
+.as-eyebrow {
+  font-size: 1.25cqw;
+  letter-spacing: 0.16em;
+  color: var(--brass-soft);
+}
+.as-title {
+  margin-top: 0.8cqw;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 4.4cqw;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.as-room {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.85cqw;
+  line-height: 1.45;
+  color: var(--brass-soft);
+  border-left: 0.3cqw solid var(--brass);
+  padding-left: 1.6cqw;
+}
+.as-takeaways {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8cqw;
+  margin-top: auto;
+}
+.as-take {
+  font-size: 1.6cqw;
+  line-height: 1.4;
+  color: #e9dcc0;
+
+  b {
+    display: block;
+    margin-bottom: 0.3cqw;
+    font-family: var(--serif);
+    font-size: 2cqw;
+    color: var(--parchment);
+  }
+}
+
+.as-stack {
+  padding: 4cqw 3.6cqw 3cqw;
+  display: flex;
+  flex-direction: column;
+}
+.as-head,
+.as-part {
+  display: grid;
+  grid-template-columns: 15cqw 1fr;
+  gap: 2.2cqw;
+}
+.as-head {
+  font-size: 1.15cqw;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  padding-bottom: 1cqw;
+  border-bottom: 0.15cqw solid var(--ink);
+}
+.as-parts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.as-part {
+  flex: 1;
+  align-items: center;
+  row-gap: 0.5cqw;
+  padding: 1.5cqw 0;
+  border-bottom: 0.1cqw solid rgba(26, 20, 16, 0.18);
+
+  &:last-child { border-bottom: none; }
+}
+.as-name {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 2.5cqw;
+  line-height: 1.05;
+  color: var(--ink);
+  grid-row: span 2;
+}
+.as-q {
+  display: block;
+  margin-top: 0.5cqw;
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 1.1cqw;
+  letter-spacing: 0.04em;
+  color: #8a5c22;
+}
+.as-what {
+  font-size: 1.62cqw;
+  line-height: 1.4;
+  color: var(--ink);
+
+  strong { font-weight: 700; color: var(--ink); }
+}
+.as-story {
+  grid-column: 2;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.5cqw;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+.as-agent {
+  background: var(--parchment-card);
+  outline: 0.2cqw dashed #8a5c22;
+  outline-offset: -0.2cqw;
+  padding-inline: 1.4cqw;
+  margin-inline: -1.4cqw;
+
+  .as-name { color: #8a5c22; }
+}
+.as-foot {
+  margin-top: 1.6cqw;
+  display: flex;
+  justify-content: space-between;
+  gap: 2cqw;
+  font-size: 1.1cqw;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--ink-soft);
+}
+
+@container (max-width: 640px) {
+  .as-slide { grid-template-columns: 1fr; }
+  .as-lead { padding: 28px 22px; gap: 20px; }
+  .as-eyebrow { font-size: 11px; }
+  .as-title { font-size: 30px; }
+  .as-room { font-size: 16px; padding-left: 12px; border-left-width: 2px; }
+  .as-takeaways { gap: 14px; margin-top: 4px; }
+  .as-take { font-size: 14px; }
+  .as-take b { font-size: 17px; }
+  .as-stack { padding: 22px; }
+  .as-head { display: none; }
+  .as-part { grid-template-columns: 1fr; gap: 6px; padding: 14px 0; border-bottom-width: 1px; }
+  .as-agent { padding-inline: 12px; margin-inline: -12px; outline-width: 2px; outline-offset: -2px; }
+  .as-name { font-size: 21px; }
+  .as-q { font-size: 11px; margin-top: 4px; }
+  .as-what { font-size: 15px; }
+  .as-name { grid-row: auto; }
+  .as-story { grid-column: auto; font-size: 14px; }
+  .as-story::before {
+    content: "In the story: ";
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .as-foot { flex-direction: column; gap: 4px; font-size: 11px; margin-top: 14px; }
+}
+
+/* ============================================================
    CODE PAGE — sub-tab prev/next nav (.subtab-nav)
    Offloaded from src/app/sections/web-apps/web-apps.scss to keep that
    file under its per-component style budget.

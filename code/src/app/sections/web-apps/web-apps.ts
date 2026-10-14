@@ -275,6 +275,13 @@ export class WebApps implements AfterViewInit {
    *  catches the crossover (scrollY > threshold + 24px hysteresis)
    *  and minimizes the title on its own. */
   select(slug: string): void {
+    // Topic pills always land on a topic's first sub-tab, so opening Agent
+    // Anatomy starts at The Story even after the reader (or a deep link)
+    // left it on another section. Same reset as blog.ts select() for parts.
+    this.selectedEpicSlug.set(this.epicTabs[0].slug);
+    this.selectedNineSlug.set(this.nineTabs[0].slug);
+    this.selectedAgentSlug.set(this.agentTabs[0].slug);
+    this.selectedLoomSlug.set(this.loomTabs[0].slug);
     this.selectedSlug.set(slug);
     this.scrollAfterSelect();
   }
