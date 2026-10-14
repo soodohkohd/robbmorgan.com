@@ -87,13 +87,13 @@ body {
 .head {
   font-family: var(--mono); font-size: .75cqw; letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft); padding-bottom: .6cqw; border-bottom: .12cqw solid var(--ink);
-  margin-right: 5.8cqw; /* clear the two bracket columns */
+  margin-right: 8.7cqw; /* clear the three bracket columns */
 }
-/* rows | Framework bracket | CLI bracket; brackets placed against the row
-   tracks so they stretch with the rows they cover. */
+/* rows | Framework | Plugin | CLI brackets, nested inner to outer, placed
+   against the row tracks so they stretch with the rows they cover. */
 .parts {
   flex: 1; display: grid;
-  grid-template-columns: 1fr 2.4cqw 2.4cqw; column-gap: .5cqw;
+  grid-template-columns: 1fr 2.4cqw 2.4cqw 2.4cqw; column-gap: .5cqw;
   grid-auto-rows: 1fr;
 }
 .part {
@@ -128,10 +128,11 @@ body {
   letter-spacing: .16em; text-transform: uppercase; color: var(--brass-deep);
 }
 .fw  { grid-column: 2; grid-row: 3; }
-.cli { grid-column: 3; grid-row: 1 / 6; }
+.plug { grid-column: 3; grid-row: 2 / 4; }
+.cli  { grid-column: 4; grid-row: 1 / 6; }
 
 .key {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6cqw;
   margin-top: .8cqw; padding-top: .8cqw; border-top: .12cqw solid var(--ink);
   font-size: .9cqw; line-height: 1.36; color: var(--ink-soft);
 }
@@ -202,11 +203,13 @@ body {
           <div class="story">The agency that employs them and sends the invoice</div>
         </div>
         <div class="bracket fw" aria-hidden="true"><span>Framework</span></div>
+        <div class="bracket plug" aria-hidden="true"><span>Plugin</span></div>
         <div class="bracket cli" aria-hidden="true"><span>CLI</span></div>
       </div>
       <div class="key">
-        <div><b>CLI</b>A ready-made agent you install and run, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
-        <div><b>Framework</b>A pack of playbooks, commands, and house rules installed into a CLI, such as HVE, Superpowers, or GSD. It lands in the Skills row. It shapes how the agent works, but it can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph, which build the Agent loop itself.</div>
+        <div><b>CLI</b>A ready-made agent you install, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
+        <div><b>Plugin</b>An installable bundle for a CLI: skills, commands, MCP connections, and hooks (automatic checks that can block an action). It&rsquo;s how most frameworks are delivered.</div>
+        <div><b>Framework</b>A pack of playbooks and house rules, such as HVE, Superpowers, or GSD. It shapes how the agent works but can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph.</div>
       </div>
       <div class="foot">
         <span>Stacked by dependency: each part relies on the ones beneath it.</span>

@@ -82,6 +82,8 @@ function storyHtml(): string {
         <p>Two more words come up in nearly every conversation about agents, and both fit in this same room. <strong>A CLI</strong> (Claude Code, Copilot CLI) is a ready-made version of <em>you</em>: a doorkeeper who already knows the routine, arriving with a starter list of things they'll do, a shelf for the binders, a way to reach the other departments, and a window for the client to watch through. Install it and the whole arrangement is running. The only things it doesn't bring are the consultant and the agency. That's why engineers say "the CLI" when they mean the entire agent.</p>
 
         <p><strong>A framework</strong>, in the sense you'll hear it most (HVE, Superpowers, GSD, Kiro's steering files), is a bigger, more opinionated set of binders. Someone has written down a whole way of working: playbooks, step-by-step routines, roles for helpers to play, house rules. You install the set into your ready-made doorkeeper, and it gets slid under the door when it applies. It can change how the consultant works a great deal. It can't make anyone obey it, because it's still only paper. Engineers sometimes mean something else by the word: a code library like LangGraph, which is the training kit for building your own doorkeeper from scratch. When someone says "framework", it's worth asking which one they mean.</p>
+
+        <p><strong>A plugin</strong> is how most of those sets arrive: a care package delivered to the doorkeeper. Open the box and you might find binders (skills), new keys to other departments (MCP connections), new shortcuts for the client to use (slash commands), and a few <em>standing orders</em> (hooks). The standing orders are the part to notice. A binder is advice the consultant can ignore. A standing order is a rule you, the doorkeeper, check every single time, such as "never send anything to an address outside the company." That makes a plugin the one kind of package that can carry real enforcement, not only persuasion.</p>
       </div>
 
       <figure class="agent-fig">
@@ -156,6 +158,7 @@ function storyHtml(): string {
             <tr><td>The client you check with before anything irreversible</td><td>Interface</td><td>Where a human sees what's happening and can say no.</td></tr>
             <tr><td>A ready-made doorkeeper who arrives with the list, the binder shelf, the keys, and the client's window</td><td>CLI</td><td><strong>Not a layer of its own.</strong> A finished harness bundled with an interface, default tools, skills, and MCP support: Claude Code, Copilot CLI, Cursor, Kiro. Everything except the model and the platform.</td></tr>
             <tr><td>A whole shelf of binders, written by someone else, describing a way of working</td><td>Framework</td><td><strong>Not a layer of its own.</strong> A pack of skills, commands, and house rules installed into a CLI: HVE, Superpowers, GSD, Kiro steering. Lands in the prompt, so it persuades but never enforces. Engineers also use the word for code libraries like LangGraph that build a harness (see <em>Steering</em>).</td></tr>
+            <tr><td>A care package for the doorkeeper: binders, new keys, and standing orders in one box</td><td>Plugin</td><td><strong>Not a layer of its own.</strong> An installable bundle for a CLI: skills, slash commands, sub-agent roles, MCP connections, and hooks. The box most frameworks ship in (Superpowers, hve-core). Its hooks are code, so unlike skills they can enforce.</td></tr>
           </tbody>
         </table>
       </div>
@@ -206,6 +209,8 @@ function storyHtml(): string {
       <p><strong>One thing is deliberately missing from that list.</strong> Everything people call a <em>framework</em>, a <em>steering pack</em>, or a <em>house-rules file</em> &mdash; HVE, Superpowers, GSD, BMAD, Kiro's steering files, <code>AGENTS.md</code>, the <code>CLAUDE.md</code> in your repo &mdash; has no layer of its own, because it never lands anywhere new. It resolves into text in the prompt, or into configuration the harness reads. That's a real answer rather than a dodge, and it has a consequence worth carrying: <strong>steering persuades, it never enforces.</strong> There's a <em>Steering</em> tab for the whole taxonomy, including a survey of what's out there and where each one stops.</p>
 
       <p><strong>The CLI is missing from the list too, for a different reason.</strong> Claude Code, Copilot CLI, and their cousins aren't one layer; each is a product that bundles several. Install one and you get a harness, an interface, a default set of tools, a place to load skills, and MCP support, all at once. Only the model and the platform come from somewhere else. That's why "the CLI" so often gets used to mean the whole agent, and why choosing one is a bigger decision than it sounds. The <em>Agent &amp; Harness</em> tab takes it apart.</p>
+
+      <p><strong>Plugins sit in between.</strong> A plugin is an installable box for a CLI, and one box can carry skills, MCP connections, slash commands, and hooks at the same time. So it touches several layers without being one. Most of the frameworks above reach you as plugins; the <em>Steering</em> tab separates the box from what's inside it.</p>
 
       <figure class="agent-fig">
         <div class="fig-frame">
@@ -310,6 +315,7 @@ function meetingHtml(): string {
             <tr><td>"Just add it to the CLAUDE.md"</td><td>Put it in every prompt, on every turn, forever. Often right &mdash; and it's the most expensive place in the system to put anything</td><td><strong class="accent">Yes</strong></td></tr>
             <tr><td>"The steering doc says it has to do X"</td><td>The steering doc <em>asks</em>. If X must happen, X belongs in harness code</td><td><strong class="accent">Yes</strong></td></tr>
             <tr><td>"We're using <em>&lt;framework&gt;</em>" (HVE, Superpowers, GSD)</td><td>Usually a pack: skills, commands, and house rules installed into a CLI. Text the model reads, not software that checks anything. Engineers sometimes mean a code library like LangGraph instead, so ask which</td><td><strong class="accent">Yes</strong></td></tr>
+            <tr><td>"There's a plugin for that"</td><td>An installable bundle for your CLI. Ask what's inside: skills only advise, but MCP connections can reach your systems and hooks run code on every matching action</td><td><strong class="accent">Yes</strong></td></tr>
             <tr><td>"Just use the CLI"</td><td>A ready-made agent: harness, interface, default tools, skill loading, and MCP support in one install. Choosing it also chooses how approvals, skills, and connections work</td><td>Rarely, but it's several decisions at once</td></tr>
             <tr><td>"Anthropic's CLI" / "the OpenAI agent"</td><td>Three layers at once &mdash; provider, harness, interface &mdash; and the harness needn't come from whoever trained the model</td><td>Rarely, but it hides a choice</td></tr>
           </tbody>
@@ -1275,8 +1281,8 @@ function steeringHtml(): string {
             </tr>
             <tr>
               <td><strong>Plugin / pack</strong></td>
-              <td>Skills, slash commands, sub-agent definitions, and hooks bundled up to be installed into a harness you already run.</td>
-              <td><strong class="accent">Skill + harness config</strong><br><span class="src">microsoft/hve-core, Superpowers, GSD, Kiro Powers</span></td>
+              <td>The <em>pack</em> is the content: skills, slash commands, sub-agent definitions, house rules. The <em>plugin</em> is the installable box it usually ships in, which can also carry MCP connections and hooks, for a harness you already run.</td>
+              <td><strong class="accent">Skill + MCP + harness config</strong><br><span class="src">microsoft/hve-core, Superpowers, GSD, Kiro Powers</span></td>
             </tr>
             <tr>
               <td><strong>Project instructions / steering files</strong></td>
@@ -1293,6 +1299,8 @@ function steeringHtml(): string {
       </div>
 
       <p><strong>Only the first two are software you run.</strong> The third and fourth are files that get read &mdash; by the harness at startup, and by the model in the prompt. The fifth is a set of habits that, if it's doing its job, eventually gets written down as the third and fourth. Calling all five "a framework" is how a room ends up believing it has adopted a system when what it has adopted is a folder of Markdown.</p>
+
+      <p><strong>One exception hides inside row three.</strong> A plugin's <em>hooks</em> are small scripts the harness runs automatically at set moments: before a file is edited, before a command runs, when a session ends. They're code, not text, so they can block an action outright. That makes hooks the only part of a pack that enforces anything, and the natural home for rules that must hold every time, security rules included. It cuts both ways: a hook from a third-party plugin runs on your machine with your permissions, so read what it does before you install it.</p>
 
       <p class="pull"><em>The test: what do I actually do to adopt this?</em></p>
 
@@ -1423,7 +1431,7 @@ function steeringHtml(): string {
         <div class="subhead">Four limitations that apply to every row above</div>
         <p>Whatever you adopt, these come with it. None is a defect in any particular product; they're properties of the mechanism.</p>
         <ul>
-          <li><strong>None of it enforces anything.</strong> Code frameworks give you somewhere to <em>put</em> enforcement; packs and instruction files cannot contain it at all. The guarantee lives in harness code or it doesn't exist.</li>
+          <li><strong>Almost none of it enforces anything.</strong> Code frameworks give you somewhere to <em>put</em> enforcement; skills and instruction files cannot contain it at all. The one exception is a plugin's hooks, which are harness code that happens to arrive in a pack. Either way, the guarantee lives in harness code or it doesn't exist.</li>
           <li><strong>All of it costs context, most of it forever.</strong> A pack that adds a few thousand always-on tokens taxes every turn of every run from then on, and competes with your own instructions for the model's attention. Ask what the resting cost is before installing.</li>
           <li><strong>Portability is partial and rarely stated.</strong> Skills and plain-Markdown instructions travel well. Commands, hooks, sub-agent definitions, and anything that touches harness configuration usually don't. A pack built for one harness makes switching harnesses a migration.</li>
           <li><strong>Agents reviewing agents is not verification.</strong> Several of these ship a review or QA phase implemented as another model pass. That's genuinely useful for catching sloppiness and genuinely useless as a correctness guarantee &mdash; the reviewer shares the author's blind spots. Whatever you'd have required before &mdash; tests, a human, a staging environment &mdash; you still require.</li>
@@ -1714,6 +1722,9 @@ function togetherHtml(): string {
             <tr><td>CLI vs. harness</td><td>Packaging vs. layer. A CLI is an <em>interface</em> that happens to ship with a harness behind it, plus default tools, skill loading, and MCP support. In conversation "the CLI" means that whole bundle. The same harness runs headless with no terminal anywhere, and plenty of harnesses were never CLIs.</td></tr>
             <tr><td>Code framework vs. harness</td><td>The engineer's sense of the word. A code framework (LangGraph, Agent SDK) is code you <em>build</em> a harness out of. It occupies the harness slot; it isn't a separate layer. If adopting it means writing programs against an API, it's a framework.</td></tr>
             <tr><td>Code framework vs. pack</td><td>Code vs. text. Both get called "framework," and outside engineering the word nearly always means the pack (HVE, Superpowers, GSD). One you import and program against; the other you drop in a folder and the model reads. Only the first can enforce anything.</td></tr>
+            <tr><td>Plugin vs. framework</td><td>The box vs. what's inside. A framework like Superpowers is a way of working; the plugin is how it gets installed. One plugin can also hold things that aren't a way of working at all, like MCP connections.</td></tr>
+            <tr><td>Plugin vs. MCP server</td><td>A container vs. one thing it can contain. A plugin can bring MCP connections along with skills and hooks. An MCP server is a running process that only provides tools and data.</td></tr>
+            <tr><td>Hook vs. skill</td><td>Enforcement vs. advice. A hook is code the harness runs every time its moment comes and can block an action. A skill is text the model reads and may not follow.</td></tr>
             <tr><td>Pack vs. methodology</td><td>The files vs. the practice. They routinely share a name &mdash; HVE is an operating model <em>and</em> a plugin; Kiro is an IDE <em>and</em> a steering-file convention. "Adopting it" means something different for each.</td></tr>
             <tr><td>Project instructions vs. skill</td><td>Always-on vs. on-demand. Instructions are in the prompt every turn whether they applied or not; a skill's body loads only when its description matches. Cost and attention both follow that split.</td></tr>
             <tr><td>Tool vs. function</td><td>A tool is the <em>declaration</em> of a capability &mdash; name, description, schema. A function is one possible <em>implementation</em> of it. Server-side and MCP tools have implementations you never write, which is the clearest proof the two aren't the same artifact.</td></tr>
@@ -1751,7 +1762,7 @@ function togetherHtml(): string {
         </dl>
       </div>
 
-      <p>And the eighth sentence, for the thing that isn't a layer: <strong>steering</strong> &mdash; every framework, pack, and house-rules file &mdash; ends up as text the model reads or configuration the harness reads, which is why it can shape an agent's taste but never guarantee its behavior.</p>
+      <p>And the eighth sentence, for the thing that isn't a layer: <strong>steering</strong> &mdash; every framework, pack, and house-rules file &mdash; ends up as text the model reads or configuration the harness reads, which is why it can shape an agent's taste but never guarantee its behavior. The exception arrives in a plugin: its hooks are code the harness runs, and they can say no.</p>
     </div>
   `;
 }
@@ -1823,11 +1834,13 @@ function slideHtml(): string {
             <div class="as-head" aria-hidden="true"><span>Part</span><span>What it is <span style="opacity:.6">/ in the story</span></span></div>
             <div class="as-parts" role="list">${rows}
               <div class="as-bracket as-fw" aria-hidden="true"><span>Framework</span></div>
+              <div class="as-bracket as-plug" aria-hidden="true"><span>Plugin</span></div>
               <div class="as-bracket as-cli" aria-hidden="true"><span>CLI</span></div>
             </div>
             <div class="as-key">
-              <div class="as-key-item"><span class="as-key-term">CLI</span>A ready-made agent you install and run, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
-              <div class="as-key-item"><span class="as-key-term">Framework</span>A pack of playbooks, commands, and house rules installed into a CLI, such as HVE, Superpowers, or GSD. It lands in the Skills row. It shapes how the agent works, but it can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph, which build the Agent loop itself.</div>
+              <div class="as-key-item"><span class="as-key-term">CLI</span>A ready-made agent you install, such as Claude Code or Copilot CLI. It bundles everything from Interface down to Tools. You still choose the model and the platform.</div>
+              <div class="as-key-item"><span class="as-key-term">Plugin</span>An installable bundle for a CLI: skills, commands, MCP connections, and hooks (automatic checks that can block an action). It&rsquo;s how most frameworks are delivered.</div>
+              <div class="as-key-item"><span class="as-key-term">Framework</span>A pack of playbooks and house rules, such as HVE, Superpowers, or GSD. It shapes how the agent works but can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph.</div>
             </div>
             <div class="as-foot">
               <span>Stacked by dependency: each part relies on the ones beneath it.</span>
