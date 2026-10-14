@@ -50,7 +50,7 @@ export class Music implements AfterViewInit {
     'A small catalogue of original songs — my lyrics mixed with AI-generated ' +
     'vocals, produced with ' +
     '<a href="https://suno.com/@morganizedchaos" ' +
-    'target="_blank" rel="noopener noreferrer">Suno.ai</a>. ' +
+    'target="_blank" rel="noopener noreferrer">Suno</a>. ' +
     'Press play and have a listen.';
 
   readonly tracks: readonly Track[] = [
