@@ -49,7 +49,7 @@ export class Music implements AfterViewInit {
   readonly ledeHtml =
     'A small catalogue of original songs — my lyrics mixed with AI-generated ' +
     'vocals, produced with ' +
-    '<a href="https://suno.com/playlist/679aed35-b743-4760-8cdc-6f8b79bd9106" ' +
+    '<a href="https://suno.com/@morganizedchaos" ' +
     'target="_blank" rel="noopener noreferrer">Suno.ai</a>. ' +
     'Press play and have a listen.';
 
