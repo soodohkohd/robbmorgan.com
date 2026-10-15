@@ -87,13 +87,18 @@ body {
 .head {
   font-family: var(--mono); font-size: .75cqw; letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft); padding-bottom: .6cqw; border-bottom: .12cqw solid var(--ink);
+  margin-right: 3.6cqw; /* clear the bracket column */
 }
+/* rows | CLI / Harness bracket. The bracket comes first in the markup and is
+   placed on rows 1-5 (Interface..Agent); the parts then auto-place down
+   column 1. The gap is wider than the Agent row's -1cqw overhang. */
 .parts {
   flex: 1; display: grid;
+  grid-template-columns: 1fr 2.4cqw; column-gap: 1.2cqw;
   /* auto rows; the grid's default stretch shares spare height among them */
 }
 .part {
-  align-items: center;
+  grid-column: 1; align-items: center;
   padding: .35cqw 0;
   border-bottom: .08cqw solid rgba(26,20,16,.18);
 }
@@ -111,6 +116,17 @@ body {
   padding-inline: 1cqw; margin-inline: -1cqw;
 }
 .part.agent .name { color: var(--brass-deep); }
+.bracket {
+  position: relative; width: .8cqw; margin-block: .9cqw;
+  border: .18cqw solid var(--brass-deep); border-left: none;
+}
+.cli  { grid-column: 2; grid-row: 1 / 6; }
+.bracket span {
+  position: absolute; top: 50%; left: calc(100% + .4cqw); transform: translateY(-50%);
+  writing-mode: vertical-rl; white-space: nowrap;
+  font-family: var(--mono); font-size: .8cqw; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--brass-deep);
+}
 /* The tinted row is widened by its negative margin, so its own bottom rule
    would overhang. Draw that rule as the next row's top edge instead. */
 .part.agent { border-bottom: none; }
@@ -121,11 +137,11 @@ body {
    back under to the first (centers sit at 12.5% and 87.5%). */
 .cycle {
   position: relative; display: grid; grid-template-columns: repeat(4, 1fr);
-  column-gap: 1.3cqw; padding-top: 1.5cqw; padding-bottom: 2cqw;
+  column-gap: 1.1cqw; padding-top: 1.5cqw; padding-bottom: 2cqw;
 }
 /* Entry point: the prompt comes down into the first step. */
 .start {
-  position: absolute; top: 0; left: calc((100% - 3.9cqw) / 8); transform: translateX(calc(-100% + .3em));
+  position: absolute; top: 0; left: calc((100% - 3.3cqw) / 8); transform: translateX(calc(-100% + .3em));
   white-space: nowrap; font-family: var(--mono); font-size: .66cqw;
   letter-spacing: .06em; color: var(--brass-deep);
 }
@@ -133,15 +149,15 @@ body {
 .step {
   position: relative; text-align: center; white-space: nowrap;
   padding: .3cqw .2cqw; border: .1cqw solid var(--brass-deep); border-radius: .3cqw;
-  background: var(--parchment); font-size: .86cqw; font-weight: 600;
+  background: var(--parchment); font-size: .8cqw; font-weight: 600;
 }
 .step:not(:nth-child(5))::after {
   content: "\2192"; position: absolute; left: 100%; top: 50%;
-  width: 1.3cqw; transform: translateY(-50%); text-align: center;
+  width: 1.1cqw; transform: translateY(-50%); text-align: center;
   font-weight: 400; color: var(--brass-deep);
 }
 .return {
-  position: absolute; left: calc((100% - 3.9cqw) / 8); right: calc((100% - 3.9cqw) / 8);
+  position: absolute; left: calc((100% - 3.3cqw) / 8); right: calc((100% - 3.3cqw) / 8);
   bottom: .3cqw; height: 1.7cqw; /* top edge sits on the steps' bottom */
   border: .12cqw solid var(--brass-deep); border-top: none;
 }
@@ -195,6 +211,7 @@ body {
     <div class="stack">
       <div class="head" aria-hidden="true"><span>Part</span><span>What it is</span><span>In the story</span></div>
       <div class="parts" role="list">
+        <div class="bracket cli" aria-hidden="true"><span>CLI / Harness</span></div>
         <div class="part" role="listitem">
           <div class="name">Interface<small>Who is in the loop</small></div>
           <div class="what">Where people start the work, watch it happen, approve risky steps, and stop it. A chat window, an IDE, Slack, or a scheduled job.</div>
@@ -210,15 +227,15 @@ body {
           <div class="what">Your company's playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so secure work is the default. Hard rules still belong in code.</div>
           <div class="story">A binder of company procedures, handed in when relevant</div>
         </div>
-        <div class="part agent" role="listitem">
-          <div class="name">Agent<small>The loop</small></div>
-          <div class="what"><div class="cycle" role="img" aria-label="The loop: your prompt starts it, then the model decides, the harness checks, a tool runs, the result goes back to the model, and it repeats until the job is done."><span class="start">Your prompt starts it</span><span class="step">Model decides</span><span class="step">Harness checks</span><span class="step">Tool runs</span><span class="step">Result returns</span><span class="return"><span>repeats until the job is done</span></span></div><div class="note"><strong>Hooks</strong> can block a step; <strong>sub-agents</strong> run loops of their own.</div></div>
-          <div class="story">You (the harness) and the consultant, passing notes until the job is finished</div>
-        </div>
         <div class="part" role="listitem">
           <div class="name">Tools<small>What it may ask for</small></div>
           <div class="what">The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.</div>
           <div class="story">Your list of things you are willing to do for them</div>
+        </div>
+        <div class="part agent" role="listitem">
+          <div class="name">Agent<small>The loop</small></div>
+          <div class="what"><div class="cycle" role="img" aria-label="The loop: your prompt starts it, then the model decides, the harness checks, a tool runs, the result goes back to the model, and it repeats until the job is done."><span class="start">Your prompt starts it</span><span class="step">Model decides</span><span class="step">Harness checks</span><span class="step">Tool runs</span><span class="step">Result returns</span><span class="return"><span>repeats until the job is done</span></span></div><div class="note"><strong>Hooks</strong> can block a step; <strong>sub-agents</strong> run loops of their own.</div></div>
+          <div class="story">You (the harness) and the consultant, passing notes until the job is finished</div>
         </div>
         <div class="part" role="listitem">
           <div class="name">Model<small>What does the thinking</small></div>
@@ -232,9 +249,9 @@ body {
         </div>
       </div>
       <div class="key">
-        <div><b>CLI / Harness</b>A product you install and run, such as Claude Code or Copilot CLI. It runs the Agent loop for you, brings the Interface and Tools, and loads your Skills and MCP connections. You still choose the Model and Platform.</div>
+        <div><b>CLI / Harness</b>A product you install and run, such as Claude Code, Codex or Copilot CLI. It runs the Agent loop for you, brings the Interface and Tools, and loads your Skills and MCP connections. You still choose the Model and Platform.</div>
         <div><b>Plugin</b>A package that adds to a CLI. One plugin can carry skills, commands, sub-agents, MCP connections, hooks, or new tools, and what&rsquo;s inside varies, so check before installing. It can&rsquo;t change the Model or Platform.</div>
-        <div><b>Framework</b>A packaged method for building with AI, such as HVE, Superpowers, or GSD, made of playbooks, step-by-step workflows, and roles. It always adds guidance to Skills. Some also ship sub-agents or hooks into the Agent row, and only hooks can enforce. Engineers also use the word for code libraries like LangGraph.</div>
+        <div><b>Framework</b>A packaged method for building with AI, such as HVE, Superpowers, or Kiro, made of playbooks, step-by-step workflows, and roles. It always adds guidance to Skills. Some also ship sub-agents or hooks into the Agent row, and only hooks can enforce. Engineers also use the word for code libraries like LangGraph.</div>
       </div>
       <div class="foot">
         <span>robbmorgan.com/code</span>
