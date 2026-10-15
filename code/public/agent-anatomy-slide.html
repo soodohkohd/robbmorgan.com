@@ -87,21 +87,17 @@ body {
 .head {
   font-family: var(--mono); font-size: .75cqw; letter-spacing: .14em; text-transform: uppercase;
   color: var(--ink-soft); padding-bottom: .6cqw; border-bottom: .12cqw solid var(--ink);
-  margin-right: 8.7cqw; /* clear the three bracket columns */
 }
-/* rows | Framework | Plugin | CLI brackets, nested inner to outer, placed
-   against the row tracks so they stretch with the rows they cover. */
 .parts {
   flex: 1; display: grid;
-  grid-template-columns: 1fr 2.4cqw 2.4cqw 2.4cqw; column-gap: .5cqw;
   /* auto rows; the grid's default stretch shares spare height among them */
 }
 .part {
-  grid-column: 1; align-items: center;
+  align-items: center;
   padding: .35cqw 0;
   border-bottom: .08cqw solid rgba(26,20,16,.18);
 }
-.part:has(+ .bracket) { border-bottom: none; }
+.part:last-child { border-bottom: none; }
 .name { font-family: var(--serif); font-weight: 600; font-size: 1.6cqw; line-height: 1.05; }
 .name small {
   display: block; margin-top: .3cqw; font-family: var(--mono); font-weight: 400;
@@ -112,24 +108,52 @@ body {
 
 .part.agent {
   background: var(--parchment-card);
-  outline: .14cqw dashed var(--brass-deep); outline-offset: -.14cqw;
-  padding-inline: 1cqw; margin-left: -1cqw;
+  padding-inline: 1cqw; margin-inline: -1cqw;
 }
 .part.agent .name { color: var(--brass-deep); }
 
-.bracket {
-  position: relative; width: .8cqw; margin-block: .9cqw;
-  border: .18cqw solid var(--brass-deep); border-left: none;
+/* The Agent row is a process, not a thing: draw the cycle. Four equal
+   steps with arrows between them, and a return path from the last step
+   back under to the first (centers sit at 12.5% and 87.5%). */
+.cycle {
+  position: relative; display: grid; grid-template-columns: repeat(4, 1fr);
+  column-gap: 1.3cqw; padding-top: 1.5cqw; padding-bottom: 2cqw;
 }
-.bracket span {
-  position: absolute; top: 50%; left: calc(100% + .4cqw); transform: translateY(-50%);
-  writing-mode: vertical-rl; white-space: nowrap;
-  font-family: var(--mono); font-size: .8cqw; font-weight: 600;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--brass-deep);
+/* Entry point: the prompt comes down into the first step. */
+.start {
+  position: absolute; top: 0; left: calc((100% - 3.9cqw) / 8); transform: translateX(calc(-100% + .3em));
+  white-space: nowrap; font-family: var(--mono); font-size: .66cqw;
+  letter-spacing: .06em; color: var(--brass-deep);
 }
-.fw  { grid-column: 2; grid-row: 3 / 5; }
-.plug { grid-column: 3; grid-row: 2 / 5; }
-.cli  { grid-column: 4; grid-row: 1 / 6; }
+.start::after { content: " \2193"; font-family: var(--sans); font-weight: 700; }
+.step {
+  position: relative; text-align: center; white-space: nowrap;
+  padding: .3cqw .2cqw; border: .1cqw solid var(--brass-deep); border-radius: .3cqw;
+  background: var(--parchment); font-size: .86cqw; font-weight: 600;
+}
+.step:not(:nth-child(5))::after {
+  content: "\2192"; position: absolute; left: 100%; top: 50%;
+  width: 1.3cqw; transform: translateY(-50%); text-align: center;
+  font-weight: 400; color: var(--brass-deep);
+}
+.return {
+  position: absolute; left: calc((100% - 3.9cqw) / 8); right: calc((100% - 3.9cqw) / 8);
+  bottom: .3cqw; height: 1.7cqw; /* top edge sits on the steps' bottom */
+  border: .12cqw solid var(--brass-deep); border-top: none;
+}
+/* Arrowhead: centered on the left line, tip at the first box's edge. */
+.return::before {
+  content: ""; position: absolute; left: -.34cqw; top: 0;
+  border: .4cqw solid transparent; border-bottom: .55cqw solid var(--brass-deep); border-top: none;
+}
+.return span {
+  position: absolute; left: 50%; bottom: -.55cqw; transform: translateX(-50%);
+  padding-inline: .5cqw; background: var(--parchment-card); white-space: nowrap;
+  font-family: var(--mono); font-size: .66cqw; letter-spacing: .06em; color: var(--brass-deep);
+}
+.note { margin-top: .4cqw; font-size: .9cqw; color: var(--ink-soft); }
+.note strong { color: var(--ink); }
+
 
 .key {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6cqw;
@@ -183,8 +207,8 @@ body {
           <div class="story">A binder of company procedures, handed in when relevant</div>
         </div>
         <div class="part agent" role="listitem">
-          <div class="name">Agent<small>How work gets done</small></div>
-          <div class="what">The whole arrangement running as a loop: the model picks the next step, and the <strong>harness</strong>, the software running the loop, carries it out or refuses. <strong>Hooks</strong> add checks that can block an action; <strong>sub-agents</strong> take on pieces of the work.</div>
+          <div class="name">Agent<small>The loop</small></div>
+          <div class="what"><div class="cycle" role="img" aria-label="The loop: your prompt starts it, then the model decides, the harness checks, a tool runs, the result goes back to the model, and it repeats until the job is done."><span class="start">Your prompt starts it</span><span class="step">Model decides</span><span class="step">Harness checks</span><span class="step">Tool runs</span><span class="step">Result returns</span><span class="return"><span>repeats until the job is done</span></span></div><div class="note"><strong>Hooks</strong> can block a step; <strong>sub-agents</strong> run loops of their own.</div></div>
           <div class="story">You (the harness) and the consultant, passing notes until the report is finished</div>
         </div>
         <div class="part" role="listitem">
@@ -202,14 +226,11 @@ body {
           <div class="what">The managed service you buy AI through. Owns access, spending limits, logging, data location, and the bill.</div>
           <div class="story">The agency that employs them and sends the invoice</div>
         </div>
-        <div class="bracket fw" aria-hidden="true"><span>Framework</span></div>
-        <div class="bracket plug" aria-hidden="true"><span>Plugin</span></div>
-        <div class="bracket cli" aria-hidden="true"><span>CLI / Harness</span></div>
       </div>
       <div class="key">
-        <div><b>CLI / Harness</b>A ready-made agent you install, such as Claude Code or Copilot CLI. Its engine, the harness, runs the Agent loop, so people use the two words interchangeably. It covers Interface down to Tools; you still choose the model and platform.</div>
-        <div><b>Plugin</b>An installable bundle for a CLI: skills, commands, sub-agents, MCP connections, and hooks (automatic checks that can block an action). A common way frameworks are delivered.</div>
-        <div><b>Framework</b>A bundle someone else wrote, such as HVE, Superpowers, or GSD. Its skills, prompts, and sub-agents guide the agent; any hooks it ships can enforce. Engineers also use the word for code libraries like LangGraph.</div>
+        <div><b>CLI / Harness</b>A product you install and run, such as Claude Code or Copilot CLI. It runs the Agent loop for you, brings the Interface and Tools, and loads your Skills and MCP connections. You still choose the Model and Platform.</div>
+        <div><b>Plugin</b>A package that adds to a CLI. One plugin can carry skills, commands, sub-agents, MCP connections, hooks, or new tools, and what&rsquo;s inside varies, so check before installing. It can&rsquo;t change the Model or Platform.</div>
+        <div><b>Framework</b>A packaged method for building with AI, such as HVE, Superpowers, or GSD, made of playbooks, step-by-step workflows, and roles. It always adds guidance to Skills. Some also ship sub-agents or hooks into the Agent row, and only hooks can enforce. Engineers also use the word for code libraries like LangGraph.</div>
       </div>
       <div class="foot">
         <span>The bottom four are the core; the top three extend it.</span>

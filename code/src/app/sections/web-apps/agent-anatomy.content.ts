@@ -1785,8 +1785,8 @@ function slideHtml(): string {
     ['Skills', 'What it knows how to do',
       'Your company\'s playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so secure work is the default. Hard rules still belong in code.',
       'A binder of company procedures, handed in when relevant'],
-    ['Agent', 'How work gets done',
-      'The whole arrangement running as a loop: the model picks the next step, and the <strong>harness</strong>, the software running the loop, carries it out or refuses. <strong>Hooks</strong> add checks that can block an action; <strong>sub-agents</strong> take on pieces of the work.',
+    ['Agent', 'The loop',
+      '<div class="as-cycle" role="img" aria-label="The loop: your prompt starts it, then the model decides, the harness checks, a tool runs, the result goes back to the model, and it repeats until the job is done."><span class="as-start">Your prompt starts it</span><span class="as-step">Model decides</span><span class="as-step">Harness checks</span><span class="as-step">Tool runs</span><span class="as-step">Result returns</span><span class="as-return"><span>repeats until the job is done</span></span></div><div class="as-note"><strong>Hooks</strong> can block a step; <strong>sub-agents</strong> run loops of their own.</div>',
       'You (the harness) and the consultant, passing notes until the report is finished', true],
     ['Tools', 'What it may ask for',
       'The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.',
@@ -1833,14 +1833,11 @@ function slideHtml(): string {
           <div class="as-stack">
             <div class="as-head" aria-hidden="true"><span>Part</span><span>What it is <span style="opacity:.6">/ in the story</span></span></div>
             <div class="as-parts" role="list">${rows}
-              <div class="as-bracket as-fw" aria-hidden="true"><span>Framework</span></div>
-              <div class="as-bracket as-plug" aria-hidden="true"><span>Plugin</span></div>
-              <div class="as-bracket as-cli" aria-hidden="true"><span>CLI / Harness</span></div>
             </div>
             <div class="as-key">
-              <div class="as-key-item"><span class="as-key-term">CLI / Harness</span>A ready-made agent you install, such as Claude Code or Copilot CLI. Its engine, the harness, runs the Agent loop, so people use the two words interchangeably. It covers Interface down to Tools; you still choose the model and platform.</div>
-              <div class="as-key-item"><span class="as-key-term">Plugin</span>An installable bundle for a CLI: skills, commands, sub-agents, MCP connections, and hooks (automatic checks that can block an action). A common way frameworks are delivered.</div>
-              <div class="as-key-item"><span class="as-key-term">Framework</span>A bundle someone else wrote, such as HVE, Superpowers, or GSD. Its skills, prompts, and sub-agents guide the agent; any hooks it ships can enforce. Engineers also use the word for code libraries like LangGraph.</div>
+              <div class="as-key-item"><span class="as-key-term">CLI / Harness</span>A product you install and run, such as Claude Code or Copilot CLI. It runs the Agent loop for you, brings the Interface and Tools, and loads your Skills and MCP connections. You still choose the Model and Platform.</div>
+              <div class="as-key-item"><span class="as-key-term">Plugin</span>A package that adds to a CLI. One plugin can carry skills, commands, sub-agents, MCP connections, hooks, or new tools, and what&rsquo;s inside varies, so check before installing. It can&rsquo;t change the Model or Platform.</div>
+              <div class="as-key-item"><span class="as-key-term">Framework</span>A packaged method for building with AI, such as HVE, Superpowers, or GSD, made of playbooks, step-by-step workflows, and roles. It always adds guidance to Skills. Some also ship sub-agents or hooks into the Agent row, and only hooks can enforce. Engineers also use the word for code libraries like LangGraph.</div>
             </div>
             <div class="as-foot">
               <span>The bottom four are the core; the top three extend it.</span>

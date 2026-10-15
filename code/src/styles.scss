@@ -1605,26 +1605,18 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
   color: var(--ink-soft);
   padding-bottom: 1cqw;
   border-bottom: 0.15cqw solid var(--ink);
-  margin-right: 9.3cqw; /* clear the three bracket columns in .as-parts */
 }
 .as-parts {
   flex: 1;
   display: grid;
-  /* rows | Framework | Plugin | CLI brackets, nested inner to outer. Each
-     is explicitly placed against the row tracks (Framework on Skills + Agent, rows 3-4;
-     Plugin on MCP..Agent, rows 2-4; CLI on Interface..Tools, rows 1-5), so they stretch with whatever height
-     the row text takes. Rows auto-place down column 1 in source order. */
-  grid-template-columns: 1fr 2.6cqw 2.6cqw 2.6cqw;
-  column-gap: 0.5cqw;
 }
 .as-part {
-  grid-column: 1;
   align-items: center;
   row-gap: 0.5cqw;
   padding: 1.5cqw 0;
   border-bottom: 0.1cqw solid rgba(26, 20, 16, 0.18);
 
-  &:has(+ .as-bracket) { border-bottom: none; }
+  &:last-child { border-bottom: none; }
 }
 .as-name {
   font-family: var(--serif);
@@ -1660,43 +1652,107 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
 }
 .as-agent {
   background: var(--parchment-card);
-  outline: 0.2cqw dashed #8a5c22;
-  outline-offset: -0.2cqw;
   padding-inline: 1.4cqw;
-  margin-left: -1.4cqw;
-
+  margin-inline: -1.4cqw;
   .as-name { color: #8a5c22; }
 }
 
-/* Square-bracket marks to the right of the rows: where "CLI" and
-   "framework" actually sit in the stack. Label runs vertically beside. */
-.as-bracket {
+/* The Agent row is a process, not a thing: draw the cycle. Four equal
+   steps with arrows between them and a return path from the last step
+   back under to the first (step centers sit at 12.5% and 87.5%). */
+.as-cycle {
   position: relative;
-  width: 1cqw;
-  margin-block: 1.2cqw;
-  border: 0.22cqw solid #8a5c22;
-  border-left: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 1.8cqw;
+  padding-top: 2.2cqw;
+  padding-bottom: 3cqw;
+}
+/* Entry point: the prompt comes down into the first step. */
+.as-start {
+  position: absolute;
+  top: 0;
+  left: calc((100% - 5.4cqw) / 8);
+  /* right-aligned so the trailing arrow sits over the box's center */
+  transform: translateX(calc(-100% + 0.3em));
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 1cqw;
+  letter-spacing: 0.06em;
+  color: #8a5c22;
 
-  span {
+  &::after { content: " \2193"; font-family: var(--sans); font-weight: 700; }
+}
+.as-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5cqw 0.3cqw;
+  border: 0.15cqw solid #8a5c22;
+  border-radius: 0.5cqw;
+  background: var(--parchment);
+  font-size: 1.3cqw;
+  font-weight: 600;
+  line-height: 1.2;
+
+  &:not(:nth-child(5))::after {
+    content: "\2192";
     position: absolute;
+    left: 100%;
     top: 50%;
-    left: calc(100% + 0.5cqw);
+    width: 1.8cqw;
     transform: translateY(-50%);
-    writing-mode: vertical-rl;
-    font-family: var(--mono);
-    font-size: 1.05cqw;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    white-space: nowrap;
+    text-align: center;
+    font-weight: 400;
     color: #8a5c22;
   }
 }
-.as-fw  { grid-column: 2; grid-row: 3 / 5; }
-.as-plug { grid-column: 3; grid-row: 2 / 5; }
-.as-cli  { grid-column: 4; grid-row: 1 / 6; }
+.as-return {
+  position: absolute;
+  left: calc((100% - 5.4cqw) / 8);
+  right: calc((100% - 5.4cqw) / 8);
+  bottom: 0.5cqw;
+  height: 2.5cqw; /* top edge sits on the steps' bottom */
+  border: 0.18cqw solid #8a5c22;
+  border-top: none;
 
-/* Key for the two brackets, under the rows. */
+  /* Arrowhead: centered on the left line, tip at the first box's edge. */
+  &::before {
+    content: "";
+    position: absolute;
+    left: -0.51cqw;
+    top: 0;
+    border: 0.6cqw solid transparent;
+    border-bottom: 0.8cqw solid #8a5c22;
+    border-top: none;
+  }
+
+  span {
+    position: absolute;
+    left: 50%;
+    bottom: -0.8cqw;
+    transform: translateX(-50%);
+    padding-inline: 0.7cqw;
+    background: var(--parchment-card);
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 1cqw;
+    letter-spacing: 0.06em;
+    color: #8a5c22;
+  }
+}
+.as-note {
+  margin-top: 0.6cqw;
+  font-size: 1.4cqw;
+  color: var(--ink-soft);
+
+  strong { color: var(--ink); }
+}
+
+
+/* Key under the rows: CLI / Harness, Plugin, Framework. */
 .as-key {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1743,10 +1799,19 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
 
   .as-part { grid-template-columns: 1fr; gap: 6px; padding: 14px 0; border-bottom-width: 1px; }
   .as-parts { display: flex; flex-direction: column; }
-  .as-bracket { display: none; }
   .as-key { grid-template-columns: 1fr; gap: 14px; margin-top: 8px; padding-top: 16px; border-top-width: 1px; font-size: 14px; }
   .as-key-term { font-size: 11px; margin-bottom: 4px; }
-  .as-agent { padding-inline: 12px; margin-inline: -12px; outline-width: 2px; outline-offset: -2px; }
+  .as-cycle { grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 24px; }
+  .as-step { font-size: 13px; padding: 6px 4px; border-width: 1px; border-radius: 6px; }
+  .as-step:not(:nth-child(5))::after { display: none; }
+  .as-cycle { padding-top: 0; }
+  .as-start { position: static; grid-column: 1 / -1; transform: none; font-size: 11px; }
+  .as-return { left: 0; right: 0; bottom: 0; height: auto; border: none; }
+  .as-agent { padding-inline: 12px; margin-inline: -12px; }
+  .as-return::before { display: none; }
+  .as-return span { position: static; display: block; transform: none; padding: 0; font-size: 11px; text-align: center; }
+  .as-return span::before { content: "\21BA  "; }
+  .as-note { font-size: 14px; margin-top: 6px; }
   .as-name { font-size: 21px; }
   .as-q { font-size: 11px; margin-top: 4px; }
   .as-what { font-size: 15px; }
