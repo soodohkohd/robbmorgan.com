@@ -1840,7 +1840,6 @@ function slideHtml(): string {
               <div class="as-key-item"><span class="as-key-term">Framework</span>A packaged method for building with AI, such as HVE, Superpowers, or GSD, made of playbooks, step-by-step workflows, and roles. It always adds guidance to Skills. Some also ship sub-agents or hooks into the Agent row, and only hooks can enforce. Engineers also use the word for code libraries like LangGraph.</div>
             </div>
             <div class="as-foot">
-              <span>The bottom four are the core; the top three extend it.</span>
               <span>robbmorgan.com/code</span>
             </div>
           </div>

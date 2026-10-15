@@ -1781,7 +1781,7 @@ app-web-apps .topic-body:has(.as-stage) { max-width: none; }
 .as-foot {
   margin-top: 1.6cqw;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 2cqw;
   font-size: 1.1cqw;
   letter-spacing: 0.04em;
