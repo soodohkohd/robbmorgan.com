@@ -1787,7 +1787,7 @@ function slideHtml(): string {
       'A binder of company procedures, handed in when relevant'],
     ['Agent', 'The loop',
       '<div class="as-cycle" role="img" aria-label="The loop: your prompt starts it, then the model decides, the harness checks, a tool runs, the result goes back to the model, and it repeats until the job is done."><span class="as-start">Your prompt starts it</span><span class="as-step">Model decides</span><span class="as-step">Harness checks</span><span class="as-step">Tool runs</span><span class="as-step">Result returns</span><span class="as-return"><span>repeats until the job is done</span></span></div><div class="as-note"><strong>Hooks</strong> can block a step; <strong>sub-agents</strong> run loops of their own.</div>',
-      'You (the harness) and the consultant, passing notes until the report is finished', true],
+      'You (the harness) and the consultant, passing notes until the job is finished', true],
     ['Tools', 'What it may ask for',
       'The menu of actions on offer: run a query, send an email, read a file. The model can only request items from this list.',
       'Your list of things you are willing to do for them'],
