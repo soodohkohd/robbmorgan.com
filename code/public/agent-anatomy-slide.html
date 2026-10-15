@@ -94,7 +94,7 @@ body {
 .parts {
   flex: 1; display: grid;
   grid-template-columns: 1fr 2.4cqw 2.4cqw 2.4cqw; column-gap: .5cqw;
-  grid-auto-rows: 1fr;
+  /* auto rows; the grid's default stretch shares spare height among them */
 }
 .part {
   grid-column: 1; align-items: center;
@@ -127,8 +127,8 @@ body {
   font-family: var(--mono); font-size: .8cqw; font-weight: 600;
   letter-spacing: .16em; text-transform: uppercase; color: var(--brass-deep);
 }
-.fw  { grid-column: 2; grid-row: 3; }
-.plug { grid-column: 3; grid-row: 2 / 4; }
+.fw  { grid-column: 2; grid-row: 3 / 5; }
+.plug { grid-column: 3; grid-row: 2 / 5; }
 .cli  { grid-column: 4; grid-row: 1 / 6; }
 
 .key {
@@ -179,12 +179,12 @@ body {
         </div>
         <div class="part" role="listitem">
           <div class="name">Skills<small>What it knows how to do</small></div>
-          <div class="what">Your company's playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so work is secure by design from the start.</div>
+          <div class="what">Your company's playbooks, loaded only when a task calls for them. Your standards, your steps, your security policies, so secure work is the default. Hard rules still belong in code.</div>
           <div class="story">A binder of company procedures, handed in when relevant</div>
         </div>
         <div class="part agent" role="listitem">
           <div class="name">Agent<small>How work gets done</small></div>
-          <div class="what">The whole arrangement running as a loop. The model picks the next step, and the <strong>harness</strong>, the software running the loop, carries it out or refuses. The cycle repeats until the job is done.</div>
+          <div class="what">The whole arrangement running as a loop: the model picks the next step, and the <strong>harness</strong>, the software running the loop, carries it out or refuses. <strong>Hooks</strong> add checks that can block an action; <strong>sub-agents</strong> take on pieces of the work.</div>
           <div class="story">You (the harness) and the consultant, passing notes until the report is finished</div>
         </div>
         <div class="part" role="listitem">
@@ -208,11 +208,11 @@ body {
       </div>
       <div class="key">
         <div><b>CLI / Harness</b>A ready-made agent you install, such as Claude Code or Copilot CLI. Its engine, the harness, runs the Agent loop, so people use the two words interchangeably. It covers Interface down to Tools; you still choose the model and platform.</div>
-        <div><b>Plugin</b>An installable bundle for a CLI: skills, commands, MCP connections, and hooks (automatic checks that can block an action). It&rsquo;s how most frameworks are delivered.</div>
-        <div><b>Framework</b>A pack of playbooks and house rules, such as HVE, Superpowers, or GSD. It shapes how the agent works but can&rsquo;t enforce anything. Engineers also use the word for code libraries like LangGraph.</div>
+        <div><b>Plugin</b>An installable bundle for a CLI: skills, commands, sub-agents, MCP connections, and hooks (automatic checks that can block an action). A common way frameworks are delivered.</div>
+        <div><b>Framework</b>A bundle someone else wrote, such as HVE, Superpowers, or GSD. Its skills, prompts, and sub-agents guide the agent; any hooks it ships can enforce. Engineers also use the word for code libraries like LangGraph.</div>
       </div>
       <div class="foot">
-        <span>Stacked by dependency: each part relies on the ones beneath it.</span>
+        <span>The bottom four are the core; the top three extend it.</span>
         <span>robbmorgan.com/code</span>
       </div>
     </div>
