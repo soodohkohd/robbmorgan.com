@@ -111,6 +111,10 @@ body {
   padding-inline: 1cqw; margin-inline: -1cqw;
 }
 .part.agent .name { color: var(--brass-deep); }
+/* The tinted row is widened by its negative margin, so its own bottom rule
+   would overhang. Draw that rule as the next row's top edge instead. */
+.part.agent { border-bottom: none; }
+.part.agent + .part { border-top: .08cqw solid rgba(26,20,16,.18); }
 
 /* The Agent row is a process, not a thing: draw the cycle. Four equal
    steps with arrows between them, and a return path from the last step
