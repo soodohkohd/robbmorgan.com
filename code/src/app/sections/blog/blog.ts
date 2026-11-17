@@ -47,6 +47,34 @@ export class Blog implements AfterViewInit {
   private headTop = 0;
   readonly posts: readonly Post[] = [
     {
+      slug: 'the-wait',
+      label: 'The Wait',
+      title: 'The Wait.',
+      date: 'November 17, 2026',
+      image: '/posts/the-wait.webp',
+      imageAlt: 'An infographic titled Your Year in Waiting. A large headline reads 172 hours, more than seven full days every year, just waiting. Three horizontal bars break it down: standing in line 110 hours, stuck in traffic 49 hours, on hold 13 hours. A row beneath lists smaller waits: 10 percent of every drive sitting at red lights, 5 minutes 35 seconds per trip through the drive-thru, and 23 minutes per visit waiting at the doctor\'s office',
+      bodyHtml: `
+        <p>You have already spent nearly a full week of this year doing nothing.</p>
+        <p>Not resting. Not thinking. Waiting.</p>
+        <p>I went looking for the numbers, because I wanted to know how bad it really is.</p>
+        <p>Americans spend an estimated 37 billion hours a year standing in line. Spread that across the country and it comes to about 110 hours each. The grocery store. The pharmacy. The coffee you ordered ahead and still waited for.</p>
+        <p>Traffic took another 49 hours from the average driver last year. That is more than a full work week, spent looking at brake lights. If you drive in Los Angeles, make it 87. Chicago, 112.</p>
+        <p>Then 13 hours on hold, listening to a recording tell you how important your call is.</p>
+        <p>Add those three up and you get 172 hours. Seven days and four hours. Every year.</p>
+        <p>And that is only the big stuff. Red lights eat about 10% of every drive. The average drive-thru visit runs 5 minutes and 35 seconds. The doctor's office costs you 23 minutes before anyone with a stethoscope walks in.</p>
+        <p>None of it shows up on a calendar. Nobody blocks out &ldquo;stand behind a guy arguing about a coupon.&rdquo; It leaks out of the day in pieces too small to notice, and it adds up to a week.</p>
+        <p>Here is the part I can't stop thinking about.</p>
+        <p>Years ago the Houston airport had a complaint problem. Passengers were angry about the wait at baggage claim. So the airport hired more handlers and got the wait down to eight minutes. The complaints kept coming.</p>
+        <p>Then someone looked closer. It was a one minute walk to the carousel, followed by seven minutes of standing there.</p>
+        <p>So they moved the arrival gates farther away. Same eight minutes, except now six of them were spent walking. The complaints all but disappeared.</p>
+        <p>Nobody got their bag a second sooner.</p>
+        <p>The wait was never the problem. The empty wait was.</p>
+        <p>You are not getting those 172 hours back. The line is the line. The light is red. But most of us now fill every one of those gaps the same way, with a phone and a thumb, and we call it &ldquo;killing time.&rdquo;</p>
+        <p>Ironically... the one thing none of us get more of.</p>
+        <p>What do you do with yours?</p>
+      `,
+    },
+    {
       slug: 'tension',
       label: 'Tension',
       title: 'Tension.',
